@@ -1,0 +1,273 @@
+<div class="stepper gsap-stagger">
+  <div class="stepper-progress" style="width: 0%;"></div>
+  <div class="step active">
+    <div class="step-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+    </div>
+    <div class="step-content">
+      <span class="step-number">01</span>
+      <span class="step-label">Confirm Details</span>
+    </div>
+  </div>
+  <div class="step ">
+    <div class="step-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+    </div>
+    <div class="step-content">
+      <span class="step-number">02</span>
+      <span class="step-label">Review Contract</span>
+    </div>
+  </div>
+  <div class="step ">
+    <div class="step-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+    </div>
+    <div class="step-content">
+      <span class="step-number">03</span>
+      <span class="step-label">Sign & Complete</span>
+    </div>
+  </div>
+  <div class="step ">
+    <div class="step-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    </div>
+    <div class="step-content">
+      <span class="step-number">04</span>
+      <span class="step-label">Completed</span>
+    </div>
+  </div>
+</div>
+
+<div class="card gsap-stagger" style="max-width: 1000px; margin: 0 auto; padding: 2.5rem 3rem;">
+  <div class="d-flex align-items-start gap-3 mb-4">
+    <div class="card-header-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+    </div>
+    <div>
+      <h2 style="color: var(--portal-dark); font-weight: 700; margin: 0 0 0.25rem 0; font-size: 1.5rem;">Confirm Your Details</h2>
+      <p class="text-muted m-0" style="font-size: 0.95rem;">Please provide your official information. These details will be used to personalize your agreement and will appear in the final document.</p>
+    </div>
+  </div>
+  
+  <form action="/c/<%= contract.uuid %>/fill" method="POST" id="fillForm">
+    <div class="form-layout-wrapper mt-4">
+      
+      <!-- Left Column: Inputs -->
+      <div>
+        <h4 style="font-size: 1.1rem; font-weight: 600; color: var(--portal-dark); margin-bottom: 1.25rem;">Your Information <span style="font-size: 0.8rem; color: var(--portal-text-muted); font-weight: 400; margin-left: 0.5rem;">All fields marked with * are required.</span></h4>
+        
+        <div class="form-inputs-section">
+          <!-- Full Name -->
+          <div class="form-group">
+            <label class="form-label">Full Legal Name *</label>
+            <div class="input-with-icon">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+              <input type="text" name="client_name" class="form-control" value="<%= contract.client_name || '' %>" required placeholder="Viral Kohli">
+            </div>
+          </div>
+          
+          <!-- Company Name -->
+          <div class="form-group">
+            <label class="form-label">Company / Business Name <span style="color: var(--portal-text-muted); font-weight: normal;">(Optional)</span></label>
+            <div class="input-with-icon">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>
+              <input type="text" name="client_company" class="form-control" value="<%= contract.client_company || '' %>" placeholder="Enter company or business name">
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="form-group">
+            <label class="form-label">Email Address *</label>
+            <div class="input-with-icon input-with-badge">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+              <input type="email" id="clientEmailInput" name="client_email" class="form-control" value="<%= contract.client_email || '' %>" required placeholder="aviral@123.com">
+              <div class="verified-badge" id="emailVerifiedBadge" style="display: none; transition: opacity 0.3s;">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                <span>Verified</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phone -->
+          <div class="form-group">
+            <label class="form-label">Phone Number *</label>
+            <div class="phone-input-group" style="display: flex; gap: 0;">
+              <select name="client_phone_code" class="form-control" style="width: auto; border-top-right-radius: 0; border-bottom-right-radius: 0; background-color: #f8f9fa; border-right: none; padding-right: 0.5rem; font-weight: 500;">
+                <option value="+91">🇮🇳 +91</option>
+                <option value="+1">🇺🇸 +1</option>
+                <option value="+44">🇬🇧 +44</option>
+                <option value="+61">🇦🇺 +61</option>
+                <option value="+81">🇯🇵 +81</option>
+                <option value="+49">🇩🇪 +49</option>
+                <option value="+971">🇦🇪 +971</option>
+              </select>
+              <input type="tel" name="client_phone" class="form-control" style="border-top-left-radius: 0; border-bottom-left-radius: 0; padding-left: 0.75rem;" value="<%= contract.client_phone || '' %>" required placeholder="1234567898">
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="form-group full-width">
+            <label class="form-label">Address *</label>
+            <div class="input-with-icon">
+              <svg class="input-icon" style="top: 1rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+              <textarea name="client_address" class="form-control" rows="3" required placeholder="C-56, Sector-19, Noida, Uttar Pradesh, India - 201301"><%= contract.client_address || '' %></textarea>
+            </div>
+          </div>
+
+          <!-- Designation -->
+          <div class="form-group full-width" style="margin-bottom: 0;">
+            <label class="form-label">Designation / Your Role <span style="color: var(--portal-text-muted); font-weight: normal;">(Optional)</span></label>
+            <div class="input-with-icon">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
+              <input type="text" name="client_designation" class="form-control" value="<%= contract.client_designation || '' %>" placeholder="e.g. Director, Founder, Project Manager">
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Right Column: Summary -->
+      <div>
+        <div class="contract-summary-panel">
+          <div class="summary-header">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Contract Details
+          </div>
+          
+          <div class="summary-row">
+            <span class="summary-label">Contract Title</span>
+            <span class="summary-value"><%= contract.project_name || 'Services Agreement' %></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Document ID</span>
+            <span class="summary-value" style="font-family: monospace; font-size: 0.8rem;"><%= contract.uuid %></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Sent by</span>
+            <span class="summary-value"><%= contract.authorized_signatory || 'Admin' %></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Company</span>
+            <span class="summary-value"><%= settings?.company_name || 'KeyQik Private Limited' %></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Sent on</span>
+            <span class="summary-value"><%= contract.created_at ? new Date(contract.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A' %></span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Expires on</span>
+            <span class="summary-value highlight">
+              <% 
+                let expires = new Date(contract.created_at);
+                expires.setDate(expires.getDate() + 14); // default 14 days 
+              %>
+              <%= expires.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) %>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--portal-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+            </span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Pages</span>
+            <span class="summary-value highlight">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--portal-dark)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+              8 pages
+            </span>
+          </div>
+        </div>
+      </div>
+      
+    </div>
+
+    <!-- Optional Permissions -->
+    <% 
+      let toggleableClauses = [];
+      if (contract.selected_clauses) {
+        toggleableClauses = contract.selected_clauses.filter(c => c.clientToggleable);
+      }
+    %>
+    <% if (toggleableClauses.length > 0) { %>
+      <div class="permissions-box">
+        <div class="permissions-header">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <div class="permissions-title">
+            <h4>Optional Permissions <span class="badge">Optional</span></h4>
+            <p>You may choose whether to grant KeyQik permission to use your information and materials. These permissions are optional and not required to sign this agreement.</p>
+          </div>
+        </div>
+        
+        <div class="permissions-grid">
+          <% toggleableClauses.forEach(clause => { %>
+            <label class="permission-item">
+              <input type="checkbox" name="clause_<%= clause.id %>" <%= clause.defaultEnabled ? 'checked' : '' %> class="custom-checkbox permission-checkbox">
+              <div class="permission-icon">
+                <% if (clause.title.toLowerCase().includes('portfolio')) { %>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                <% } else if (clause.title.toLowerCase().includes('case study')) { %>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                <% } else { %>
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+                <% } %>
+              </div>
+              <div class="permission-text">
+                <h5><%= clause.title %></h5>
+                <p><%= clause.content %></p>
+              </div>
+            </label>
+          <% }) %>
+        </div>
+      </div>
+    <% } %>
+    
+    <div class="d-flex justify-content-between" style="margin-top: 2rem;">
+      <a href="/c/<%= contract.uuid %>" class="btn btn-secondary" style="border: 1px solid var(--portal-border); font-weight: 500; gap: 0.5rem; background: #fff;">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+        Back to Link
+      </a>
+      <button type="submit" class="btn btn-primary" style="gap: 0.5rem;">
+        Continue to Review
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+      </button>
+    </div>
+  </form>
+</div>
+<script src="/js/public/contract-fill.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const emailInput = document.getElementById('clientEmailInput');
+    const emailBadge = document.getElementById('emailVerifiedBadge');
+    const badgeText = emailBadge.querySelector('span');
+
+    const validateEmail = (email) => {
+      // Basic email regex
+      return String(email)
+        .toLowerCase()
+        .match(
+          /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+    };
+
+    const checkEmail = () => {
+      const val = emailInput.value.trim();
+      if (!val) {
+        emailBadge.style.display = 'none';
+        return;
+      }
+
+      if (validateEmail(val)) {
+        emailBadge.style.display = 'flex';
+        emailBadge.style.background = 'var(--portal-success-light)';
+        emailBadge.style.color = 'var(--portal-success)';
+        badgeText.textContent = 'Valid';
+        emailBadge.querySelector('svg').innerHTML = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline>';
+      } else {
+        emailBadge.style.display = 'flex';
+        emailBadge.style.background = '#FEE2E2'; // Light red
+        emailBadge.style.color = '#EF4444'; // Red
+        badgeText.textContent = 'Invalid';
+        emailBadge.querySelector('svg').innerHTML = '<circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>';
+      }
+    };
+
+    emailInput.addEventListener('input', checkEmail);
+    // Initial check in case it's prefilled
+    checkEmail();
+  });
+</script>

@@ -1,0 +1,401 @@
+<div class="templates-header">
+  <div>
+    <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">Templates</h1>
+    <p>Create, manage and reuse contract templates to save time and ensure consistency.</p>
+  </div>
+  <div class="header-actions" style="display: flex; gap: 1rem;">
+    <form method="POST" action="/admin/templates" style="margin: 0;">
+      <button type="submit" class="btn btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" style="margin-right: 0.5rem;">
+          <line x1="12" y1="5" x2="12" y2="19" />
+          <line x1="5" y1="12" x2="19" y2="12" />
+        </svg>
+        New Template
+      </button>
+    </form>
+    <button class="btn btn-accent" onclick="showToast('Upload Template coming in Phase 4!')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+        stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+        <polyline points="17 8 12 3 7 8" />
+        <line x1="12" y1="3" x2="12" y2="15" />
+      </svg>
+      Upload Template
+    </button>
+  </div>
+</div>
+
+<div class="templates-filters">
+  <div class="filter-input">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round">
+      <circle cx="11" cy="11" r="8" />
+      <line x1="21" y1="21" x2="16.65" y2="16.65" />
+    </svg>
+    <input type="text" id="searchInput" placeholder="Search templates...">
+  </div>
+
+  <select class="filter-select" id="categoryFilter">
+    <option value="All">All Categories</option>
+    <option value="Service Agreement">Service Agreement</option>
+    <option value="Project Agreement">Project Agreement</option>
+    <option value="Legal Agreement">Legal Agreement</option>
+  </select>
+
+  <select class="filter-select" id="typeFilter">
+    <option value="All">All Types</option>
+    <option value="Standard">Standard</option>
+    <option value="Custom">Custom</option>
+  </select>
+
+  <button class="btn btn-outline" style="margin-left: auto; gap: 0.5rem;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round">
+      <line x1="4" y1="21" x2="4" y2="14" />
+      <line x1="4" y1="10" x2="4" y2="3" />
+      <line x1="12" y1="21" x2="12" y2="12" />
+      <line x1="12" y1="8" x2="12" y2="3" />
+      <line x1="20" y1="21" x2="20" y2="16" />
+      <line x1="20" y1="12" x2="20" y2="3" />
+      <line x1="1" y1="14" x2="7" y2="14" />
+      <line x1="9" y1="8" x2="15" y2="8" />
+      <line x1="17" y1="16" x2="23" y2="16" />
+    </svg>
+    Recently Added
+  </button>
+</div>
+
+<div class="templates-layout">
+  <div class="templates-grid-new">
+    <% // Helper function for visual placeholder mapping 
+      const getCategoryProps=(slug)=> {
+      if (slug.includes('consultancy') || slug.includes('seo')) {
+      return { name: 'Service Agreement', color: 'rgba(52, 122, 90, 0.1)', textColor: '#347A5A' };
+      } else if (slug.includes('development') || slug.includes('video')) {
+      return { name: 'Project Agreement', color: 'rgba(43, 108, 203, 0.1)', textColor: '#2B6CCB' };
+      }
+      return { name: 'Legal Agreement', color: 'rgba(139, 92, 246, 0.1)', textColor: '#8B5CF6' };
+      };
+
+      const getIconProps = (slug) => {
+      if (slug.includes('web-dev')) return { bg: 'rgba(43, 108, 203, 0.1)', color: '#2B6CCB', svg: `
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />` };
+      if (slug.includes('seo')) return { bg: 'rgba(255, 176, 32, 0.1)', color: '#FFB020', svg: `
+      <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />` };
+      if (slug.includes('consultancy')) return { bg: 'rgba(139, 92, 246, 0.1)', color: '#8B5CF6', svg: `
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+      <circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+      <path d="M16 3.13a4 4 0 0 1 0 7.75" />` };
+      if (slug.includes('video')) return { bg: 'rgba(239, 68, 68, 0.1)', color: '#EF4444', svg: `
+      <polygon points="23 7 16 12 23 17 23 7" />
+      <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />` };
+      return { bg: 'rgba(52, 122, 90, 0.1)', color: '#347A5A', svg: `
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />` };
+      };
+      %>
+
+      <% if (templates && templates.length> 0) { %>
+        <% templates.forEach(t=> {
+          const cat = getCategoryProps(t.slug);
+          const icon = getIconProps(t.slug);
+          %>
+          <div class="template-card-new" data-name="<%= t.name.toLowerCase() %>" data-category="<%= cat.name %>"
+            data-type="Standard">
+            <button class="star-btn" onclick="this.classList.toggle('active')"><svg width="18" height="18"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round">
+                <polygon
+                  points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+              </svg></button>
+
+            <div class="template-card-header">
+              <div class="template-icon-wrapper" style="background: <%= icon.bg %>; color: <%= icon.color %>;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round"><%- icon.svg %></svg>
+              </div>
+              <div class="template-card-title">
+                <h3>
+                  <%= t.name %>
+                </h3>
+                <span>
+                  <%= cat.name %>
+                </span>
+              </div>
+            </div>
+
+            <p class="template-card-desc">
+              <%= t.description %>
+            </p>
+
+            <div class="template-badge" style="background: <%= cat.color %>; color: <%= cat.textColor %>;">
+              <%= cat.name %>
+            </div>
+
+            <div class="template-card-footer">
+              <div class="template-usage">Used <%= Math.floor(Math.random() * 40) + 5 %> times</div>
+              <div class="template-actions">
+                <button class="template-action-btn" title="Preview" onclick="previewTemplate('<%= t.name.replace(/'/g, "\\'") %>', '<%= cat.name %>', `<%= t.description.replace(/`/g, '\\`' ) %>`)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                        stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                        <circle cx="12" cy="12" r="3" />
+                      </svg>
+                </button>
+
+                <div style="position: relative; display: inline-block;">
+                  <button class="template-action-btn" title="Options"
+                    onclick="this.nextElementSibling.style.display = this.nextElementSibling.style.display === 'block' ? 'none' : 'block'">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                      stroke-linecap="round" stroke-linejoin="round">
+                      <circle cx="12" cy="12" r="1" />
+                      <circle cx="19" cy="12" r="1" />
+                      <circle cx="5" cy="12" r="1" />
+                    </svg>
+                  </button>
+                  <div class="options-dropdown"
+                    style="display: none; position: absolute; bottom: 100%; right: 0; background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4px; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); width: 140px; z-index: 10;">
+                    <a href="/admin/templates/<%= t.id %>/edit"
+                      style="display: block; padding: 8px 12px; text-decoration: none; color: #475569; font-size: 13px; border-radius: 4px;">Edit
+                      Structure</a>
+                    <form method="POST" action="/admin/contracts/delete-template" style="margin: 0;">
+                      <input type="hidden" name="id" value="<%= t.id %>">
+                      <button type="submit"
+                        style="display: block; width: 100%; text-align: left; padding: 8px 12px; background: none; border: none; color: #ef4444; font-size: 13px; cursor: pointer; border-radius: 4px;"
+                        onclick="return confirm('Delete this template?')">Delete Template</button>
+                    </form>
+                  </div>
+                </div>
+
+                <a href="/admin/contracts/create/<%= t.slug %>" class="template-action-btn"
+                  style="border: none; background: var(--portal-bg); color: var(--portal-primary);"
+                  title="Create Contract">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12" />
+                    <polyline points="12 5 19 12 12 19" />
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </div>
+          <% }) %>
+            <% } else { %>
+              <p>No templates available.</p>
+              <% } %>
+  </div>
+
+  <aside class="templates-sidebar">
+    <div class="sidebar-box">
+      <h3>Categories</h3>
+      <ul class="category-list">
+        <li><a href="#" class="active" onclick="filterCategory('All', this)">
+            <span style="display: flex; align-items: center; gap: 0.5rem;"><svg width="14" height="14"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg> All Templates</span>
+            <span class="cat-count">
+              <%= catCounts.All %>
+            </span>
+          </a></li>
+        <li><a href="#" onclick="filterCategory('Service Agreement', this)">
+            <span style="display: flex; align-items: center; gap: 0.5rem;"><svg width="14" height="14"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg> Service Agreement</span>
+            <span class="cat-count">
+              <%= catCounts.Service %>
+            </span>
+          </a></li>
+        <li><a href="#" onclick="filterCategory('Project Agreement', this)">
+            <span style="display: flex; align-items: center; gap: 0.5rem;"><svg width="14" height="14"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg> Project Agreement</span>
+            <span class="cat-count">
+              <%= catCounts.Project %>
+            </span>
+          </a></li>
+        <li><a href="#" onclick="filterCategory('Legal Agreement', this)">
+            <span style="display: flex; align-items: center; gap: 0.5rem;"><svg width="14" height="14"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              </svg> Legal Agreement</span>
+            <span class="cat-count">
+              <%= catCounts.Legal %>
+            </span>
+          </a></li>
+        <li><a href="#" onclick="filterCategory('Financial Agreement', this)">
+            <span style="display: flex; align-items: center; gap: 0.5rem;"><svg width="14" height="14"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+              </svg> Financial Agreement</span>
+            <span class="cat-count">
+              <%= catCounts.Financial %>
+            </span>
+          </a></li>
+        <li><a href="#" onclick="filterCategory('HR Agreement', this)">
+            <span style="display: flex; align-items: center; gap: 0.5rem;"><svg width="14" height="14"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg> HR Agreement</span>
+            <span class="cat-count">
+              <%= catCounts.HR %>
+            </span>
+          </a></li>
+      </ul>
+      <a href="#" onclick="showToast('Category management coming in Phase 4')"
+        style="display: inline-block; margin-top: 1rem; color: var(--portal-primary); font-size: 0.85rem; font-weight: 500; text-decoration: none;">Manage
+        Categories &rarr;</a>
+    </div>
+
+    <div class="sidebar-box">
+      <h3>Quick Actions</h3>
+      <div class="quick-actions-list">
+        <form method="POST" action="/admin/templates" style="margin: 0;">
+          <button type="submit"
+            style="background:none; border:none; padding:10px 12px; width:100%; text-align:left; color:#475569; font-weight:500; font-size:14px; cursor:pointer; border-radius:6px; display:flex; gap:12px; align-items:center;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg> New Template
+          </button>
+        </form>
+        <a href="#" onclick="showToast('Upload Template coming in Phase 4')"><svg width="16" height="16"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+            <polyline points="17 8 12 3 7 8" />
+            <line x1="12" y1="3" x2="12" y2="15" />
+          </svg> Upload Template</a>
+        <a href="#" onclick="showToast('Create from Contract coming in Phase 4')"><svg width="16" height="16"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg> Create from Contract</a>
+        <a href="#" onclick="showToast('Import from Word coming in Phase 4')"><svg width="16" height="16"
+            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+            <polyline points="14 2 14 8 20 8" />
+          </svg> Import from Word</a>
+        <a href="/admin/clauses"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+            <rect x="7" y="7" width="3" height="9" />
+            <rect x="14" y="7" width="3" height="5" />
+          </svg> Manage Clauses</a>
+
+        <div class="sidebar-box smart-promo-box">
+          <h3>
+            <div
+              style="background: var(--portal-primary); color: white; padding: 4px; border-radius: 6px; display: flex;">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+              </svg></div>
+            Create Faster with Smart Templates
+          </h3>
+          <p style="margin-top: 1rem;">Use smart fields and clause library to create professional contracts in minutes.
+          </p>
+          <button class="btn btn-primary w-100">Learn More &rarr;</button>
+        </div>
+  </aside>
+</div>
+
+<!-- Preview Modal -->
+<div id="previewModal" class="modal"
+  style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; align-items: center; justify-content: center;">
+  <div
+    style="background: white; border-radius: 12px; width: 100%; max-width: 500px; padding: 24px; position: relative;">
+    <button onclick="document.getElementById('previewModal').style.display='none'"
+      style="position: absolute; right: 16px; top: 16px; background: none; border: none; cursor: pointer; color: #64748b;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <h3 id="previewTitle" style="margin: 0 0 4px; font-size: 20px;">Template Name</h3>
+    <span id="previewCategory"
+      style="display: inline-block; font-size: 13px; color: var(--portal-primary); background: var(--portal-bg); padding: 2px 8px; border-radius: 4px; margin-bottom: 16px;">Category</span>
+    <p id="previewDesc"
+      style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 24px; padding: 12px; background: #f8fafc; border-radius: 8px;">
+      Description</p>
+    <button class="btn btn-primary w-100" onclick="document.getElementById('previewModal').style.display='none'">Close
+      Preview</button>
+  </div>
+</div>
+
+<script>
+  function showToast(msg) {
+    alert(msg);
+  }
+
+  function previewTemplate(name, category, description) {
+    document.getElementById('previewTitle').innerText = name;
+    document.getElementById('previewCategory').innerText = category;
+    document.getElementById('previewDesc').innerText = description;
+    document.getElementById('previewModal').style.display = 'flex';
+  }
+
+  function filterTemplates() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const cat = document.getElementById('categoryFilter').value;
+    const type = document.getElementById('typeFilter').value;
+
+    document.querySelectorAll('.template-card-new').forEach(card => {
+      const cardName = card.getAttribute('data-name');
+      const cardCat = card.getAttribute('data-category');
+      const cardType = card.getAttribute('data-type');
+
+      const matchesSearch = cardName.includes(search);
+      const matchesCat = (cat === 'All' || cat === 'All Categories' || cardCat === cat);
+      const matchesType = (type === 'All' || type === 'All Types' || cardType === type);
+
+      if (matchesSearch && matchesCat && matchesType) {
+        card.style.display = 'flex';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  function filterCategory(cat, element) {
+    // Update active class on sidebar
+    document.querySelectorAll('.category-list a').forEach(a => a.classList.remove('active'));
+    element.classList.add('active');
+
+    // Update dropdown to match and trigger filter
+    const dropdown = document.getElementById('categoryFilter');
+    let found = false;
+    for (let i = 0; i < dropdown.options.length; i++) {
+      if (dropdown.options[i].value === cat || (cat === 'All' && dropdown.options[i].value === 'All Categories')) {
+        dropdown.selectedIndex = i;
+        found = true;
+        break;
+      }
+    }
+    filterTemplates();
+  }
+
+  document.getElementById('searchInput').addEventListener('input', filterTemplates);
+  document.getElementById('categoryFilter').addEventListener('change', filterTemplates);
+  document.getElementById('typeFilter').addEventListener('change', filterTemplates);
+
+  // Close dropdowns when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.options-dropdown') && !e.target.closest('.template-action-btn')) {
+      document.querySelectorAll('.options-dropdown').forEach(d => d.style.display = 'none');
+    }
+  });
+</script>

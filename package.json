@@ -1,0 +1,52 @@
+{
+  "name": "kkeyqik-contract-portal",
+  "version": "1.0.0",
+  "description": "Contract & Agreement Portal for KKeyQik Private Limited",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "node --watch app.js",
+    "migrate": "node scripts/migrate.js",
+    "seed": "node scripts/seed.js",
+    "setup": "node scripts/migrate.js && node scripts/seed.js"
+  },
+  "keywords": [
+    "contract",
+    "agreement",
+    "esignature",
+    "portal"
+  ],
+  "author": "KKeyQik Private Limited",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@sparticuz/chromium": "^149.0.0",
+    "@supabase/supabase-js": "^2.112.3",
+    "bcryptjs": "^2.4.3",
+    "connect-pg-simple": "^10.0.0",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-ejs-layouts": "^2.5.1",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
+    "googleapis": "^174.0.1",
+    "helmet": "^8.0.0",
+    "mammoth": "^1.12.1",
+    "multer": "^2.2.0",
+    "mysql2": "^3.23.3",
+    "node-cron": "^4.6.0",
+    "nodemailer": "^6.10.1",
+    "pdf-creator-node": "^4.0.1",
+    "pdf-lib": "^1.17.1",
+    "pdf-parse": "^2.4.5",
+    "pg": "^8.23.0",
+    "puppeteer": "^24.43.1",
+    "puppeteer-core": "^25.6.0",
+    "uuid": "^11.1.0"
+  },
+  "devDependencies": {
+    "basic-ftp": "^6.2.0",
+    "chokidar": "^5.0.0",
+    "dotenv": "^17.4.2"
+  }
+}

@@ -1,0 +1,201 @@
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+  <div>
+    <a href="/admin/templates" style="color: #64748b; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 4px; margin-bottom: 8px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      Back to Templates
+    </a>
+    <h1 class="page-title">Edit Template: <%= template.name %></h1>
+  </div>
+  <button class="btn btn-primary" onclick="saveTemplate()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>
+    Save Changes
+  </button>
+</div>
+
+<div class="row">
+  <div class="col-8">
+    <div class="card mb-4">
+      <h3 style="margin: 0 0 20px; font-size: 16px;">Content Sections</h3>
+      <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">These are the static content blocks that make up the contract body. Use <code>{{variable_name}}</code> for dynamic fields.</p>
+      
+      <div id="sectionsContainer" style="display: flex; flex-direction: column; gap: 16px;">
+        <!-- Filled via JS -->
+      </div>
+      
+      <div style="margin-top: 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
+        <button class="btn btn-outline" style="flex: 1; min-width: 180px; border-style: dashed;" onclick="addSection()">
+          + Add New Section
+        </button>
+
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 13px; font-weight: 500; color: #64748b; white-space: nowrap;">Variable Builder:</span>
+          <select id="variableDropdown" class="form-control" style="width: auto; padding: 6px 12px; font-size: 13px; cursor: pointer;" onchange="handleVariableInsert(this)">
+            <option value="">+ Insert Variable...</option>
+            <option value="{{client_name}}">{{client_name}} (Client Name)</option>
+            <option value="{{company_name}}">{{company_name}} (Company Name)</option>
+            <option value="{{contract_value}}">{{contract_value}} (Contract Value)</option>
+            <option value="{{start_date}}">{{start_date}} (Start Date)</option>
+            <option value="{{end_date}}">{{end_date}} (End Date)</option>
+            <option value="{{signee_name}}">{{signee_name}} (Signee Name)</option>
+            <option value="{{signee_title}}">{{signee_title}} (Signee Title)</option>
+          </select>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-4">
+    <div class="card mb-4">
+      <h3 style="margin: 0 0 20px; font-size: 16px;">Template Info</h3>
+      <div class="form-group mb-3">
+        <label>Name</label>
+        <input type="text" id="tplName" class="form-control" value="<%= template.name %>">
+      </div>
+      <div class="form-group mb-3">
+        <label>Icon (Emoji)</label>
+        <input type="text" id="tplIcon" class="form-control" value="<%= template.icon %>" maxlength="2">
+      </div>
+      <div class="form-group mb-3">
+        <label>Description</label>
+        <textarea id="tplDesc" class="form-control" rows="3"><%= template.description %></textarea>
+      </div>
+    </div>
+
+    <div class="card mb-4">
+      <h3 style="margin: 0 0 20px; font-size: 16px;">Included Clauses</h3>
+      <p style="color: #64748b; font-size: 13px; margin-bottom: 16px;">Select which library clauses to attach by default.</p>
+      <div style="display: flex; flex-direction: column; gap: 12px; max-height: 300px; overflow-y: auto;">
+        <% clauses.forEach(clause => { %>
+          <label style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #e2e8f0; border-radius: 8px; cursor: pointer;">
+            <input type="checkbox" class="clause-checkbox" value="<%= clause.id %>" <%= template.default_clauses.includes(clause.id) ? 'checked' : '' %>>
+            <div>
+              <div style="font-weight: 500; font-size: 14px;"><%= clause.title %></div>
+              <div style="font-size: 12px; color: #64748b;"><%= clause.category %></div>
+            </div>
+          </label>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let sections = <%- JSON.stringify(template.content_sections || []) %>;
+let activeTextarea = null;
+
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+function renderSections() {
+  const container = document.getElementById('sectionsContainer');
+  container.innerHTML = '';
+  
+  sections.forEach((sec, idx) => {
+    container.innerHTML += `
+      <div class="section-editor" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
+        <div style="background: #f8fafc; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+          <input type="text" value="${escapeHtml(sec.title)}" onchange="updateSectionTitle(${idx}, this.value)" style="border: none; background: transparent; font-weight: 600; font-size: 15px; flex: 1; outline: none;" placeholder="Section Title">
+          <button class="btn-icon" style="color: #ef4444;" onclick="removeSection(${idx})">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
+        </div>
+        <textarea class="section-textarea" data-idx="${idx}" onfocus="setActiveTextarea(this)" oninput="updateSectionContent(${idx}, this.value)" onchange="updateSectionContent(${idx}, this.value)" style="width: 100%; border: none; padding: 16px; min-height: 150px; outline: none; font-family: monospace; font-size: 13px; line-height: 1.5; resize: vertical;">${escapeHtml(sec.content)}</textarea>
+      </div>
+    `;
+  });
+}
+
+function setActiveTextarea(el) {
+  activeTextarea = el;
+}
+
+function handleVariableInsert(selectEl) {
+  const variable = selectEl.value;
+  if (!variable) return;
+  insertVariableAtCursor(variable);
+  selectEl.value = '';
+}
+
+function insertVariableAtCursor(variable) {
+  if (!activeTextarea || !document.body.contains(activeTextarea)) {
+    const textareas = document.querySelectorAll('.section-textarea');
+    if (textareas.length > 0) {
+      activeTextarea = textareas[textareas.length - 1];
+    } else {
+      addSection();
+      setTimeout(() => {
+        const textareas = document.querySelectorAll('.section-textarea');
+        if (textareas.length > 0) {
+          activeTextarea = textareas[0];
+          insertVariableAtCursor(variable);
+        }
+      }, 50);
+      return;
+    }
+  }
+
+  const startPos = activeTextarea.selectionStart !== undefined ? activeTextarea.selectionStart : activeTextarea.value.length;
+  const endPos = activeTextarea.selectionEnd !== undefined ? activeTextarea.selectionEnd : activeTextarea.value.length;
+  const originalText = activeTextarea.value;
+  
+  const newText = originalText.substring(0, startPos) + variable + originalText.substring(endPos);
+  activeTextarea.value = newText;
+  
+  const newCursorPos = startPos + variable.length;
+  activeTextarea.selectionStart = newCursorPos;
+  activeTextarea.selectionEnd = newCursorPos;
+  
+  const idx = parseInt(activeTextarea.getAttribute('data-idx'));
+  if (!isNaN(idx) && sections[idx]) {
+    sections[idx].content = newText;
+  }
+  
+  activeTextarea.focus();
+}
+
+function updateSectionTitle(idx, val) { sections[idx].title = val; }
+function updateSectionContent(idx, val) { sections[idx].content = val; }
+function addSection() {
+  sections.push({ title: 'New Section', content: '' });
+  renderSections();
+}
+function removeSection(idx) {
+  if (confirm('Remove this section?')) {
+    sections.splice(idx, 1);
+    renderSections();
+  }
+}
+
+async function saveTemplate() {
+  const selectedClauses = Array.from(document.querySelectorAll('.clause-checkbox:checked')).map(cb => parseInt(cb.value));
+  
+  const payload = {
+    name: document.getElementById('tplName').value,
+    icon: document.getElementById('tplIcon').value,
+    description: document.getElementById('tplDesc').value,
+    content_sections: sections,
+    default_clauses: selectedClauses
+    // Note: Fields schema generation could be advanced by parsing {{var}} from sections.
+  };
+
+  try {
+    const res = await fetch(`/admin/templates/<%= template.id %>`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      alert('Template saved successfully!');
+    } else {
+      alert('Failed to save template');
+    }
+  } catch (e) {
+    console.error(e);
+    alert('Network error');
+  }
+}
+
+renderSections();
+</script>

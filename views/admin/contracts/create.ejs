@@ -1,0 +1,152 @@
+<div class="card mb-4">
+  <h2 class="mb-4">
+    <%= typeof isEdit !=='undefined' && isEdit ? 'Edit' : 'Create' %> Contract: <%= template ? template.name
+        : 'Unknown Template' %>
+  </h2>
+
+  <form id="createContractForm"
+    action="<%= typeof isEdit !== 'undefined' && isEdit ? `/admin/contracts/${contract.id}/edit` : '/admin/contracts/create' %>"
+    method="POST">
+    <input type="hidden" name="templateId" value="<%= template ? template.id : '' %>">
+
+    <!-- Company details handled dynamically via Global Settings on the backend -->
+
+
+    <div class="section mb-5">
+      <h3 class="mb-3 border-bottom pb-2">1. Client Details</h3>
+      <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Client Name</label>
+          <input type="text" name="clientName" class="form-control"
+            value="<%= (typeof contract !== 'undefined' && contract.client_name) ? contract.client_name : '' %>"
+            required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Client Email</label>
+          <input type="email" name="clientEmail" class="form-control"
+            value="<%= (typeof contract !== 'undefined' && contract.client_email) ? contract.client_email : '' %>"
+            required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Region</label>
+          <select name="clientRegion" id="clientRegion" class="form-control" required>
+            <option value="indian" <%=(typeof contract !=='undefined' && contract.client_region==='indian' )
+              ? 'selected' : '' %>>Indian</option>
+            <option value="foreign" <%=(typeof contract !=='undefined' && contract.client_region==='foreign' )
+              ? 'selected' : '' %>>Foreign</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="section mb-5">
+      <h3 class="mb-3 border-bottom pb-2">2. Project Details</h3>
+      <div class="form-group">
+        <label class="form-label">Project Name</label>
+        <input type="text" name="projectName" class="form-control"
+          value="<%= (typeof contract !== 'undefined' && contract.project_name) ? contract.project_name : '' %>"
+          required>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Scope of Work</label>
+        <textarea name="scopeOfWork" class="form-control" rows="4"
+          required><%= (typeof contract !== 'undefined' && contract.scope_of_work) ? contract.scope_of_work : ((typeof prefill !== 'undefined' && prefill.scopeOfWork) ? prefill.scopeOfWork : '') %></textarea>
+      </div>
+
+      <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Total Amount</label>
+          <div class="d-flex">
+            <select name="currency" class="form-control" style="width: 80px; margin-right: 0.5rem;" required>
+              <option value="INR" <%=(typeof contract !=='undefined' && contract.currency==='INR' ) || ((typeof
+                contract==='undefined' || !contract.currency) && typeof prefill !=='undefined' &&
+                prefill.currency==='INR' ) ? 'selected' : '' %>>₹ INR</option>
+              <option value="USD" <%=(typeof contract !=='undefined' && contract.currency==='USD' ) || ((typeof
+                contract==='undefined' || !contract.currency) && typeof prefill !=='undefined' &&
+                prefill.currency==='USD' ) ? 'selected' : '' %>>$ USD</option>
+            </select>
+            <input type="number" name="amount" class="form-control"
+              value="<%= (typeof contract !== 'undefined' && contract.total_amount) ? contract.total_amount : ((typeof prefill !== 'undefined' && prefill.amount) ? prefill.amount : '') %>"
+              required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Time Period</label>
+          <input type="text" name="timePeriod" class="form-control"
+            value="<%= (typeof contract !== 'undefined' && contract.timeline) ? contract.timeline : ((typeof prefill !== 'undefined' && prefill.timePeriod) ? prefill.timePeriod : '') %>"
+            required>
+        </div>
+      </div>
+
+      <div class="row" style="display: grid; grid-template-columns: 1fr; margin-bottom: 1rem;">
+        <div class="form-group">
+          <label class="form-label">Payment Type</label>
+          <select name="paymentType" id="paymentType" class="form-control" required>
+            <option value="full_advance">Full Advance</option>
+            <option value="custom_split">Custom Split</option>
+            <option value="milestone">Milestone-Based</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="dynamicPaymentFields" class="mb-3 p-3 bg-light rounded" style="background: var(--portal-bg);">
+        <!-- Populated via JS -->
+      </div>
+    </div>
+
+    <% // Filter out Payment Terms since they are handled by Payment Type 
+      const filteredClauses=template &&
+      template.default_clauses ? template.default_clauses.filter(c=> !c.title.toLowerCase().includes('payment terms')) :
+      [];
+      %>
+      <% if (filteredClauses.length> 0) { %>
+        <div class="content-box mb-4">
+          <h3 class="section-title">Additional Clauses (Addendum)</h3>
+          <p class="text-muted" style="font-size: 0.9rem; margin-top: 16px; margin-bottom: 24px; display: block;">Check the boxes below to
+            include these optional clauses in the contract addendum.</p>
+
+          <div class="clauses-grid"
+            style="display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+            <% filteredClauses.forEach((clause, index)=> { %>
+              <label class="clause-toggle-card" for="clause<%= index %>"
+                style="display: flex; align-items: flex-start; padding: 12px 16px; border: 1px solid var(--portal-border, #e2e8f0); border-radius: 8px; cursor: pointer; transition: all 0.2s; background: white;">
+                <div style="margin-right: 12px; margin-top: 2px;">
+                  <input class="form-check-input custom-checkbox" type="checkbox" name="clauses[<%= index %>][enabled]"
+                    value="true" <%=clause.defaultEnabled !==false ? 'checked' : '' %> id="clause<%= index %>"
+                    style="width: 18px; height: 18px; accent-color: var(--portal-primary, #347A5A); cursor: pointer;">
+                </div>
+                <div style="flex: 1;">
+                  <div
+                    style="font-weight: 600; font-size: 0.95rem; color: var(--portal-text, #334155); margin-bottom: 2px;">
+                    <%= clause.title %>
+                  </div>
+                  <div
+                    style="font-size: 0.8rem; color: var(--portal-text-muted, #64748B); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    <%= clause.content.replace(/<[^>]*>?/gm, '').substring(0, 100) %>...
+                  </div>
+                </div>
+
+                <input type="hidden" name="clauses[<%= index %>][title]" value="<%= clause.title %>">
+                <input type="hidden" name="clauses[<%= index %>][content]" value="<%= clause.content %>">
+                <input type="hidden" name="clauses[<%= index %>][clientToggleable]"
+                  value="<%= clause.clientToggleable %>">
+              </label>
+              <% }) %>
+          </div>
+        </div>
+
+        <style>
+          .clause-toggle-card:has(.custom-checkbox:checked) {
+            border-color: var(--portal-primary, #347A5A) !important;
+            background-color: rgba(52, 122, 90, 0.03) !important;
+          }
+        </style>
+        <% } %>
+
+          <div class="d-flex justify-content-between">
+            <button type="submit" name="action" value="draft" class="btn btn-secondary">Save Draft</button>
+            <button type="submit" name="action" value="preview" class="btn btn-primary">Preview Contract</button>
+          </div>
+  </form>
+</div>
+<script src="/js/admin/create-contract.js"></script>

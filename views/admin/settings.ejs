@@ -1,0 +1,810 @@
+<div class="settings-page">
+  <!-- Header Section -->
+  <div class="page-header mb-4">
+    <h1 class="page-title">Settings</h1>
+    <p class="page-subtitle">Manage your company details and global preferences that will be used across your contracts.</p>
+  </div>
+
+  <!-- Tabs Navigation -->
+  <ul class="nav-tabs mb-4">
+    <li class="nav-tab active" data-tab="company">Company Details</li>
+    <li class="nav-tab" data-tab="general">General Settings</li>
+    <li class="nav-tab" data-tab="contract">Contract Preferences</li>
+    <li class="nav-tab" data-tab="email">Email Templates</li>
+    <li class="nav-tab" data-tab="integrations">Integrations</li>
+    <a href="/admin/team" class="nav-tab" style="text-decoration: none; color: inherit;">Users & Roles</a>
+  </ul>
+
+  <!-- Main Content Grid -->
+  <div class="settings-grid">
+    <!-- Left Column: Forms -->
+    <div class="settings-main">
+      
+      <!-- ==================== COMPANY DETAILS TAB ==================== -->
+      <div class="settings-pane active" id="tab-company">
+        <!-- Company Information Card -->
+        <form id="settingsForm" class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="card-title">Company Information</h3>
+              <p class="card-subtitle">These details will appear in your contracts and documents.</p>
+            </div>
+            <button type="button" class="btn btn-save" onclick="saveTabForm('settingsForm', this)">Save Changes</button>
+          </div>
+          
+          <div class="form-grid">
+            <!-- Left Column -->
+            <div class="form-group" style="grid-column: 1; grid-row: 1;">
+              <label>Company Name *</label>
+              <input type="text" name="company_name" value="<%= settings.company_name || '' %>" class="form-control" required>
+            </div>
+            <div class="form-group" style="grid-column: 1; grid-row: 2;">
+              <label>Company Short Name</label>
+              <input type="text" name="company_short_name" value="<%= settings.company_short_name || '' %>" class="form-control">
+            </div>
+            <div class="form-group" style="grid-column: 1; grid-row: 3;">
+              <label>Company Email *</label>
+              <input type="email" name="company_email" value="<%= settings.company_email || '' %>" class="form-control" required>
+            </div>
+            <div class="form-group" style="grid-column: 1; grid-row: 4;">
+              <label>Phone Number *</label>
+              <div class="phone-input">
+                <span class="flag">IN</span>
+                <input type="text" name="company_phone" value="<%= settings.company_phone || '' %>" class="form-control" style="padding-left: 36px;" required>
+              </div>
+            </div>
+            <div class="form-group" style="grid-column: 1; grid-row: 5;">
+              <label>Website</label>
+              <input type="text" name="company_website" value="<%= settings.company_website || '' %>" class="form-control">
+            </div>
+            <div class="form-group" style="grid-column: 1; grid-row: 6;">
+              <label>GST Number</label>
+              <input type="text" name="company_gst" value="<%= settings.company_gst || '' %>" class="form-control">
+            </div>
+
+            <!-- Right Column -->
+            <div class="form-group" style="grid-column: 2; grid-row: 1 / span 2; height: 100%;">
+              <label>Registered Address *</label>
+              <textarea name="company_address" class="form-control" style="flex: 1; resize: none;" required><%= settings.company_address || '' %></textarea>
+              <div class="text-right text-muted" style="font-size: 11px; margin-top: 4px;">58/200</div>
+            </div>
+            <div class="form-group" style="grid-column: 2; grid-row: 3;">
+              <label>PAN Number</label>
+              <input type="text" name="company_pan" value="<%= settings.company_pan || '' %>" class="form-control">
+            </div>
+            <div class="form-group" style="grid-column: 2; grid-row: 4;">
+              <label>CIN Number</label>
+              <input type="text" name="company_cin" value="<%= settings.company_cin || '' %>" class="form-control">
+            </div>
+            <div class="form-group" style="grid-column: 2; grid-row: 5;">
+              <label>Company Logo</label>
+              <input type="hidden" name="company_logo" id="companyLogoValue" value="<%= settings.company_logo || '/images/logo.svg' %>">
+              <input type="file" id="logoFileInput" accept="image/png, image/jpeg, image/svg+xml" style="display: none;">
+              <div class="logo-upload-container">
+                <div class="logo-preview">
+                  <img src="<%= settings.company_logo || '/images/logo.svg' %>" alt="Company Logo" id="logoPreviewImg" style="max-height: 40px; max-width: 100%;">
+                </div>
+                <div class="logo-upload-btn" id="uploadLogoBtn" style="padding: 10px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                  <div style="font-size: 11px; margin-top: 4px; font-weight: 500; color: #1e293b;">Upload Logo</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group" style="grid-column: 2; grid-row: 6;">
+              <label>Authorized Signature (Auto-applied to contracts)</label>
+              <input type="hidden" name="company_signature" id="companySignatureValue" value="<%= settings.company_signature || '' %>">
+              <input type="file" id="signatureFileInput" accept="image/png, image/jpeg" style="display: none;">
+              <div class="logo-upload-container">
+                <div class="logo-preview" style="background: #f8fafc;">
+                  <img src="<%= settings.company_signature || '' %>" alt="Signature" id="signaturePreviewImg" style="max-height: 40px; max-width: 100%; display: <%= settings.company_signature ? 'block' : 'none' %>;">
+                  <span id="signaturePlaceholderText" style="font-size: 11px; color: #94a3b8; display: <%= settings.company_signature ? 'none' : 'block' %>;">No signature uploaded</span>
+                </div>
+                <div class="logo-upload-btn" id="uploadSignatureBtn" style="padding: 10px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                  <div style="font-size: 11px; margin-top: 4px; font-weight: 500; color: #1e293b;">Upload Signature</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
+
+        <!-- Additional Company Details Card -->
+        <form id="additionalSettingsForm" class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title">Additional Company Details</h3>
+            <button type="button" class="btn btn-save" onclick="saveTabForm('additionalSettingsForm', this)">Save Changes</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group" style="grid-column: 1; grid-row: 1;">
+              <label>Company Tagline / Motto</label>
+              <input type="text" name="company_tagline" value="<%= settings.company_tagline || '' %>" class="form-control">
+            </div>
+            <div class="form-group" style="grid-column: 2; grid-row: 1 / span 2;">
+              <label>About Company</label>
+              <textarea name="company_about" class="form-control" rows="4"><%= settings.company_about || '' %></textarea>
+            </div>
+            <div class="form-group" style="grid-column: 1; grid-row: 2;">
+              <label>Industry / Business Type</label>
+              <select name="company_industry" class="form-control filter-select">
+                <option value="Digital Marketing Agency" <%= settings.company_industry === 'Digital Marketing Agency' ? 'selected' : '' %>>Digital Marketing Agency</option>
+                <option value="Software Development" <%= settings.company_industry === 'Software Development' ? 'selected' : '' %>>Software Development</option>
+                <option value="Consulting" <%= settings.company_industry === 'Consulting' ? 'selected' : '' %>>Consulting</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- ==================== GENERAL SETTINGS TAB ==================== -->
+      <div class="settings-pane" id="tab-general">
+        <form id="generalSettingsForm" class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title">General Settings</h3>
+            <button type="button" class="btn btn-save" onclick="saveTabForm('generalSettingsForm', this)">Save Changes</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Default Workspace Language</label>
+              <select name="default_language" class="form-control">
+                <option value="en-US" <%= settings.default_language === 'en-US' ? 'selected' : '' %>>English (US)</option>
+                <option value="en-IN" <%= settings.default_language === 'en-IN' ? 'selected' : '' %>>English (India)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Default Currency</label>
+              <select name="default_currency" class="form-control">
+                <option value="INR" <%= settings.default_currency === 'INR' ? 'selected' : '' %>>INR (₹)</option>
+                <option value="USD" <%= settings.default_currency === 'USD' ? 'selected' : '' %>>USD ($)</option>
+                <option value="EUR" <%= settings.default_currency === 'EUR' ? 'selected' : '' %>>EUR (€)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Time Zone</label>
+              <select name="time_zone" class="form-control">
+                <option value="Asia/Kolkata" <%= settings.time_zone === 'Asia/Kolkata' ? 'selected' : '' %>>Asia/Kolkata (IST)</option>
+                <option value="UTC" <%= settings.time_zone === 'UTC' ? 'selected' : '' %>>UTC</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Date Format</label>
+              <select name="date_format" class="form-control">
+                <option value="DD/MM/YYYY" <%= settings.date_format === 'DD/MM/YYYY' ? 'selected' : '' %>>DD/MM/YYYY</option>
+                <option value="MM/DD/YYYY" <%= settings.date_format === 'MM/DD/YYYY' ? 'selected' : '' %>>MM/DD/YYYY</option>
+                <option value="YYYY-MM-DD" <%= settings.date_format === 'YYYY-MM-DD' ? 'selected' : '' %>>YYYY-MM-DD</option>
+              </select>
+            </div>
+          </div>
+        </form>
+
+        <form id="appearanceForm" class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title">Appearance</h3>
+            <button type="button" class="btn btn-save" onclick="saveTabForm('appearanceForm', this)">Save Changes</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Brand Primary Color</label>
+              <div style="display: flex; gap: 8px;">
+                <input type="color" name="brand_primary_color" value="<%= settings.brand_primary_color || '#237648' %>" style="width: 36px; height: 36px; padding: 0; border: none; border-radius: 4px;">
+                <input type="text" value="<%= settings.brand_primary_color || '#237648' %>" class="form-control" style="flex: 1;" onchange="this.previousElementSibling.value = this.value">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>Theme Mode</label>
+              <select name="theme_mode" class="form-control">
+                <option value="system" <%= settings.theme_mode === 'system' ? 'selected' : '' %>>System Default</option>
+                <option value="light" <%= settings.theme_mode === 'light' ? 'selected' : '' %>>Light Mode</option>
+                <option value="dark" <%= settings.theme_mode === 'dark' ? 'selected' : '' %>>Dark Mode</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- ==================== CONTRACT PREFERENCES TAB ==================== -->
+      <div class="settings-pane" id="tab-contract">
+        <form id="contractPrefsForm" class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title">Contract Defaults</h3>
+            <button type="button" class="btn btn-save" onclick="saveTabForm('contractPrefsForm', this)">Save Changes</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Default Payment Terms</label>
+              <input type="text" name="default_payment_terms" value="<%= settings.default_payment_terms || 'Net 15 Days' %>" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Default Governing Law</label>
+              <input type="text" name="default_governing_law" value="<%= settings.default_governing_law || 'Laws of India' %>" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Default Jurisdiction</label>
+              <input type="text" name="default_jurisdiction" value="<%= settings.default_jurisdiction || 'New Delhi, India' %>" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>Default Notice Period</label>
+              <input type="text" name="default_notice_period" value="<%= settings.default_notice_period || '30 Days' %>" class="form-control">
+            </div>
+          </div>
+        </form>
+
+        <form id="contractNumberingForm" class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title">Contract Numbering</h3>
+            <button type="button" class="btn btn-save" onclick="saveTabForm('contractNumberingForm', this)">Save Changes</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>Numbering Prefix</label>
+              <input type="text" name="contract_number_prefix" value="<%= settings.contract_number_prefix || 'CON-' %>" class="form-control" placeholder="e.g. CON-">
+            </div>
+            <div class="form-group">
+              <label>Include Year</label>
+              <select name="contract_number_year" class="form-control">
+                <option value="yes" <%= settings.contract_number_year === 'yes' ? 'selected' : '' %>>Yes (e.g. CON-2026-0001)</option>
+                <option value="no" <%= settings.contract_number_year === 'no' ? 'selected' : '' %>>No (e.g. CON-0001)</option>
+              </select>
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- ==================== EMAIL TEMPLATES TAB ==================== -->
+      <div class="settings-pane" id="tab-email">
+        <form id="smtpSettingsForm" class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3 class="card-title">SMTP Configuration</h3>
+            <button type="button" class="btn btn-save" onclick="saveTabForm('smtpSettingsForm', this)">Save Changes</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label>SMTP Host</label>
+              <input type="text" name="smtp_host" value="<%= settings.smtp_host || '' %>" class="form-control" placeholder="smtp.gmail.com">
+            </div>
+            <div class="form-group">
+              <label>SMTP Port</label>
+              <input type="text" name="smtp_port" value="<%= settings.smtp_port || '' %>" class="form-control" placeholder="587">
+            </div>
+            <div class="form-group">
+              <label>SMTP Username</label>
+              <input type="text" name="smtp_user" value="<%= settings.smtp_user || '' %>" class="form-control">
+            </div>
+            <div class="form-group">
+              <label>SMTP Password</label>
+              <input type="password" name="smtp_pass" value="<%= settings.smtp_pass || '' %>" class="form-control">
+            </div>
+            <div class="form-group" style="grid-column: 1 / span 2;">
+              <label>From Email</label>
+              <input type="email" name="smtp_from_email" value="<%= settings.smtp_from_email || '' %>" class="form-control" placeholder="noreply@company.com">
+            </div>
+          </div>
+        </form>
+      </div>
+
+      <!-- ==================== INTEGRATIONS TAB ==================== -->
+      <div class="settings-pane" id="tab-integrations">
+        <form id="driveSettingsForm" class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+              <h3 class="card-title">Google Drive Backup</h3>
+              <p class="card-subtitle">Automatically backup signed contracts (PDFs) to a Google Drive folder via a Service Account.</p>
+            </div>
+            <button type="button" class="btn btn-save" onclick="saveTabForm('driveSettingsForm', this)">Save Changes</button>
+          </div>
+          <div class="form-grid">
+            <div class="form-group" style="grid-column: 1 / span 2;">
+              <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+                <input type="checkbox" name="google_drive_enabled" value="yes" <%= settings.google_drive_enabled === 'yes' ? 'checked' : '' %>>
+                Enable Google Drive Backup
+              </label>
+            </div>
+            <div class="form-group" style="grid-column: 1 / span 2;">
+              <label>Service Account Client Email</label>
+              <input type="text" name="google_drive_client_email" value="<%= settings.google_drive_client_email || '' %>" class="form-control" placeholder="e.g. your-bot@your-project.iam.gserviceaccount.com">
+            </div>
+            <div class="form-group" style="grid-column: 1 / span 2;">
+              <label>Service Account Private Key</label>
+              <textarea name="google_drive_private_key" class="form-control" rows="4" placeholder="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----" style="font-family: monospace; font-size: 11px;"><%= settings.google_drive_private_key || '' %></textarea>
+            </div>
+            <div class="form-group" style="grid-column: 1 / span 2;">
+              <label>Target Folder ID</label>
+              <input type="text" name="google_drive_folder_id" value="<%= settings.google_drive_folder_id || '' %>" class="form-control" placeholder="The ID from your Google Drive folder URL">
+              <span style="font-size: 11px; color: #64748b; margin-top: 4px;">Make sure to share this folder with your Service Account Client Email as an Editor!</span>
+            </div>
+          </div>
+        </form>
+
+        <div class="card mb-4">
+          <div class="card-header"><h3 class="card-title">Other Integrations</h3></div>
+          <p style="color: #64748b;">Connect external services like DocuSign, or Zapier. (Coming Soon)</p>
+          <a href="/admin/webhooks" class="btn btn-save" style="text-decoration: none; display: inline-block; margin-top: 16px;">Manage Webhooks &rarr;</a>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right Column: Helpers -->
+    <div class="settings-sidebar">
+      
+      <div class="helper-card mb-4">
+        <div class="helper-icon icon-green">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+        </div>
+        <div class="helper-content">
+          <h4>What is this?</h4>
+          <p>These company details will be auto-filled in your contracts, proposals and other documents to save time and ensure consistency.</p>
+        </div>
+      </div>
+
+      <div class="helper-card default-usage-card mb-4">
+        <h4>Default Usage</h4>
+        <ul class="usage-list">
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Company Name & Logo</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Address & Contact Info</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Legal Identifiers (GST, PAN, CIN)</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Email & Phone</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Website</li>
+          <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg> Tagline / About Company</li>
+        </ul>
+        <p class="usage-note">These details can be overridden while creating a contract if needed.</p>
+      </div>
+
+      <div class="helper-card mb-4" style="background: #f8fafc;">
+        <div class="helper-icon icon-green" style="background: #e2e8f0; color: #64748b;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15.05 5A5 5 0 0 1 19 8.95M15.05 1A9 9 0 0 1 23 8.94m-1 7.98v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+        </div>
+        <div class="helper-content">
+          <h4>Need Help?</h4>
+          <p>If you need help updating your company details or have any questions.</p>
+          <button class="btn btn-outline" style="width: 100%; margin-top: 12px; border-color: #237648; color: #237648;">Contact Support &rarr;</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+.settings-page {
+  font-family: 'Outfit', sans-serif;
+  color: #334155;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+
+.page-subtitle {
+  font-size: 14px;
+  color: #64748b;
+  margin: 0;
+}
+
+/* Tabs */
+.nav-tabs {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0 0 24px 0;
+  border-bottom: 1px solid #e2e8f0;
+  gap: 32px;
+}
+.nav-tab {
+  padding: 12px 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: #64748b;
+  cursor: pointer;
+  position: relative;
+}
+.nav-tab.active {
+  color: #237648;
+}
+.nav-tab.active::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #237648;
+}
+
+/* Grid Layout */
+.settings-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Content Panes */
+.settings-pane {
+  display: none;
+}
+.settings-pane.active {
+  display: block;
+}
+
+/* Cards */
+.card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 24px;
+}
+.card-header {
+  margin-bottom: 24px;
+}
+.card-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+.card-subtitle {
+  font-size: 13px;
+  color: #64748b;
+  margin: 0;
+}
+.btn-save {
+  background: #237648;
+  color: white;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  border: none;
+  cursor: pointer;
+  transition: 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 120px;
+}
+.btn-save:hover {
+  background: #1c5e39;
+}
+.btn-save:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  width: 14px;
+  height: 14px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-radius: 50%;
+  border-top-color: #fff;
+  animation: spin 0.8s linear infinite;
+  display: inline-block;
+}
+.btn-outline {
+  background: transparent;
+  border: 1px solid #e2e8f0;
+  padding: 8px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+/* Form Grid */
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.form-group {
+  display: flex;
+  flex-direction: column;
+}
+.form-group label {
+  font-size: 12px;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 6px;
+}
+.form-control {
+  padding: 10px 12px;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  font-size: 13px;
+  color: #1e293b;
+  background: #fff;
+  outline: none;
+  font-family: inherit;
+}
+.form-control:focus {
+  border-color: #cbd5e1;
+}
+.phone-input {
+  position: relative;
+}
+.phone-input .flag {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 14px;
+}
+
+.logo-upload-container {
+  display: flex;
+  gap: 12px;
+  height: 100%;
+}
+.logo-preview {
+  flex: 1;
+  background: #f0fdf4;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.logo-upload-btn {
+  flex: 1;
+  border: 1px dashed #cbd5e1;
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: #64748b;
+  cursor: pointer;
+  background: #f8fafc;
+  transition: all 0.2s;
+  padding: 16px;
+}
+.logo-upload-btn:hover {
+  border-color: #94a3b8;
+  background: #f1f5f9;
+}
+
+/* Right Sidebar Helpers */
+.helper-card {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+}
+.helper-icon {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.icon-green {
+  background: #dcfce7;
+  color: #16a34a;
+}
+.helper-content h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 6px 0;
+}
+.helper-content p {
+  font-size: 13px;
+  line-height: 1.5;
+  color: #475569;
+  margin: 0;
+}
+
+.default-usage-card {
+  background: #fff;
+  flex-direction: column;
+  gap: 12px;
+}
+.default-usage-card h4 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 4px 0;
+}
+.usage-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.usage-list li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #334155;
+  margin-bottom: 12px;
+}
+.usage-list li svg {
+  width: 16px;
+  height: 16px;
+  color: #16a34a;
+}
+.usage-note {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.5;
+  margin: 4px 0 0 0;
+  padding-top: 12px;
+  border-top: 1px solid #e2e8f0;
+}
+
+/* Filter select arrow reuse */
+.filter-select {
+  background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right 12px center;
+  appearance: none;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  // Tab Switching
+  const navTabs = document.querySelectorAll('.nav-tab[data-tab]');
+  const panes = document.querySelectorAll('.settings-pane');
+
+  navTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      // Remove active from all
+      navTabs.forEach(n => n.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      
+      // Add active to clicked
+      tab.classList.add('active');
+      document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+    });
+  });
+
+  // Logo Upload Logic
+  const uploadLogoBtn = document.getElementById('uploadLogoBtn');
+  const logoFileInput = document.getElementById('logoFileInput');
+  const logoPreviewImg = document.getElementById('logoPreviewImg');
+  const companyLogoValue = document.getElementById('companyLogoValue');
+
+  if (uploadLogoBtn && logoFileInput) {
+    uploadLogoBtn.addEventListener('click', () => {
+      logoFileInput.click();
+    });
+
+    logoFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert('File size must be less than 2MB');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Data = event.target.result;
+        logoPreviewImg.src = base64Data;
+        companyLogoValue.value = base64Data;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Signature Upload Logic
+  const uploadSignatureBtn = document.getElementById('uploadSignatureBtn');
+  const signatureFileInput = document.getElementById('signatureFileInput');
+  const signaturePreviewImg = document.getElementById('signaturePreviewImg');
+  const companySignatureValue = document.getElementById('companySignatureValue');
+  const signaturePlaceholderText = document.getElementById('signaturePlaceholderText');
+
+  if (uploadSignatureBtn && signatureFileInput) {
+    uploadSignatureBtn.addEventListener('click', () => {
+      signatureFileInput.click();
+    });
+
+    signatureFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert('File size must be less than 2MB');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const img = new Image();
+        img.onload = () => {
+          const canvas = document.createElement('canvas');
+          canvas.width = img.width;
+          canvas.height = img.height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0);
+          
+          // Remove white/light background
+          const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+          const data = imgData.data;
+          for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i+1];
+            const b = data[i+2];
+            // If pixel is bright/white, make it transparent
+            if (r > 200 && g > 200 && b > 200) {
+              data[i+3] = 0; // Set alpha to 0
+            } else if (r > 150 && g > 150 && b > 150) {
+              // Soften the edges by reducing alpha on grays
+              data[i+3] = Math.max(0, 255 - (r - 150) * 2.5);
+            }
+          }
+          ctx.putImageData(imgData, 0, 0);
+          
+          // Always save as transparent PNG
+          const transparentBase64 = canvas.toDataURL('image/png');
+          
+          signaturePreviewImg.src = transparentBase64;
+          signaturePreviewImg.style.display = 'block';
+          signaturePlaceholderText.style.display = 'none';
+          companySignatureValue.value = transparentBase64;
+        };
+        img.src = event.target.result;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+});
+
+// Dynamic Save Function
+async function saveTabForm(formId, btnElement) {
+  const form = document.getElementById(formId);
+  if (!form || !btnElement) return;
+  
+  const originalHtml = btnElement.innerHTML;
+  btnElement.innerHTML = '<span class="spinner"></span> Saving...';
+  btnElement.disabled = true;
+
+  const formData = new FormData(form);
+  const payload = {};
+  for (let [key, value] of formData.entries()) {
+    payload[key] = value;
+  }
+
+  try {
+    const response = await fetch('/admin/settings', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      btnElement.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg> Saved!';
+      btnElement.style.background = '#15803d';
+      setTimeout(() => {
+        btnElement.innerHTML = originalHtml;
+        btnElement.style.background = '';
+        btnElement.disabled = false;
+      }, 2000);
+    } else {
+      throw new Error(data.error || 'Server error');
+    }
+  } catch (err) {
+    console.error(err);
+    btnElement.innerHTML = 'Error (Too Large?)';
+    btnElement.style.background = '#dc2626';
+    setTimeout(() => {
+      btnElement.innerHTML = originalHtml;
+      btnElement.style.background = '';
+      btnElement.disabled = false;
+    }, 3000);
+  }
+}
+</script>

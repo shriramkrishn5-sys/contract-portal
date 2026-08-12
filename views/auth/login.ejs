@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login | <%= locals.settings?.company_short_name || 'KKeyQik' %> Contract Portal</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: <%= locals.settings?.brand_primary_color || '#2B6B39' %>;
+      --primary-light: #EBF3ED;
+      --text-main: #111827;
+      --text-muted: #6B7280;
+      --border: #E5E7EB;
+      --bg-page: #F9FAFB;
+      --bg-left: #FDFDFD;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { display: flex; min-height: 100vh; background-color: var(--bg-page); color: var(--text-main); }
+    
+    .left-panel {
+      flex: 1;
+      background-color: var(--bg-left);
+      padding: 4rem 10%;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      overflow: hidden;
+      border-right: 1px solid var(--border);
+    }
+    .left-content { position: relative; z-index: 10; max-width: 480px; }
+    
+    .logo { margin-bottom: 3rem; }
+    
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      background: var(--primary-light); color: var(--primary);
+      padding: 0.5rem 1rem; border-radius: 9999px;
+      font-size: 0.85rem; font-weight: 600; margin-bottom: 1.5rem;
+    }
+    
+    .hero-title { font-size: 3.5rem; font-weight: 700; line-height: 1.15; margin-bottom: 1.5rem; color: #111827; letter-spacing: -0.02em; }
+    .hero-title span { color: var(--primary); display: block; }
+    
+    .hero-divider { width: 40px; height: 3px; background: var(--primary); margin-bottom: 1.5rem; }
+    
+    .hero-desc { color: var(--text-muted); font-size: 1.1rem; line-height: 1.6; margin-bottom: 3rem; max-width: 400px; }
+    
+    .features { display: flex; flex-direction: column; gap: 2rem; position: relative; z-index: 10; }
+    .feature { display: flex; align-items: flex-start; gap: 1rem; }
+    .feature-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: var(--primary-light); color: var(--primary);
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+    .feature-text h4 { font-size: 1rem; font-weight: 600; margin-bottom: 0.25rem; }
+    .feature-text p { font-size: 0.85rem; color: var(--text-muted); line-height: 1.5; }
+    
+    .left-footer { margin-top: auto; font-size: 0.75rem; color: rgba(255, 255, 255, 0.9); position: relative; z-index: 10; }
+    
+    /* Graphic shapes */
+    .shape-container { position: absolute; bottom: 0; left: 0; width: 100%; height: 280px; overflow: hidden; z-index: 1; pointer-events: none; }
+    
+    .wave-bg {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-repeat: no-repeat;
+      background-position: bottom;
+      background-size: cover;
+    }
+    
+    .shape-1 { 
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%231B4E27' fill-opacity='1' d='M0,224L60,213.3C120,203,240,181,360,186.7C480,192,600,224,720,240C840,256,960,256,1080,229.3C1200,203,1320,149,1380,122.7L1440,96L1440,320L1380,320C1320,320,1200,320,1080,320C960,320,840,320,720,320C600,320,480,320,360,320C240,320,120,320,60,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+      z-index: 1;
+    }
+    
+    .shape-2 {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='<%= encodeURIComponent(locals.settings?.brand_primary_color || '#2B6B39') %>' fill-opacity='0.9' d='M0,128L48,154.7C96,181,192,235,288,245.3C384,256,480,224,576,192C672,160,768,128,864,133.3C960,139,1056,181,1152,192C1248,203,1344,181,1392,170.7L1440,160L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
+      z-index: 2;
+    }
+    
+    .shape-ring { position: absolute; bottom: 20px; right: 10%; width: 220px; height: 220px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, 0.2); z-index: 1; }
+    .shape-ring-2 { position: absolute; bottom: 40px; right: calc(10% + 20px); width: 180px; height: 180px; border-radius: 50%; background: rgba(255, 255, 255, 0.05); z-index: 1; }
+    
+    .doc-illustration { 
+      position: absolute; bottom: 50px; right: 15%; z-index: 3; 
+      width: 120px; height: 160px; background: white; border-radius: 8px; 
+      box-shadow: 0 10px 30px rgba(0,0,0,0.15); padding: 1.2rem; display: flex; flex-direction: column; gap: 0.75rem; 
+      transform: rotate(5deg);
+    }
+    .doc-line { height: 4px; background: #E5E7EB; border-radius: 2px; }
+    .doc-line.short { width: 60%; }
+    .doc-signature { margin-top: auto; height: 20px; width: 70%; border-bottom: 2px dashed #D1D5DB; }
+    .doc-check { position: absolute; bottom: -12px; right: -12px; width: 36px; height: 36px; background: var(--primary); border-radius: 50%; border: 3px solid white; display: flex; justify-content: center; align-items: center; color: white; }
+    
+    /* Right Panel */
+    .right-panel {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+      background-image: radial-gradient(#D1D5DB 1px, transparent 1px);
+      background-size: 30px 30px;
+      position: relative;
+    }
+    
+    .login-card {
+      background: white;
+      padding: 3.5rem;
+      border-radius: 20px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.04);
+      width: 100%;
+      max-width: 500px;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .card-header { text-align: center; margin-bottom: 2.5rem; }
+    .card-header h2 { font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem; color: #111827; }
+    .card-header p { color: var(--text-muted); font-size: 0.95rem; }
+    
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label { display: block; font-size: 0.875rem; font-weight: 600; margin-bottom: 0.5rem; color: #374151; }
+    .input-wrapper { position: relative; }
+    .input-wrapper svg.icon-left { position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: #9CA3AF; }
+    .input-wrapper input {
+      width: 100%; padding: 0.875rem 1.25rem 0.875rem 3rem;
+      border: 1px solid var(--border); border-radius: 8px;
+      font-size: 0.95rem; color: var(--text-main); outline: none; transition: all 0.2s;
+    }
+    .input-wrapper input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(43, 107, 57, 0.1); }
+    .input-wrapper button.icon-right {
+      position: absolute; right: 1.25rem; top: 50%; transform: translateY(-50%);
+      background: none; border: none; cursor: pointer; color: #9CA3AF; transition: color 0.2s;
+    }
+    .input-wrapper button.icon-right:hover { color: #374151; }
+    
+    .form-options { display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; font-size: 0.85rem; }
+    .form-options label { display: flex; align-items: center; gap: 0.5rem; color: var(--text-muted); cursor: pointer; }
+    .form-options input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--primary); border-radius: 4px; }
+    .form-options a { color: var(--primary); font-weight: 600; text-decoration: none; }
+    
+    .btn-login {
+      width: 100%; padding: 1rem; background: var(--primary); color: white;
+      border: none; border-radius: 8px; font-size: 1rem; font-weight: 600;
+      cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.5rem; transition: background 0.2s;
+    }
+    .btn-login:hover { background: #1B4E27; }
+    
+    .divider {
+      display: flex; align-items: center; text-align: center; margin: 2rem 0; color: #9CA3AF; font-size: 0.85rem; font-weight: 500;
+    }
+    .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid var(--border); }
+    .divider::before { margin-right: 1.5rem; }
+    .divider::after { margin-left: 1.5rem; }
+    
+    .btn-google {
+      width: 100%; padding: 0.875rem; background: white; color: var(--text-main);
+      border: 1px solid var(--border); border-radius: 8px; font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 0.75rem; transition: background 0.2s;
+    }
+    .btn-google:hover { background: #F9FAFB; }
+    
+    .signup-link { text-align: center; margin-top: 2.5rem; font-size: 0.95rem; color: var(--text-muted); }
+    .signup-link a { color: var(--primary); font-weight: 600; text-decoration: none; }
+    
+    .trust-badge { display: flex; align-items: center; justify-content: center; gap: 0.5rem; margin-top: 2.5rem; color: var(--text-muted); font-size: 0.85rem; font-weight: 500; }
+    .trust-badge svg { color: var(--primary); }
+    
+    .error-alert { background: #FEF2F2; border: 1px solid #FCA5A5; color: #DC2626; padding: 0.875rem; border-radius: 8px; margin-bottom: 1.5rem; font-size: 0.875rem; display: flex; gap: 0.5rem; align-items: center; font-weight: 500; }
+    
+    @media (max-width: 992px) {
+      .left-panel { display: none; }
+      .right-panel { background-image: none; background-color: var(--bg-left); }
+      .login-card { box-shadow: none; border: 1px solid var(--border); }
+    }
+  </style>
+</head>
+<body>
+  
+  <!-- Left Panel -->
+  <div class="left-panel">
+    <div class="left-content">
+      <div class="logo">
+        <% if (locals.settings && locals.settings.company_logo) { %>
+          <img src="<%= locals.settings.company_logo %>" alt="<%= locals.settings.company_short_name || 'Logo' %>" style="max-height: 40px; max-width: 250px;">
+        <% } else { %>
+          <h2 style="font-size: 24px; font-weight: 700; color: var(--primary);"><%= locals.settings?.company_short_name || 'KKeyQik' %></h2>
+        <% } %>
+      </div>
+      
+      <div class="badge">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+        Secure. Reliable. Professional.
+      </div>
+      
+      <h1 class="hero-title">
+        Welcome to<br><span><%= locals.settings?.company_short_name || 'KKeyQik' %></span>
+        Contract Portal
+      </h1>
+      
+      <div class="hero-divider"></div>
+      
+      <p class="hero-desc">
+        Manage your contracts, templates, parties and more in one secure place. Built for speed. Designed for professionals.
+      </p>
+      
+      <div class="features">
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+          </div>
+          <div class="feature-text">
+            <h4>Secure & Private</h4>
+            <p>Your data is encrypted and 100% secure.</p>
+          </div>
+        </div>
+        
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          </div>
+          <div class="feature-text">
+            <h4>Streamlined Workflow</h4>
+            <p>Create, manage and track contracts effortlessly.</p>
+          </div>
+        </div>
+        
+        <div class="feature">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
+          <div class="feature-text">
+            <h4>Save Time</h4>
+            <p>Smart templates and automation save hours of work.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <div class="shape-container">
+      <div class="shape-1 wave-bg"></div>
+      <div class="shape-2 wave-bg"></div>
+      <div class="shape-ring"></div>
+      <div class="shape-ring-2"></div>
+      <div class="doc-illustration">
+        <div class="doc-line"></div>
+        <div class="doc-line"></div>
+        <div class="doc-line"></div>
+        <div class="doc-line short"></div>
+        <div class="doc-signature"></div>
+        <div class="doc-check">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </div>
+      </div>
+    </div>
+    
+    <div class="left-footer">
+      &copy; <%= new Date().getFullYear() %> <%= locals.settings?.company_name || 'KKeyQik' %>.<br>All rights reserved.
+    </div>
+  </div>
+  
+  <!-- Right Panel -->
+  <div class="right-panel">
+    <div class="login-card">
+      <div class="card-header">
+        <h2>Login to your account</h2>
+        <p>Enter your credentials to access your account</p>
+      </div>
+      
+      <% if (typeof error !== 'undefined' && error) { %>
+        <div class="error-alert">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+          <%= error %>
+        </div>
+      <% } %>
+      
+      <form action="/auth/login" method="POST">
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <div class="input-wrapper">
+            <svg class="icon-left" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <input type="email" id="email" name="email" placeholder="Enter your email address" required autofocus autocomplete="email">
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="password">Password</label>
+          <div class="input-wrapper">
+            <svg class="icon-left" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            <input type="password" id="password" name="password" placeholder="Enter your password" required autocomplete="current-password">
+            <button type="button" class="icon-right" onclick="togglePassword()">
+              <svg id="eye-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              <svg id="eye-off-icon" style="display:none;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+            </button>
+          </div>
+        </div>
+        
+        <div class="form-options">
+          <label>
+            <input type="checkbox" name="remember"> Remember me
+          </label>
+          <a href="#">Forgot Password?</a>
+        </div>
+        
+        <button type="submit" class="btn-login">
+          Login 
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </button>
+      </form>
+      
+      <div class="divider">OR</div>
+      
+      <button type="button" class="btn-google">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24c0,11.045,8.955,20,20,20c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"/><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"/><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.202,0-9.619-3.317-11.283-7.946l-6.522,5.025C9.505,39.556,16.227,44,24,44z"/><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.571c0.001-0.001,0.002-0.001,0.003-0.002l6.19,5.238C36.971,39.205,44,34,44,24C44,22.659,43.862,21.35,43.611,20.083z"/></svg>
+        Continue with Google
+      </button>
+      
+      <div class="signup-link">
+        Don't have an account? <a href="#">Sign up</a>
+      </div>
+    </div>
+    
+    <div class="trust-badge">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>
+      Trusted by businesses across India, Middle East, UK & beyond.
+    </div>
+  </div>
+
+  <script>
+    function togglePassword() {
+      const input = document.getElementById('password');
+      const eyeIcon = document.getElementById('eye-icon');
+      const eyeOffIcon = document.getElementById('eye-off-icon');
+      
+      if (input.type === 'password') {
+        input.type = 'text';
+        eyeIcon.style.display = 'none';
+        eyeOffIcon.style.display = 'block';
+      } else {
+        input.type = 'password';
+        eyeIcon.style.display = 'block';
+        eyeOffIcon.style.display = 'none';
+      }
+    }
+  </script>
+</body>
+</html>

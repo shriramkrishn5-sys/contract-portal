@@ -1,0 +1,272 @@
+{
+  "slug": "seo-retainer",
+  "name": "SEO Retainer Agreement",
+  "description": "Monthly SEO services and optimization contract",
+  "icon": "search",
+  "version": 1,
+  "sections": [
+    {
+      "id": "preamble",
+      "title": "1. Preamble and Parties",
+      "content": "This SEO Retainer Agreement (the \"Agreement\") is entered into on {{start_date}} by and between:\n\n**KKeyQik Private Limited**\nA company incorporated under the Companies Act, 2013, having its CIN: U73100UP2025PTC224880 and GSTIN: 09AALCK9039M1ZP, with its registered office at H-235 A, Sector-12, Pratap Vihar, Ghaziabad - 201009, Uttar Pradesh, India, represented by its Director, Naman Agarwal (hereinafter referred to as the \"Company\" or \"Service Provider\").\n\nAND\n\n**{{client_name}}**\nLocated at {{client_address}} (hereinafter referred to as the \"Client\").\n\nCollectively referred to as the \"Parties\".",
+      "order": 1,
+      "required": true
+    },
+    {
+      "id": "definitions",
+      "title": "2. Definitions",
+      "content": "2.1 \"Agreement\" means this contract, including all schedules, annexures, and any subsequent amendments made in writing.\n2.2 \"Deliverables\" means the specific outputs, such as search engine optimization campaigns, reports, and link building, to be provided by the Company to the Client as described in the Scope of Work.\n2.3 \"Effective Date\" refers to {{start_date}}.",
+      "order": 2,
+      "required": true
+    },
+    {
+      "id": "scope_of_work",
+      "title": "3. Scope of Work",
+      "content": "The Company agrees to perform the following services for the project \"{{project_name}}\":\n\n{{scope_of_work}}\n\nAny additional features, modifications, or services outside this scope will require a separate written addendum and may incur additional charges.",
+      "order": 3,
+      "required": true
+    },
+    {
+      "id": "timeline",
+      "title": "4. Timeline & Deliverables",
+      "content": "The project shall commence on {{start_date}} and is expected to be completed by {{end_date}}, subject to timely feedback and provision of necessary assets by the Client.\n\nProject Milestones & Deliverables:\n{{timeline}}\n\nThe Company shall not be held liable for delays caused by the Client's failure to provide required materials or approvals.",
+      "order": 4,
+      "required": true
+    },
+    {
+      "id": "payment_terms",
+      "title": "5. Payment Terms",
+      "content": "The total compensation for the services described in this Agreement shall be INR {{total_amount}}.\n\nPayment Structure:\n{{payment_terms_section}}\n\nStandard Terms: All advance payments must be made within three (3) business days of signing this Agreement. Following the realization of the advance payment, a one-week preparation period shall commence before active development/service begins.",
+      "order": 5,
+      "required": true
+    },
+    {
+      "id": "ip_rights",
+      "title": "6. Intellectual Property Rights",
+      "content": "6.1 Client Ownership: Upon receipt of full payment, all intellectual property rights in the final custom search engine optimization campaigns, reports, and link building developed specifically for the Client shall be transferred to the Client.\n6.2 Company Ownership: The Company retains all rights, title, and interest in any pre-existing code, libraries, templates, or proprietary tools used in the creation of the deliverables, and grants the Client a non-exclusive, perpetual, royalty-free license to use them as integrated into the final deliverables.",
+      "order": 6,
+      "required": true
+    },
+    {
+      "id": "confidentiality",
+      "title": "7. Confidentiality",
+      "content": "Both Parties agree to hold in strict confidence any proprietary or confidential information disclosed by the other Party. This obligation shall survive the termination of this Agreement for a period of three (3) years. Confidential information does not include information that is publicly known or independently developed.",
+      "order": 7,
+      "required": true
+    },
+    {
+      "id": "warranties",
+      "title": "8. Representations & Warranties",
+      "content": "8.1 The Company warrants that the services will be performed in a professional and workmanlike manner in accordance with industry standards.\n8.2 The Client warrants that they own or have obtained the necessary rights and licenses for any text, images, data, or other materials provided to the Company for inclusion in the deliverables.",
+      "order": 8,
+      "required": true
+    },
+    {
+      "id": "limitation_liability",
+      "title": "9. Limitation of Liability",
+      "content": "To the maximum extent permitted by applicable law, the Company's total liability under this Agreement, whether in contract, tort, or otherwise, shall not exceed the total amount actually paid by the Client to the Company under this Agreement. In no event shall the Company be liable for any indirect, incidental, special, or consequential damages, including loss of profits, data, or business opportunities.",
+      "order": 9,
+      "required": true
+    },
+    {
+      "id": "indemnification",
+      "title": "10. Indemnification",
+      "content": "The Client agrees to indemnify, defend, and hold harmless the Company, its directors (including Naman Agarwal), employees, and agents from any claims, damages, liabilities, costs, or expenses (including reasonable attorneys' fees) arising out of or related to (a) any materials provided by the Client infringing on third-party intellectual property rights, or (b) the Client's use of the deliverables in violation of applicable laws.",
+      "order": 10,
+      "required": true
+    },
+    {
+      "id": "termination",
+      "title": "11. Termination & Breach",
+      "content": "11.1 Termination for Convenience: Either party may terminate this Agreement by providing thirty (30) days written notice.\n11.2 Termination for Cause: Either party may terminate this Agreement immediately upon written notice if the other party breaches any material term and fails to cure such breach within fourteen (14) days of receiving notice.\n11.3 Effect of Termination: Upon termination, the Client shall pay the Company for all work performed and expenses incurred up to the effective date of termination.",
+      "order": 11,
+      "required": true
+    },
+    {
+      "id": "force_majeure",
+      "title": "12. Force Majeure",
+      "content": "Neither Party shall be liable for any failure or delay in performance under this Agreement due to circumstances beyond their reasonable control, including but not limited to acts of God, natural disasters, pandemics, government actions, strikes, internet outages, or other unforeseeable events.",
+      "order": 12,
+      "required": true
+    },
+    {
+      "id": "dispute_resolution",
+      "title": "13. Dispute Resolution",
+      "content": "This Agreement shall be governed by and construed in accordance with the laws of India. Any dispute arising out of or in connection with this Agreement shall be subject to the exclusive jurisdiction of the competent courts in Ghaziabad, Uttar Pradesh, India.",
+      "order": 13,
+      "required": true
+    },
+    {
+      "id": "general_provisions",
+      "title": "14. General Provisions",
+      "content": "14.1 Entire Agreement: This Agreement constitutes the entire understanding between the Parties and supersedes all prior agreements, oral or written.\n14.2 Amendments: Any modification to this Agreement must be in writing and signed by both Parties.\n14.3 Severability: If any provision is held invalid or unenforceable, the remaining provisions shall remain in full force and effect.\n14.4 Notices: All notices under this Agreement shall be in writing and sent to the addresses specified in the Preamble.",
+      "order": 14,
+      "required": true
+    },
+    {
+      "id": "signatures",
+      "title": "15. Signatures",
+      "content": "IN WITNESS WHEREOF, the Parties hereto have executed this Agreement as of the Effective Date.\n\n**For KKeyQik Private Limited**\nSignature: ___________________________\nName: Naman Agarwal\nTitle: Director\nDate: ___________________________\n\n**For {{client_name}}**\nSignature: ___________________________\nName: {{client_signatory_name}}\nTitle: {{client_signatory_title}}\nDate: ___________________________",
+      "order": 15,
+      "required": true
+    }
+  ],
+  "clauses": [
+    {
+      "id": "portfolio-usage",
+      "title": "Portfolio Usage Rights",
+      "content": "The Company reserves the right to display the final deliverables in its professional portfolio, website, and marketing materials as an example of its work, unless explicitly objected to by the Client in writing.",
+      "defaultEnabled": true,
+      "clientToggleable": true
+    },
+    {
+      "id": "case-study",
+      "title": "Case Study Publication Rights",
+      "content": "The Client grants the Company permission to create and publish case studies detailing the project scope, challenges, solutions implemented, and non-confidential performance metrics.",
+      "defaultEnabled": true,
+      "clientToggleable": true
+    },
+    {
+      "id": "nda-clause",
+      "title": "Additional Non-Disclosure Agreement (NDA)",
+      "content": "Both parties agree to execute a separate, standalone Non-Disclosure Agreement before the commencement of any exchange of proprietary information. All terms of such NDA shall supersede the standard confidentiality provisions herein.",
+      "defaultEnabled": false,
+      "clientToggleable": true
+    },
+    {
+      "id": "revision-limit",
+      "title": "Revision Limit Policy",
+      "content": "The Client is entitled to a maximum of three (3) rounds of revisions per milestone. Any additional revisions beyond this limit will be billed at the Company's standard hourly rate of INR 2000 per hour.",
+      "defaultEnabled": true,
+      "clientToggleable": false
+    },
+    {
+      "id": "cancellation-policy",
+      "title": "Cancellation Policy & Penalties",
+      "content": "In the event of project cancellation by the Client after commencement, the Client shall pay a cancellation fee equivalent to 25% of the total project value or the value of work completed up to the date of cancellation, whichever is higher.",
+      "defaultEnabled": true,
+      "clientToggleable": false
+    },
+    {
+      "id": "source-code",
+      "title": "Source Code Handover",
+      "content": "Upon full and final payment of all outstanding invoices, the Company shall provide the Client with the complete, uncompiled source code, administrative credentials, and necessary documentation.",
+      "defaultEnabled": true,
+      "clientToggleable": false
+    },
+    {
+      "id": "maintenance-support",
+      "title": "Maintenance & Support",
+      "content": "The Company shall provide free bug-fixing and technical support for a period of thirty (30) days following the final deployment. Any enhancements or new features requested during this period will be billed separately.",
+      "defaultEnabled": false,
+      "clientToggleable": false
+    },
+    {
+      "id": "non-compete",
+      "title": "Non-Compete",
+      "content": "During the term of this Agreement and for a period of 12 months thereafter, the Company agrees not to directly provide similar services to any direct competitor of the Client without prior written consent.",
+      "defaultEnabled": false,
+      "clientToggleable": false
+    },
+    {
+      "id": "non-solicitation",
+      "title": "Non-Solicitation",
+      "content": "During the term of this Agreement and for a period of 24 months after its termination, the Client agrees not to solicit, recruit, or hire any employee, contractor, or affiliate of the Company.",
+      "defaultEnabled": true,
+      "clientToggleable": false
+    },
+    {
+      "id": "payment-50-50",
+      "title": "Payment Terms: 50/50 Split",
+      "content": "The Client agrees to pay 50% of the total amount as an upfront deposit before work commences, and the remaining 50% upon final delivery and acceptance of the project.",
+      "defaultEnabled": true,
+      "clientToggleable": false
+    },
+    {
+      "id": "payment-10-90",
+      "title": "Payment Terms: 10/90 Split",
+      "content": "The Client agrees to pay 10% of the total amount as a retainer to initiate the project, with the remaining 90% due upon successful completion and deployment.",
+      "defaultEnabled": false,
+      "clientToggleable": false
+    },
+    {
+      "id": "payment-advance",
+      "title": "Payment Terms: 100% Advance Payment",
+      "content": "The Client agrees to pay 100% of the total amount upfront prior to the commencement of any services or deliverables.",
+      "defaultEnabled": false,
+      "clientToggleable": false
+    }
+  ],
+  "adminFields": [
+    {
+      "id": "client_name",
+      "label": "Client Legal Name",
+      "type": "text",
+      "required": true,
+      "placeholder": "Enter client name"
+    },
+    {
+      "id": "client_address",
+      "label": "Client Address",
+      "type": "textarea",
+      "required": true,
+      "placeholder": "Enter client address"
+    },
+    {
+      "id": "project_name",
+      "label": "Project Name",
+      "type": "text",
+      "required": true,
+      "placeholder": "e.g. Website Redesign"
+    },
+    {
+      "id": "scope_of_work",
+      "label": "Scope of Work",
+      "type": "textarea",
+      "required": true,
+      "placeholder": "Describe deliverables"
+    },
+    {
+      "id": "total_amount",
+      "label": "Total Amount (INR)",
+      "type": "number",
+      "required": true,
+      "placeholder": "e.g. 50000"
+    },
+    {
+      "id": "start_date",
+      "label": "Start Date",
+      "type": "date",
+      "required": true,
+      "placeholder": ""
+    },
+    {
+      "id": "end_date",
+      "label": "End Date",
+      "type": "date",
+      "required": true,
+      "placeholder": ""
+    },
+    {
+      "id": "timeline",
+      "label": "Timeline Details",
+      "type": "textarea",
+      "required": true,
+      "placeholder": "Describe milestones"
+    }
+  ],
+  "clientFields": [
+    {
+      "id": "client_signatory_name",
+      "label": "Signatory Name",
+      "type": "text",
+      "required": true
+    },
+    {
+      "id": "client_signatory_title",
+      "label": "Signatory Title",
+      "type": "text",
+      "required": true
+    }
+  ]
+}

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Notification</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f8fafc; color: #1e293b; -webkit-font-smoothing: antialiased;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f8fafc; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <!-- Main Container -->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td style="background-color: <%= locals.settings?.brand_primary_color || '#1e293b' %>; padding: 20px 30px; color: #ffffff;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td>
+                                        <h1 style="margin: 0; font-size: 18px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">System Notification</h1>
+                                    </td>
+                                    <td align="right">
+                                        <span style="font-size: 12px; color: #94a3b8;"><%= new Date().toLocaleDateString() %></span>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 30px;">
+                            <h2 style="margin: 0 0 20px 0; font-size: 20px; color: #0f172a; border-bottom: 2px solid #f1f5f9; padding-bottom: 10px;">
+                                Contract Activity Alert
+                            </h2>
+                            
+                            <table border="0" cellpadding="12" cellspacing="0" width="100%" style="background-color: #f8fafc; border-radius: 6px; margin-bottom: 25px;">
+                                <tr>
+                                    <td width="100" style="color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase;">Event</td>
+                                    <td>
+                                        <% if (eventType === 'signed') { %>
+                                            <span style="display: inline-block; padding: 4px 10px; background-color: #dcfce7; color: #166534; border-radius: 12px; font-size: 13px; font-weight: 600;">Signed</span>
+                                        <% } else if (eventType === 'opened') { %>
+                                            <span style="display: inline-block; padding: 4px 10px; background-color: #e0f2fe; color: #075985; border-radius: 12px; font-size: 13px; font-weight: 600;">Viewed</span>
+                                        <% } else { %>
+                                            <span style="display: inline-block; padding: 4px 10px; background-color: #f1f5f9; color: #475569; border-radius: 12px; font-size: 13px; font-weight: 600;"><%= eventType %></span>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; border-top: 1px solid #e2e8f0;">Client</td>
+                                    <td style="font-size: 15px; font-weight: 600; color: #0f172a; border-top: 1px solid #e2e8f0;"><%= contract.clientName %></td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; border-top: 1px solid #e2e8f0;">Document</td>
+                                    <td style="font-size: 14px; color: #334155; border-top: 1px solid #e2e8f0;"><%= contract.projectName || contract.title %></td>
+                                </tr>
+                                <tr>
+                                    <td style="color: #64748b; font-size: 13px; font-weight: 600; text-transform: uppercase; border-top: 1px solid #e2e8f0;">Time</td>
+                                    <td style="font-size: 14px; color: #334155; border-top: 1px solid #e2e8f0;"><%= new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute:'2-digit' }) %> (UTC)</td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Primary CTA -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <td align="center">
+                                        <a href="<%= contract.dashboardUrl || 'https://admin.kkeyqik.com' %>" target="_blank" style="display: inline-block; padding: 12px 24px; background-color: <%= locals.settings?.brand_primary_color || '#3b82f6' %>; color: #ffffff; text-decoration: none; font-size: 14px; font-weight: 600; border-radius: 4px; border: 1px solid <%= locals.settings?.brand_primary_color || '#2563eb' %>;">
+                                            View in Dashboard
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

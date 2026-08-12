@@ -1,0 +1,36 @@
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+  <div>
+    <h1 class="page-title">Add Webhook</h1>
+    <p class="page-subtitle">Send notifications to external systems</p>
+  </div>
+  <div>
+    <a href="/admin/webhooks" class="btn btn-outline">Cancel</a>
+  </div>
+</div>
+
+<div class="card" style="max-width: 600px;">
+  <form action="/admin/webhooks/add" method="POST">
+    <div class="form-group" style="margin-bottom: 20px;">
+      <label class="form-label">Webhook URL</label>
+      <input type="url" name="url" class="form-control" placeholder="https://example.com/webhook" required>
+      <p style="font-size: 12px; color: #64748b; margin-top: 5px;">The URL where the POST request will be sent.</p>
+    </div>
+    
+    <div class="form-group" style="margin-bottom: 20px;">
+      <label class="form-label">Event Type</label>
+      <select name="event_type" class="form-control" required>
+        <option value="contract.signed">contract.signed</option>
+      </select>
+      <p style="font-size: 12px; color: #64748b; margin-top: 5px;">The event that will trigger this webhook.</p>
+    </div>
+    
+    <div class="form-group" style="margin-bottom: 30px;">
+      <label style="display: flex; align-items: center; cursor: pointer;">
+        <input type="checkbox" name="is_active" checked style="margin-right: 10px; width: 16px; height: 16px;">
+        <span style="font-weight: 500;">Active</span>
+      </label>
+    </div>
+    
+    <button type="submit" class="btn btn-primary">Save Webhook</button>
+  </form>
+</div>

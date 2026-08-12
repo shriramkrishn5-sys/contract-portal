@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><%= contract.project_name || 'Contract' %></title>
+    <!-- Use Merriweather for the document text for a premium legal look -->
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Inter:wght@400;600;700&family=Dancing+Script:wght@400;700&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #347A5A;
+            --primary-light: #EBF3F0;
+            --primary-dark: #296047;
+            --accent: #FFDE59;
+            --secondary: #4b5563; 
+            --text-dark: #1E293B;
+            --text-light: #64748B;
+            --border: #E2E8F0;
+            --bg-light: #F8F9FB;
+        }
+
+        body {
+            font-family: 'Merriweather', serif;
+            font-size: 11pt;
+            line-height: 1.7;
+            color: var(--text-dark);
+            margin: 0;
+            padding: 0;
+            background: white;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* San serif overrides for headers */
+        .sans-serif {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .container {
+            padding: 40px 50px;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .company-info {
+            text-align: left;
+        }
+
+        .company-name {
+            font-family: 'Lora', serif;
+            font-size: 22pt;
+            font-weight: 700;
+            color: var(--primary);
+            letter-spacing: -0.5px;
+            margin-bottom: 5px;
+        }
+
+        .company-details {
+            font-size: 9pt;
+            color: var(--text-light);
+            line-height: 1.4;
+        }
+
+        .title-section {
+            text-align: center;
+            margin-bottom: 40px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .document-title {
+            font-size: 18pt;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin: 0;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: inline-block;
+        }
+
+        .title-underline {
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: var(--accent);
+            margin: 10px auto 0;
+            border-radius: 2px;
+        }
+
+        .document-meta {
+            font-size: 9pt;
+            color: var(--text-light);
+            margin-top: 10px;
+        }
+
+        .intro-text {
+            margin-bottom: 30px;
+            text-align: justify;
+        }
+
+        .section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 12pt;
+            margin-bottom: 12px;
+            color: var(--primary);
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 6px;
+            padding-left: 12px;
+            border-left: 3px solid var(--accent);
+        }
+
+        .clause {
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        .clause-title {
+            font-weight: 700;
+            margin-bottom: 5px;
+            color: var(--text-dark);
+        }
+
+        .clause-content {
+            color: #333;
+        }
+
+        .signature-section {
+            margin-top: 60px;
+            display: flex;
+            justify-content: space-between;
+            page-break-inside: avoid;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .signature-block {
+            width: 45%;
+        }
+
+        .signature-area {
+            height: 80px;
+            border-bottom: 2px solid var(--primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: flex-start;
+        }
+
+        .signature-img {
+            max-width: 100%;
+            max-height: 70px;
+            object-fit: contain;
+        }
+
+        .signature-text {
+            font-size: 22pt;
+            margin-bottom: -5px;
+        }
+
+        .signature-meta {
+            font-size: 9pt;
+            color: var(--secondary);
+        }
+
+        .signature-meta p {
+            margin: 3px 0;
+        }
+
+        .page-break {
+            page-break-before: always;
+        }
+
+        .cert-container {
+            border: 2px solid var(--primary);
+            padding: 40px;
+            border-radius: 8px;
+            margin-top: 40px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .cert-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .cert-title {
+            font-size: 20pt;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .cert-subtitle {
+            font-size: 11pt;
+            color: var(--text-light);
+        }
+
+        .cert-flex-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+
+        .cert-flex-item {
+            width: 48%;
+            background: var(--bg-light);
+            padding: 15px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            box-sizing: border-box;
+        }
+
+        .cert-label {
+            font-size: 8pt;
+            text-transform: uppercase;
+            color: var(--text-light);
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .cert-value {
+            font-size: 10pt;
+            font-weight: 500;
+            color: var(--text-dark);
+            word-break: break-all;
+        }
+
+        .hash-box {
+            background: var(--primary-dark);
+            color: white;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .hash-box .cert-label {
+            color: #a7c4b5;
+        }
+
+        .footer {
+            margin-top: 40px;
+            text-align: center;
+            font-size: 8pt;
+            color: var(--text-light);
+            border-top: 2px solid var(--primary-light);
+            padding-top: 15px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 100pt;
+            font-weight: 800;
+            color: rgba(0, 0, 0, 0.05);
+            z-index: -1;
+            white-space: nowrap;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="watermark"><%= contract.status === 'signed' ? 'CONFIDENTIAL' : 'DRAFT' %></div>
+    <div class="brand-bar"></div>
+    <div class="container inner-container">
+        <!-- Header -->
+        <div class="header">
+            <div class="company-info">
+                <div class="company-name"><%= settings?.company_name || 'KKeyQik Private Limited' %><span class="accent-dot">.</span></div>
+                <div class="company-details">
+                    <%= settings?.company_address || 'H-235 A, Sector -12, Pratap Vihar, Ghaziabad - 201009' %>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 10pt; color: var(--text-light);">Document ID</span><br>
+                <strong style="font-size: 11pt;"><%= contract.uuid || contract.id || 'N/A' %></strong>
+            </div>
+        </div>
+
+        <!-- Title Section -->
+        <div class="title-section">
+            <h1 class="document-title">CONTRACT AGREEMENT<span class="title-underline"></span></h1>
+            <div class="document-meta">
+                Effective Date: <%= contract.created_at ? new Date(contract.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A' %>
+            </div>
+        </div>
+
+        <div class="intro-text">
+            <p>This Agreement (the "Agreement") is entered into as of <strong><%= contract.created_at ? new Date(contract.created_at).toLocaleDateString() : 'the Effective Date' %></strong>, by and between:</p>
+            
+            <p><strong><%= settings?.company_name || 'KKeyQik Private Limited' %></strong>, having its principal place of business at <%= settings?.company_address || 'H-235 A, Sector -12, Pratap Vihar, Ghaziabad - 201009' %> ("Company")</p>
+            
+            <p style="text-align: center; font-style: italic; margin: 15px 0;">AND</p>
+            
+            <p><strong><%= contract.client_name || '[Client Name]' %></strong>, having its principal place of business at <%= contract.client_selections?.client_address || contract.client_address || contract.client_company || '[Client Address]' %> ("Client").</p>
+        </div>
+
+        <% if (template && template.content_sections) { %>
+            <% let sections = [];
+               try { sections = typeof template.content_sections === 'string' ? JSON.parse(template.content_sections) : template.content_sections; } catch(e){}
+               // Skip the last section if it's a "Signatures" section to avoid duplication
+               const filteredSections = sections.filter(s => !s.title.toLowerCase().includes('signature'));
+               filteredSections.forEach(section => { %>
+                <div class="section">
+                    <div class="section-title"><%= section.title %></div>
+                    <div class="clause-content" style="white-space: pre-wrap;"><%- parseTemplateVars(section.content, contract, settings).replace(/\n/g, '<br>') %></div>
+                </div>
+            <% }) %>
+        <% } else { %>
+            <!-- Fallback -->
+            <div class="section">
+                <div class="section-title">1. Scope of Work</div>
+                <div class="clause-content" style="white-space: pre-wrap;"><%= contract.scope_of_work || 'Scope of work details...' %></div>
+            </div>
+            <% if (contract.total_amount) { %>
+            <div class="section">
+                <div class="section-title">2. Payment Terms</div>
+                <div class="clause-content">Amount: <%= contract.currency || 'USD' %> <%= contract.total_amount %></div>
+            </div>
+            <% } %>
+        <% } %>
+
+        <% const activeClauses = (contract.selected_clauses || []).filter(c => c.defaultEnabled !== false);
+           if (activeClauses.length > 0) { %>
+            <div class="section">
+                <div class="section-title">Addendum: Additional Terms</div>
+                <% activeClauses.forEach((clause, index) => { %>
+                    <div class="clause">
+                        <div class="clause-title"><%= (index + 1) + '. ' + (clause.title || 'Clause') %></div>
+                        <div class="clause-content"><%- parseTemplateVars(clause.content, contract, settings).replace(/\n/g, '<br>') %></div>
+                    </div>
+                <% }); %>
+            </div>
+        <% } %>
+
+        <!-- Signature Section -->
+        <div class="signature-section" style="margin-top: 80px;">
+            <div class="signature-block">
+                <div class="signature-area">
+                    <div class="signature-text" style="font-family: 'Dancing Script', cursive, serif; font-size: 24pt; color: var(--primary);">
+                        <%= contract.authorized_signatory || 'Authorized Signatory' %>
+                    </div>
+                </div>
+                <div class="signature-meta">
+                    <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= settings?.authorized_signatory || 'Authorized Signatory' %></p>
+                    <p><%= settings?.company_name || 'KKeyQik Private Limited' %></p>
+                    <% if (typeof audit !== 'undefined' && audit && audit.timestamp) { %>
+                        <p>Date: <%= new Date(audit.timestamp).toLocaleDateString() %></p>
+                    <% } else { %>
+                        <p>Date: <%= contract.created_at ? new Date(contract.created_at).toLocaleDateString() : '________________' %></p>
+                    <% } %>
+                </div>
+            </div>
+            
+            <div class="signature-block">
+                <div class="signature-area">
+                    <% if (typeof signature !== 'undefined' && signature) { %>
+                        <% if (signature.image || signature.data) { %>
+                            <img src="<%= signature.image || signature.data %>" class="signature-img" alt="Signature">
+                        <% } else if (signature.text) { %>
+                            <div class="signature-text" style="font-family: <%= signature.fontFamily || 'cursive' %>;"><%= signature.text %></div>
+                        <% } %>
+                    <% } %>
+                </div>
+                <div class="signature-meta">
+                    <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= contract.client_selections?.client_signatory_name || contract.client_name || 'Authorized Signatory' %></p>
+                    <p><%= contract.client_selections?.client_designation || contract.client_designation || contract.client_company || 'Client' %></p>
+                    <% if (typeof audit !== 'undefined' && audit && audit.timestamp) { %>
+                        <p>Date: <%= new Date(audit.timestamp).toLocaleDateString() %></p>
+                        <p>IP: <%= (audit.ip === '::1' || audit.ip === '127.0.0.1') ? 'Local Network' : (audit.ip || 'N/A') %></p>
+                    <% } else { %>
+                        <p>Date: ________________</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+
+        <!-- Certificate of Completion -->
+        <% if (typeof audit !== 'undefined' && audit && audit.hash) { %>
+        <div class="page-break"></div>
+        
+        <div class="cert-container">
+            <div class="cert-header">
+                <div class="cert-title">Certificate of Completion</div>
+                <div class="cert-subtitle">Electronic Signature Audit Trail</div>
+            </div>
+            
+            <div class="cert-flex-row">
+                <div class="cert-flex-item" style="width: 100%;">
+                    <div class="cert-label">Document Title</div>
+                    <div class="cert-value" style="font-size: 14pt; font-weight: 700;"><%= contract.project_name || 'Agreement' %></div>
+                </div>
+            </div>
+
+            <div class="cert-flex-row">
+                <div class="cert-flex-item">
+                    <div class="cert-label">Document ID</div>
+                    <div class="cert-value"><%= contract.uuid || contract.id || 'N/A' %></div>
+                </div>
+                <div class="cert-flex-item">
+                    <div class="cert-label">Status</div>
+                    <div class="cert-value" style="color: #16a34a; font-weight: 700;">COMPLETED</div>
+                </div>
+            </div>
+
+            <div class="cert-flex-row">
+                <div class="cert-flex-item">
+                    <div class="cert-label">Signer Name</div>
+                    <div class="cert-value"><%= contract.client_name || 'N/A' %></div>
+                </div>
+                <div class="cert-flex-item">
+                    <div class="cert-label">Signer Email</div>
+                    <div class="cert-value"><%= contract.client_email || 'N/A' %></div>
+                </div>
+            </div>
+
+            <div class="cert-flex-row">
+                <div class="cert-flex-item">
+                    <div class="cert-label">Signing IP Address</div>
+                    <div class="cert-value"><%= audit.ip || 'N/A' %></div>
+                </div>
+                <div class="cert-flex-item">
+                    <div class="cert-label">Timestamp (UTC)</div>
+                    <div class="cert-value"><%= audit.timestamp ? new Date(audit.timestamp).toUTCString() : 'N/A' %></div>
+                </div>
+            </div>
+
+            <div class="cert-flex-row">
+                <div class="cert-flex-item" style="width: 100%;">
+                    <div class="cert-label">Device & Browser Context</div>
+                    <div class="cert-value" style="font-size: 9pt; color: var(--secondary);">
+                        <%= audit.os || 'N/A' %> / <%= audit.browser || 'N/A' %><br>
+                        <span style="font-size: 8pt;"><%= audit.userAgent || '' %></span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="cert-flex-row" style="margin-top: 30px; align-items: center; border-top: 1px solid var(--border); padding-top: 20px;">
+                <div style="flex: 1;">
+                    <div class="hash-box" style="margin-top: 0; text-align: left;">
+                        <div class="cert-label" style="color: #9ca3af;">Cryptographic Hash (SHA-256)</div>
+                        <div class="cert-value" style="color: white; font-family: monospace; letter-spacing: 1px; margin-top: 5px; word-break: break-all;"><%= audit.hash %></div>
+                    </div>
+                </div>
+                <div style="margin-left: 20px; text-align: center;">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=<%= encodeURIComponent(settings?.app_url || 'https://contract.kkeyqik.com') %>/c/<%= contract.uuid %>/complete" alt="Verification QR Code" style="width: 100px; height: 100px; border-radius: 4px; border: 1px solid #ccc; padding: 4px; background: white;">
+                    <div style="font-size: 7pt; color: var(--text-light); margin-top: 5px;">Scan to Verify</div>
+                </div>
+            </div>
+        </div>
+        <% } %>
+
+        <div class="footer">
+            This document and its digital signatures are legally binding. Generated securely via <span class="footer-brand">contract.kkeyqik.com</span>
+        </div>
+    </div>
+</body>
+</html>

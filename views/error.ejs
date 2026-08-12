@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error | KKeyQik Portal</title>
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/public.css">
+</head>
+<body>
+  <div class="auth-container">
+    <div class="login-card" style="text-align: center;">
+      <h2 style="color: var(--portal-danger, #EF4444); margin-bottom: 1rem;">
+        <%= error && error.status ? error.status : 'Error' %>
+      </h2>
+      <p style="margin-bottom: 1.5rem; color: var(--portal-text-muted, #6B7280);">
+        <%= message %>
+      </p>
+      <a href="/" class="btn btn-primary">Go Home</a>
+    </div>
+  </div>
+</body>
+</html>

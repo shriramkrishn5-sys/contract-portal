@@ -1,0 +1,98 @@
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+  <div>
+    <h1 class="page-title">Client Directory</h1>
+    <p class="page-subtitle">Auto-generated rolodex from your signed contracts</p>
+  </div>
+  <div class="search-bar" style="position: relative; width: 300px;">
+    <svg style="position: absolute; left: 12px; top: 10px; color: #94a3b8;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+    <input type="text" id="clientSearch" class="form-control" placeholder="Search clients..." style="padding-left: 40px; border-radius: 20px;">
+  </div>
+</div>
+
+<div class="card">
+  <% if (clients.length === 0) { %>
+    <div class="empty-state" style="padding: 60px 20px; text-align: center;">
+      <div style="width: 64px; height: 64px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <h3>No clients found</h3>
+      <p style="color: #64748b; margin-bottom: 20px;">Clients will appear here automatically once contracts are signed.</p>
+    </div>
+  <% } else { %>
+    <table class="table" id="clientsTable">
+      <thead>
+        <tr>
+          <th>Client Name</th>
+          <th>Company</th>
+          <th>Contact Info</th>
+          <th>Contracts</th>
+          <th>Lifetime Value</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% clients.forEach(client => { %>
+          <tr class="client-row">
+            <td>
+              <div style="font-weight: 600; color: #0f172a;"><%= client.name %></div>
+              <div style="font-size: 13px; color: #64748b;"><%= client.designation || 'Signatory' %></div>
+            </td>
+            <td>
+              <div style="font-weight: 500;"><%= client.company %></div>
+              <div style="font-size: 13px; color: #64748b;"><%= client.region === 'indian' ? 'India' : 'International' %></div>
+            </td>
+            <td>
+              <div style="font-size: 13px; margin-bottom: 2px;"><a href="mailto:<%= client.email %>" style="color: #3b82f6; text-decoration: none;"><%= client.email %></a></div>
+              <div style="font-size: 13px; color: #64748b;"><%= client.phone || 'N/A' %></div>
+            </td>
+            <td>
+              <span class="badge" style="background: #e0e7ff; color: #4338ca; padding: 4px 10px; font-weight: 600;">
+                <%= client.contract_count %>
+              </span>
+            </td>
+            <td>
+              <div style="font-weight: 600; color: #16a34a;">
+                <% if(client.region === 'international') { %>$<% } else { %>₹<% } %><%= (client.total_spent || 0).toLocaleString() %>
+              </div>
+            </td>
+            <td class="text-right">
+              <a href="/admin/contracts?search=<%= encodeURIComponent(client.email) %>" class="btn btn-outline" style="padding: 4px 12px; font-size: 13px;">View Contracts</a>
+              <button onclick="deleteClient('<%= client.id %>', '<%= client.name %>')" class="btn btn-outline text-danger" style="padding: 4px 12px; font-size: 13px; margin-left: 5px; border-color: #fee2e2; background: #fef2f2;">Delete</button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<script>
+document.getElementById('clientSearch')?.addEventListener('input', function(e) {
+  const term = e.target.value.toLowerCase();
+  document.querySelectorAll('.client-row').forEach(row => {
+    const text = row.innerText.toLowerCase();
+    row.style.display = text.includes(term) ? '' : 'none';
+  });
+});
+
+function deleteClient(id, name) {
+  if (confirm(`Are you sure you want to delete client "${name}"? This action cannot be undone.`)) {
+    fetch(`/admin/clients/${id}/delete`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert('Failed to delete client: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Network error occurred.');
+    });
+  }
+}
+</script>

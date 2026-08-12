@@ -1,0 +1,94 @@
+<div class="versions-page">
+  <div class="page-header mb-4">
+    <a href="/admin/contracts/<%= contract.id %>" class="btn btn-outline-secondary btn-sm mb-3" style="display: inline-flex; align-items: center; gap: 4px;">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+      Back to Contract
+    </a>
+    <h1 class="page-title">Version History</h1>
+    <p class="page-subtitle">Track changes and restore previous versions for <strong><%= contract.project_name || 'Contract' %></strong>.</p>
+  </div>
+
+  <div class="card">
+    <% if (versions && versions.length > 0) { %>
+      <div class="timeline">
+        <% versions.forEach((v, index) => { %>
+          <div class="timeline-item pb-4" style="border-left: 2px solid #e2e8f0; padding-left: 1.5rem; position: relative;">
+            <div style="position: absolute; left: -9px; top: 0; width: 16px; height: 16px; border-radius: 50%; background: #fff; border: 2px solid var(--portal-primary);"></div>
+            <div class="d-flex justify-content-between align-items-start">
+              <div>
+                <h4 class="mb-1">Version <%= v.version_number %></h4>
+                <p class="text-muted small mb-2">Saved on <%= new Date(v.created_at).toLocaleString() %> by <%= v.admin_name || 'Unknown Admin' %></p>
+              </div>
+              <% if (index === 0) { %>
+                <span class="badge badge-success" style="background: #dcfce7; color: #16a34a; padding: 4px 8px; border-radius: 4px; font-size: 12px; font-weight: 500;">Previous (Newest Backup)</span>
+              <% } %>
+            </div>
+            <button class="btn btn-outline-primary btn-sm mt-2 restore-btn" data-version="<%= v.id %>" style="border: 1px solid var(--portal-primary); color: var(--portal-primary); background: transparent; border-radius: 4px; padding: 4px 12px; font-size: 13px;">
+              Restore this version
+            </button>
+          </div>
+        <% }) %>
+      </div>
+    <% } else { %>
+      <div class="text-center py-5 text-muted">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" class="mb-3" style="opacity: 0.5;"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+        <p>No previous versions found. Edit this contract to create a version snapshot.</p>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<script>
+  document.querySelectorAll('.restore-btn').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      const versionId = btn.dataset.version;
+      if (!confirm('Are you sure you want to restore this version? This will overwrite the current contract data with the historical data.')) {
+        return;
+      }
+      
+      try {
+        const res = await fetch(`/admin/contracts/<%= contract.id %>/versions/${versionId}/restore`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+          alert('Contract successfully restored!');
+          window.location.href = `/admin/contracts/<%= contract.id %>`;
+        } else {
+          alert('Failed to restore: ' + data.message);
+        }
+      } catch (err) {
+        alert('Network error while restoring version.');
+      }
+    });
+  });
+</script>
+
+<style>
+.versions-page {
+  max-width: 800px;
+  margin: 0 auto;
+}
+.page-title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+.page-subtitle {
+  color: #64748b;
+  font-size: 14px;
+}
+.card {
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+}
+.restore-btn:hover {
+  background: var(--portal-primary) !important;
+  color: white !important;
+}
+</style>

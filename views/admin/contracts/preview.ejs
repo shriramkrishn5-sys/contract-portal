@@ -1,0 +1,38 @@
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h2>Contract Preview</h2>
+  <div>
+    <a href="/admin/contracts/<%= contract.id %>/edit" class="btn btn-secondary mr-2">Edit</a>
+    <form action="/admin/contracts/<%= contract.id %>/send" method="POST" style="display: inline;">
+      <button type="submit" id="generateBtn" class="btn btn-primary">Generate & Send Link</button>
+    </form>
+  </div>
+</div>
+
+<div class="contract-document mx-auto" style="max-width: 800px; border: 1px solid var(--portal-border);">
+  <div class="text-center mb-5">
+    <h1 style="margin:0;">CONTRACT AGREEMENT</h1>
+    <p class="text-muted">Effective Date: <%= new Date().toLocaleDateString() %></p>
+  </div>
+
+  <p>This Agreement is entered into between <strong><%= typeof contract !== 'undefined' ? (contract.company_name || 'KKeyQik') : 'KKeyQik' %></strong> (hereinafter referred to as the "Company") and <strong><%= typeof contract !== 'undefined' ? (contract.client_name || '[Client Name]') : '[Client Name]' %></strong> (hereinafter referred to as the "Client").</p>
+
+  <h3>1. Scope of Work</h3>
+  <p>The Company agrees to perform the following services for the Project <strong><%= typeof contract !== 'undefined' ? (contract.project_name || '[Project Name]') : '[Project Name]' %></strong>:</p>
+  <p style="white-space: pre-wrap;"><%= typeof contract !== 'undefined' ? (contract.scope_of_work || '[Scope Details]') : '[Scope Details]' %></p>
+
+  <h3>2. Payment Terms</h3>
+  <p>Total Amount: <%= typeof contract !== 'undefined' ? (contract.currency || 'USD') : '' %> <%= typeof contract !== 'undefined' ? (contract.total_amount || '0') : '0' %></p>
+
+  <div class="mt-5 pt-4 border-top d-flex justify-content-between">
+    <div>
+      <p><strong>For Company:</strong></p>
+      <div style="height: 60px;"></div>
+      <p>Name: <%= typeof contract !== 'undefined' ? (contract.authorized_signatory || 'John Doe') : 'John Doe' %></p>
+    </div>
+    <div>
+      <p><strong>For Client:</strong></p>
+      <div style="height: 60px;"></div>
+      <p>Name: <%= typeof contract !== 'undefined' ? (contract.client_name || '[Client Name]') : '[Client Name]' %></p>
+    </div>
+  </div>
+</div>

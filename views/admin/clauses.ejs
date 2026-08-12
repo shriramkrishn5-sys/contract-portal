@@ -1,0 +1,191 @@
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+  <div>
+    <h1 class="page-title">Clause Library</h1>
+    <p class="page-subtitle">Manage standard and reusable clauses for your templates</p>
+  </div>
+  <button class="btn btn-primary" onclick="openClauseModal()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+    Add New Clause
+  </button>
+</div>
+
+<div class="card">
+  <% if (clauses.length === 0) { %>
+    <div class="empty-state" style="padding: 60px 20px; text-align: center;">
+      <div style="width: 64px; height: 64px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <h3>No clauses found</h3>
+      <p style="color: #64748b; margin-bottom: 20px;">Get started by adding your first standard clause.</p>
+      <button class="btn btn-primary" onclick="openClauseModal()">Create Clause</button>
+    </div>
+  <% } else { %>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Category</th>
+          <th>Default</th>
+          <th>Client Toggleable</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% clauses.forEach(clause => { %>
+          <tr>
+            <td style="font-weight: 500; color: #0f172a;">
+              <%= clause.title %>
+            </td>
+            <td><span class="badge" style="background: #e2e8f0; color: #334155;"><%= clause.category %></span></td>
+            <td>
+              <% if (clause.default_enabled) { %>
+                <span class="badge" style="background: #dcfce7; color: #166534;">Yes</span>
+              <% } else { %>
+                <span class="badge" style="background: #f1f5f9; color: #64748b;">No</span>
+              <% } %>
+            </td>
+            <td>
+              <% if (clause.client_toggleable) { %>
+                <span class="badge" style="background: #dcfce7; color: #166534;">Yes</span>
+              <% } else { %>
+                <span class="badge" style="background: #f1f5f9; color: #64748b;">No</span>
+              <% } %>
+            </td>
+            <td class="text-right">
+              <button class="btn btn-icon" onclick='editClause(<%- JSON.stringify(clause) %>)' title="Edit">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              </button>
+              <button class="btn btn-icon" style="color: #ef4444;" onclick="deleteClause(<%= clause.id %>)" title="Delete">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+              </button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>
+
+<!-- Modal -->
+<div id="clauseModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center;">
+  <div class="modal-content" style="background: white; border-radius: 16px; width: 100%; max-width: 600px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+    <div class="modal-header" style="padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+      <h3 id="modalTitle" style="margin: 0; font-size: 18px; font-weight: 600;">Add New Clause</h3>
+      <button class="btn-icon" onclick="closeModal()" style="border: none; background: none; cursor: pointer; color: #64748b;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    
+    <form id="clauseForm" style="padding: 24px;">
+      <input type="hidden" id="clauseId" name="id">
+      
+      <div class="form-group mb-3">
+        <label>Clause Title *</label>
+        <input type="text" id="clauseTitle" name="title" class="form-control" required placeholder="e.g., Standard NDA">
+      </div>
+      
+      <div class="form-group mb-3">
+        <label>Category</label>
+        <select id="clauseCategory" name="category" class="form-control">
+          <option value="General">General</option>
+          <option value="Payment">Payment Terms</option>
+          <option value="Legal">Legal & Compliance</option>
+          <option value="Intellectual Property">Intellectual Property</option>
+        </select>
+      </div>
+      
+      <div class="form-group mb-4">
+        <label>Content *</label>
+        <textarea id="clauseContent" name="content" class="form-control" rows="5" required placeholder="Enter the full clause text..."></textarea>
+      </div>
+
+      <div class="form-group" style="display: flex; gap: 24px;">
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 400;">
+          <input type="checkbox" id="clauseDefault" name="default_enabled" style="width: 16px; height: 16px;">
+          Enabled by Default
+        </label>
+        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 400;">
+          <input type="checkbox" id="clauseClientToggle" name="client_toggleable" style="width: 16px; height: 16px;">
+          Client Can Toggle
+        </label>
+      </div>
+      
+      <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 12px;">
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveClauseBtn">Save Clause</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const modal = document.getElementById('clauseModal');
+const form = document.getElementById('clauseForm');
+
+function openClauseModal() {
+  document.getElementById('modalTitle').innerText = 'Add New Clause';
+  form.reset();
+  document.getElementById('clauseId').value = '';
+  modal.style.display = 'flex';
+}
+
+function editClause(clause) {
+  document.getElementById('modalTitle').innerText = 'Edit Clause';
+  document.getElementById('clauseId').value = clause.id;
+  document.getElementById('clauseTitle').value = clause.title;
+  document.getElementById('clauseCategory').value = clause.category;
+  document.getElementById('clauseContent').value = clause.content;
+  document.getElementById('clauseDefault').checked = clause.default_enabled === 1;
+  document.getElementById('clauseClientToggle').checked = clause.client_toggleable === 1;
+  modal.style.display = 'flex';
+}
+
+function closeModal() {
+  modal.style.display = 'none';
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const id = document.getElementById('clauseId').value;
+  const payload = {
+    title: document.getElementById('clauseTitle').value,
+    category: document.getElementById('clauseCategory').value,
+    content: document.getElementById('clauseContent').value,
+    default_enabled: document.getElementById('clauseDefault').checked,
+    client_toggleable: document.getElementById('clauseClientToggle').checked
+  };
+
+  const url = id ? `/admin/clauses/${id}` : '/admin/clauses';
+  const method = id ? 'PUT' : 'POST';
+
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+      window.location.reload();
+    } else {
+      alert('Failed to save clause');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Network error');
+  }
+});
+
+async function deleteClause(id) {
+  if (!confirm('Are you sure you want to delete this clause?')) return;
+  try {
+    const res = await fetch(`/admin/clauses/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+      window.location.reload();
+    } else {
+      alert('Failed to delete clause');
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
+</script>

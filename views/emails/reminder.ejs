@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gentle Reminder: Contract Review Request</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; color: #1f2937; -webkit-font-smoothing: antialiased;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f3f4f6; padding: 40px 20px;">
+        <tr>
+            <td align="center">
+                <!-- Main Container -->
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);">
+                    
+                    <!-- Header -->
+                    <tr>
+                        <td align="center" style="background-color: <%= locals.settings?.brand_primary_color || '#2563eb' %>; padding: 40px 20px; color: #ffffff;">
+                            <% if (locals.settings && locals.settings.company_logo) { %>
+                                <img src="<%= locals.settings.company_logo %>" alt="<%= locals.settings.company_name || 'KKeyQik' %>" style="max-height: 60px; margin-bottom: 0;">
+                            <% } else { %>
+                                <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;"><%= locals.settings?.company_short_name || 'KKeyQik' %></h1>
+                                <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; font-weight: 300;"><%= locals.settings?.company_name || 'Private Limited' %></p>
+                            <% } %>
+                        </td>
+                    </tr>
+                    
+                    <!-- Body Content -->
+                    <tr>
+                        <td style="padding: 40px 40px 20px 40px;">
+                            <h2 style="margin: 0 0 20px 0; font-size: 22px; color: #111827;">Reminder: Signature Requested</h2>
+                            
+                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-top: 0;">Dear <strong><%= contract.clientName %></strong>,</p>
+                            
+                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">This is a gentle reminder that <%= locals.settings?.company_name || 'KKeyQik Private Limited' %> is waiting for your signature on the following document. Please review and sign it at your earliest convenience.</p>
+                            
+                            <!-- Document Details Box -->
+                            <table border="0" cellpadding="20" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin: 30px 0;">
+                                <tr>
+                                    <td>
+                                        <p style="margin: 0 0 10px 0; font-size: 13px; text-transform: uppercase; color: #64748b; font-weight: 600; letter-spacing: 0.5px;">Document Details</p>
+                                        <p style="margin: 0 0 8px 0; font-size: 16px; color: #0f172a;"><strong><%= contract.projectName || contract.title || 'Contract Agreement' %></strong></p>
+                                        <% if (contract.amount) { %>
+                                            <p style="margin: 0; font-size: 15px; color: #16a34a; font-weight: 600;"><%= contract.amount %></p>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Primary CTA -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 35px 0;">
+                                <tr>
+                                    <td align="center">
+                                        <a href="<%= contract.linkUrl || 'https://contract.kkeyqik.com' %>" target="_blank" style="display: inline-block; padding: 16px 36px; background-color: <%= locals.settings?.brand_primary_color || '#2563eb' %>; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 6px; text-align: center;">
+                                            Review & Sign Document
+                                        </a>
+                                    </td>
+                                </tr>
+                            </table>
+                            
+                            <!-- Fallback Link -->
+                            <div style="background-color: #f9fafb; padding: 15px; border-radius: 6px; margin-top: 30px;">
+                                <p style="font-size: 13px; color: #6b7280; line-height: 1.5; margin: 0 0 8px 0;">If the button above does not work, copy and paste this link into your browser:</p>
+                                <a href="<%= contract.linkUrl %>" style="color: <%= locals.settings?.brand_primary_color || '#2563eb' %>; font-size: 13px; word-break: break-all; text-decoration: none;"><%= contract.linkUrl %></a>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Footer -->
+                    <tr>
+                        <td align="center" style="background-color: #f8fafc; padding: 30px 40px; font-size: 13px; color: #94a3b8; border-top: 1px solid #f1f5f9;">
+                            <p style="margin: 0 0 10px 0; font-weight: 600; color: #64748b;"><%= locals.settings?.company_name || 'KKeyQik Private Limited' %></p>
+                            <p style="margin: 0 0 15px 0;"><%= locals.settings?.smtp_from_email || locals.settings?.company_email || 'contracts@kkeyqik.com' %></p>
+                            <p style="margin: 0; font-size: 12px; line-height: 1.5;">This email and its contents are confidential. If you received this in error, please disregard it and notify the sender.</p>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    </table>
+</body>
+</html>

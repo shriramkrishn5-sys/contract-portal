@@ -1,0 +1,135 @@
+<div class="page-header">
+  <h2>Categories</h2>
+  <button class="btn btn-primary" onclick="openCategoryModal()">Add Category</button>
+</div>
+
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Icon</th>
+        <th>Name</th>
+        <th>Color</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% categories.forEach(category => { %>
+        <tr>
+          <td><span style="font-size: 1.5em;"><%= category.icon %></span></td>
+          <td><%= category.name %></td>
+          <td>
+            <div style="width: 20px; height: 20px; background-color: <%= category.color %>; border-radius: 4px;"></div>
+            <%= category.color %>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-outline-primary" onclick='editCategory(<%- JSON.stringify(category) %>)'>Edit</button>
+            <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(<%= category.id %>)">Delete</button>
+          </td>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<!-- Category Modal -->
+<div class="modal fade" id="categoryModal" tabindex="-1">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <form id="categoryForm" method="POST" action="/admin/categories">
+        <div class="modal-header">
+          <h5 class="modal-title" id="categoryModalTitle">Add Category</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <input type="hidden" id="categoryId" name="id">
+          <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-control" id="categoryName" name="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Color</label>
+            <input type="color" class="form-control form-control-color" id="categoryColor" name="color" value="#000000" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Icon (Emoji or FontAwesome)</label>
+            <input type="text" class="form-control" id="categoryIcon" name="icon" value="📁" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Category</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  let modal;
+  document.addEventListener('DOMContentLoaded', function() {
+    modal = new bootstrap.Modal(document.getElementById('categoryModal'));
+  });
+
+  function openCategoryModal() {
+    document.getElementById('categoryForm').action = '/admin/categories';
+    document.getElementById('categoryId').value = '';
+    document.getElementById('categoryName').value = '';
+    document.getElementById('categoryColor').value = '#000000';
+    document.getElementById('categoryIcon').value = '📁';
+    document.getElementById('categoryModalTitle').textContent = 'Add Category';
+    modal.show();
+  }
+
+  function editCategory(category) {
+    // We handle update via a PUT request in fetch or changing action method. 
+    // Express doesn't support PUT in forms natively, let's use a standard POST approach if we didn't add method-override, 
+    // or just handle submission via JS.
+    document.getElementById('categoryId').value = category.id;
+    document.getElementById('categoryName').value = category.name;
+    document.getElementById('categoryColor').value = category.color;
+    document.getElementById('categoryIcon').value = category.icon;
+    document.getElementById('categoryModalTitle').textContent = 'Edit Category';
+    
+    // We override the submit handler for edits
+    document.getElementById('categoryForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const data = {
+        name: document.getElementById('categoryName').value,
+        color: document.getElementById('categoryColor').value,
+        icon: document.getElementById('categoryIcon').value,
+      };
+      
+      try {
+        const response = await fetch(`/admin/categories/${category.id}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          alert('Error updating category');
+        }
+      } catch(err) {
+        alert('Error updating category');
+      }
+    };
+    modal.show();
+  }
+
+  async function deleteCategory(id) {
+    if (confirm('Are you sure you want to delete this category?')) {
+      try {
+        const response = await fetch(`/admin/categories/${id}`, { method: 'DELETE' });
+        if (response.ok) {
+          window.location.reload();
+        } else {
+          alert('Error deleting category');
+        }
+      } catch (err) {
+        alert('Error deleting category');
+      }
+    }
+  }
+</script>

@@ -1,0 +1,209 @@
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+  <div>
+    <h1 class="page-title">Users & Roles</h1>
+    <p class="page-subtitle">Manage team access and permissions</p>
+  </div>
+  <% if (currentUser.role === 'superadmin') { %>
+    <button class="btn btn-primary" onclick="openUserModal()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+      Add New User
+    </button>
+  <% } %>
+</div>
+
+<div class="card">
+  <table class="table">
+    <thead>
+      <tr>
+        <th>User</th>
+        <th>Role</th>
+        <th>Joined Date</th>
+        <th class="text-right">Status</th>
+        <% if (currentUser.role === 'superadmin') { %>
+          <th class="text-right">Actions</th>
+        <% } %>
+      </tr>
+    </thead>
+    <tbody>
+      <% team.forEach(user => { %>
+        <tr>
+          <td>
+            <div style="display: flex; align-items: center; gap: 12px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">
+                <%= user.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() %>
+              </div>
+              <div>
+                <div style="font-weight: 600; color: #0f172a;"><%= user.name %></div>
+                <div style="font-size: 13px; color: #64748b;"><%= user.email %></div>
+              </div>
+            </div>
+          </td>
+          <td>
+            <% if (user.role === 'superadmin') { %>
+              <span class="badge" style="background: #fee2e2; color: #b91c1c;">Super Admin</span>
+            <% } else if (user.role === 'manager') { %>
+              <span class="badge" style="background: #fef3c7; color: #b45309;">Manager</span>
+            <% } else { %>
+              <span class="badge" style="background: #f1f5f9; color: #64748b;">Viewer</span>
+            <% } %>
+          </td>
+          <td style="color: #64748b;">
+            <%= new Date(user.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %>
+          </td>
+          <td class="text-right">
+            <span class="badge badge-active">Active</span>
+          </td>
+          <% if (currentUser.role === 'superadmin') { %>
+            <td class="text-right">
+              <div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
+                <button type="button" class="btn-icon" title="Edit User" onclick='openEditModal(<%- JSON.stringify({ id: user.id, name: user.name, email: user.email, role: user.role }) %>)' style="border: 1px solid #cbd5e1; background: white; border-radius: 6px; padding: 6px 12px; cursor: pointer; color: #334155; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                  Edit
+                </button>
+                <% if (user.id !== currentUser.id) { %>
+                  <button type="button" class="btn-icon" title="Delete User" onclick="deleteUser(<%= user.id %>, '<%- user.name.replace(/'/g, "\\'") %>')" style="border: 1px solid #fca5a5; background: #fef2f2; border-radius: 6px; padding: 6px 12px; cursor: pointer; color: #dc2626; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    Delete
+                  </button>
+                <% } %>
+              </div>
+            </td>
+          <% } %>
+        </tr>
+      <% }) %>
+    </tbody>
+  </table>
+</div>
+
+<% if (currentUser.role === 'superadmin') { %>
+<!-- Modal -->
+<div id="userModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center;">
+  <div class="modal-content" style="background: white; border-radius: 16px; width: 100%; max-width: 450px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+    <div class="modal-header" style="padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+      <h3 id="modalTitle" style="margin: 0; font-size: 18px; font-weight: 600;">Add New User</h3>
+      <button class="btn-icon" onclick="closeModal()" style="border: none; background: none; cursor: pointer; color: #64748b;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    
+    <form id="userForm" style="padding: 24px;">
+      <input type="hidden" id="editUserId" value="">
+      <div class="form-group mb-3">
+        <label>Full Name *</label>
+        <input type="text" id="userName" class="form-control" required placeholder="e.g. John Doe">
+      </div>
+      <div class="form-group mb-3">
+        <label>Email Address *</label>
+        <input type="email" id="userEmail" class="form-control" required placeholder="john@example.com">
+      </div>
+      <div class="form-group mb-3">
+        <label>Role</label>
+        <select id="userRole" class="form-control">
+          <option value="viewer">Viewer (Read-only)</option>
+          <option value="manager">Manager (Create & Edit)</option>
+          <option value="superadmin">Super Admin (Full Access)</option>
+        </select>
+      </div>
+      <div class="form-group mb-4">
+        <label id="passwordLabel">Initial Password *</label>
+        <input type="password" id="userPassword" class="form-control" required minlength="6">
+        <small id="passwordHelp" style="display: block; color: #64748b; margin-top: 4px; font-size: 12px;"></small>
+      </div>
+      <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 12px;">
+        <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="saveUserBtn">Add User</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+const modal = document.getElementById('userModal');
+const form = document.getElementById('userForm');
+
+function openUserModal() {
+  form.reset();
+  document.getElementById('editUserId').value = '';
+  document.getElementById('modalTitle').textContent = 'Add New User';
+  document.getElementById('passwordLabel').textContent = 'Initial Password *';
+  document.getElementById('userPassword').required = true;
+  document.getElementById('passwordHelp').textContent = '';
+  document.getElementById('saveUserBtn').textContent = 'Add User';
+  modal.style.display = 'flex';
+}
+
+function openEditModal(user) {
+  form.reset();
+  document.getElementById('editUserId').value = user.id;
+  document.getElementById('userName').value = user.name;
+  document.getElementById('userEmail').value = user.email;
+  document.getElementById('userRole').value = user.role;
+  document.getElementById('modalTitle').textContent = 'Edit User';
+  document.getElementById('passwordLabel').textContent = 'New Password (Optional)';
+  document.getElementById('userPassword').required = false;
+  document.getElementById('userPassword').value = '';
+  document.getElementById('passwordHelp').textContent = 'Leave blank to keep existing password';
+  document.getElementById('saveUserBtn').textContent = 'Save Changes';
+  modal.style.display = 'flex';
+}
+
+function closeModal() {
+  modal.style.display = 'none';
+}
+
+async function deleteUser(id, name) {
+  if (!confirm(`Are you sure you want to delete user "${name}"? This action cannot be undone.`)) {
+    return;
+  }
+  try {
+    const res = await fetch(`/admin/team/${id}`, {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      window.location.reload();
+    } else {
+      alert(data.message || 'Failed to delete user');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Network error while deleting user');
+  }
+}
+
+form.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const editUserId = document.getElementById('editUserId').value;
+  const isEdit = Boolean(editUserId);
+
+  const payload = {
+    name: document.getElementById('userName').value,
+    email: document.getElementById('userEmail').value,
+    role: document.getElementById('userRole').value,
+    password: document.getElementById('userPassword').value
+  };
+
+  const url = isEdit ? `/admin/team/${editUserId}` : '/admin/team';
+  const method = isEdit ? 'PUT' : 'POST';
+
+  try {
+    const res = await fetch(url, {
+      method: method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    const data = await res.json();
+    if (res.ok && data.success) {
+      window.location.reload();
+    } else {
+      alert(data.message || (isEdit ? 'Failed to update user' : 'Failed to add user'));
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Network error');
+  }
+});
+</script>
+<% } %>

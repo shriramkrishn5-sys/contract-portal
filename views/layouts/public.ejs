@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= title %> | KKeyQik Contracts</title>
+  
+  <!-- Google Fonts for Premium Look -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="/css/variables.css">
+  <link rel="stylesheet" href="/css/base.css">
+  <link rel="stylesheet" href="/css/components.css">
+  <link rel="stylesheet" href="/css/public.css">
+  <% if (typeof useSignature !== 'undefined' && useSignature) { %>
+  <link rel="stylesheet" href="/css/signature.css">
+  <% } %>
+
+  <!-- GSAP for Dynamic Animations -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+  <div class="public-bg-elements">
+    <div class="bg-shape shape-1"></div>
+    <div class="bg-shape shape-2"></div>
+    <div class="bg-dots"></div>
+  </div>
+
+  <div class="public-layout">
+    <header class="public-header gsap-header">
+      <div class="header-container">
+        <div class="brand-logo" style="display: block; max-height: 40px; pointer-events: none;">
+          <img src="/images/logo.svg" alt="KKeyQik Logo" style="height: 40px; width: auto; object-fit: contain;">
+        </div>
+        <div class="secure-badge">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          <div class="secure-text">
+            <strong>Secure Document</strong>
+            <span>256-bit SSL Encrypted</span>
+          </div>
+        </div>
+      </div>
+    </header>
+    
+    <main class="public-main">
+      <%- body %>
+    </main>
+    
+    <footer class="public-footer gsap-footer">
+      <div class="footer-secure-notice">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+        Your information is securely transmitted and used only for preparing and executing this agreement.
+      </div>
+      <div class="footer-copyright">
+        <p>Powered by <strong>KKeyQik</strong> Contract Portal</p>
+        <p>&copy; <%= new Date().getFullYear() %> KKeyQik Private Limited. All rights reserved.</p>
+      </div>
+    </footer>
+  </div>
+</body>
+</html>

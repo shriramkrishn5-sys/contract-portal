@@ -1,0 +1,61 @@
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+  <div>
+    <h1 class="page-title">Webhooks</h1>
+    <p class="page-subtitle">Manage external integrations</p>
+  </div>
+  <div>
+    <a href="/admin/webhooks/add" class="btn btn-primary">Add Webhook</a>
+  </div>
+</div>
+
+<div class="card">
+  <% if (webhooks.length === 0) { %>
+    <div class="empty-state" style="padding: 60px 20px; text-align: center;">
+      <div style="width: 64px; height: 64px; border-radius: 50%; background: #f1f5f9; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+      </div>
+      <h3>No webhooks found</h3>
+      <p style="color: #64748b; margin-bottom: 20px;">Create your first webhook to integrate with external systems.</p>
+    </div>
+  <% } else { %>
+    <table class="table" id="webhooksTable">
+      <thead>
+        <tr>
+          <th>URL</th>
+          <th>Event Type</th>
+          <th>Status</th>
+          <th>Created</th>
+          <th class="text-right">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% webhooks.forEach(webhook => { %>
+          <tr>
+            <td>
+              <div style="font-weight: 500; color: #0f172a;"><%= webhook.url %></div>
+            </td>
+            <td>
+              <span class="badge" style="background: #f1f5f9; color: #475569; padding: 4px 10px; font-size: 12px; border-radius: 12px;"><%= webhook.event_type %></span>
+            </td>
+            <td>
+              <% if (webhook.is_active) { %>
+                <span style="color: #16a34a; font-weight: 500; font-size: 13px;">● Active</span>
+              <% } else { %>
+                <span style="color: #94a3b8; font-weight: 500; font-size: 13px;">● Inactive</span>
+              <% } %>
+            </td>
+            <td>
+              <div style="font-size: 13px; color: #64748b;"><%= new Date(webhook.created_at).toLocaleDateString() %></div>
+            </td>
+            <td class="text-right">
+              <a href="/admin/webhooks/edit/<%= webhook.id %>" class="btn btn-outline" style="padding: 4px 12px; font-size: 13px;">Edit</a>
+              <form action="/admin/webhooks/delete/<%= webhook.id %>" method="POST" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this webhook?');">
+                <button type="submit" class="btn btn-outline" style="padding: 4px 12px; font-size: 13px; color: #ef4444; border-color: #ef4444;">Delete</button>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  <% } %>
+</div>

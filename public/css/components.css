@@ -1,0 +1,143 @@
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.6rem 1.25rem;
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-weight: 500;
+  font-size: 0.9rem;
+  border-radius: var(--radius-sm);
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  gap: 0.5rem;
+}
+
+.btn-primary {
+  background-color: var(--portal-primary);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) { 
+  background-color: var(--portal-primary-hover); 
+  box-shadow: 0 4px 12px rgba(52, 122, 90, 0.2);
+  color: #fff;
+}
+
+.btn-secondary {
+  background-color: var(--portal-accent);
+  color: var(--portal-dark);
+}
+.btn-secondary:hover:not(:disabled) { 
+  background-color: var(--portal-accent-hover); 
+  box-shadow: 0 4px 12px rgba(255, 222, 89, 0.3);
+  color: var(--portal-dark);
+}
+
+.btn-outline {
+  background-color: transparent;
+  border: 1px solid var(--portal-border);
+  color: var(--portal-text);
+}
+.btn-outline:hover:not(:disabled) {
+  background-color: var(--portal-bg);
+  color: var(--portal-text);
+}
+
+.btn-danger {
+  background-color: var(--portal-danger);
+  color: #fff;
+}
+.btn-danger:hover:not(:disabled) { 
+  background-color: #b91c1c; 
+  color: #fff;
+}
+
+.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Cards */
+.card {
+  background: var(--portal-surface);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-sm);
+  padding: 1.5rem;
+  border: 1px solid var(--portal-border);
+  transition: box-shadow 0.2s ease;
+}
+.card:hover {
+  box-shadow: var(--shadow-md);
+}
+
+/* Badges */
+.badge {
+  padding: 0.3rem 0.8rem;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.badge-draft { background: var(--portal-border); color: var(--portal-text-muted); }
+.badge-sent, .badge-active { background: var(--portal-primary-light); color: var(--portal-primary); }
+.badge-opened { background: var(--portal-info-light); color: var(--portal-info); }
+.badge-signed, .badge-completed { background: var(--portal-success-light); color: var(--portal-success); }
+.badge-expired { background: var(--portal-danger-light); color: var(--portal-danger); }
+.badge-expiring-soon { background: var(--portal-accent-light); color: #B45309; }
+
+/* Forms */
+.form-group { margin-bottom: 1.25rem; }
+.form-label { display: block; margin-bottom: 0.5rem; font-weight: 500; color: var(--portal-text); font-size: 0.9rem; }
+.form-control {
+  width: 100%;
+  padding: 0.6rem 1rem;
+  border: 1px solid var(--portal-border);
+  border-radius: var(--radius-sm);
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--portal-text);
+  background-color: var(--portal-surface);
+  transition: all 0.2s;
+}
+.form-control:focus { outline: none; border-color: var(--portal-primary); box-shadow: 0 0 0 3px var(--portal-primary-light); }
+
+/* Tables */
+.table { width: 100%; border-collapse: separate; border-spacing: 0; }
+.table th, .table td { 
+  padding: 1rem; 
+  text-align: left; 
+  border-bottom: 1px solid var(--portal-border); 
+  font-size: 0.9rem;
+}
+.table th { 
+  background-color: var(--portal-surface); 
+  font-weight: 500; 
+  color: var(--portal-text-muted); 
+  border-bottom: 2px solid var(--portal-border);
+}
+.table tr:last-child td { border-bottom: none; }
+.table tr { transition: background-color 0.2s; }
+.table tr:hover { background-color: var(--portal-bg); }
+
+/* Utilities */
+.text-muted { color: var(--portal-text-muted); }
+.text-primary { color: var(--portal-primary); }
+.text-danger { color: var(--portal-danger); }
+.text-success { color: var(--portal-success); }
+.font-semibold { font-weight: 600; }
+.mb-1 { margin-bottom: 0.25rem; }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-3 { margin-bottom: 1rem; }
+.mb-4 { margin-bottom: 1.5rem; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-3 { margin-top: 1rem; }
+.mt-4 { margin-top: 1.5rem; }
+.d-flex { display: flex; }
+.align-items-center { align-items: center; }
+.justify-content-between { justify-content: space-between; }
+.gap-2 { gap: 0.5rem; }
+.gap-3 { gap: 1rem; }

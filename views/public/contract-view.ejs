@@ -1,0 +1,243 @@
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Merriweather:ital,wght@0,300;0,400;0,700;1,300&display=swap');
+</style>
+
+<!-- Stepper (Unmodified) -->
+<div class="stepper gsap-stagger">
+  <div class="stepper-progress" style="width: 33.33%;"></div>
+  <div class="step completed">
+    <div class="step-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <div class="step-content">
+      <span class="step-number">01</span>
+      <span class="step-label">Confirm Details</span>
+    </div>
+  </div>
+  <div class="step active">
+    <div class="step-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+    </div>
+    <div class="step-content">
+      <span class="step-number">02</span>
+      <span class="step-label">Review Contract</span>
+    </div>
+  </div>
+  <div class="step ">
+    <div class="step-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+    </div>
+    <div class="step-content">
+      <span class="step-number">03</span>
+      <span class="step-label">Sign & Complete</span>
+    </div>
+  </div>
+  <div class="step ">
+    <div class="step-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    </div>
+    <div class="step-content">
+      <span class="step-number">04</span>
+      <span class="step-label">Completed</span>
+    </div>
+  </div>
+</div>
+
+<!-- 1. Header -->
+<div class="review-header gsap-stagger">
+  <h1 class="review-title">Review Your Contract</h1>
+  <p class="review-subtitle">Please read through all document pages and terms carefully before proceeding to sign.</p>
+</div>
+
+<!-- 2. Metadata Card -->
+<div class="doc-metadata-card gsap-stagger">
+  <div class="metadata-left">
+    <div class="doc-badge-icon">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+        <polyline points="10 9 9 9 8 9"></polyline>
+      </svg>
+    </div>
+    <div class="doc-main-info">
+      <div class="doc-title-row">
+        <h2 class="doc-title"><%= template ? template.name : (contract.project_name || 'Legal Agreement') %></h2>
+        <span class="doc-id-chip">ID: #<%= contract.uuid ? contract.uuid.substring(0, 8).toUpperCase() : 'N/A' %></span>
+      </div>
+      <div class="doc-meta-tags">
+        <span class="meta-tag">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+          12 Pages
+        </span>
+        <span class="meta-tag status-tag">
+          <span class="pulse-dot"></span> Ready for Review
+        </span>
+      </div>
+    </div>
+  </div>
+
+  <div class="metadata-divider"></div>
+
+  <div class="metadata-right">
+    <div class="meta-party-col">
+      <span class="party-label">Prepared for</span>
+      <strong class="party-name"><%= contract.client_name || 'Client' %></strong>
+      <span class="party-sub"><%= contract.client_address || contract.client_email || 'Client Address' %></span>
+    </div>
+    <div class="meta-party-col">
+      <span class="party-label">Prepared by</span>
+      <strong class="party-name"><%= settings ? (settings.company_name || 'KKeyQik Private Limited') : 'KKeyQik Private Limited' %></strong>
+      <span class="party-sub"><%= contract.authorized_signatory || (settings ? settings.user_name : '') || 'Authorized Representative' %></span>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Two-Column Layout -->
+<div class="review-two-column-layout gsap-stagger">
+  <!-- Left Sidebar: Document Pages Thumbnails -->
+  <aside class="document-pages-sidebar">
+    <div class="sidebar-header">
+      <h3 class="sidebar-title">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>
+        Document Pages
+      </h3>
+      <span class="sidebar-badge">12</span>
+    </div>
+
+    <div class="thumbnails-scroll-container">
+      <% for (let i = 1; i <= 12; i++) { %>
+        <div class="page-thumbnail <%= i === 1 ? 'active' : '' %>" data-page="<%= i %>">
+          <div class="thumbnail-preview">
+            <div class="thumb-header-line"></div>
+            <div class="thumb-body-line"></div>
+            <div class="thumb-body-line short"></div>
+            <div class="thumb-body-line"></div>
+            <div class="thumb-body-line medium"></div>
+            <div class="thumb-body-line short"></div>
+          </div>
+          <span class="thumb-page-num">Page <%= i %></span>
+        </div>
+      <% } %>
+    </div>
+  </aside>
+
+  <!-- Right Column: Document Viewer -->
+  <main class="document-viewer-container">
+    <!-- Sleek Top Toolbar -->
+    <div class="viewer-toolbar">
+      <!-- Mock Pagination -->
+      <div class="toolbar-group">
+        <div class="page-pagination">
+          <button type="button" class="toolbar-btn" id="prevPageBtn" title="Previous Page">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <span class="page-indicator">Page <span id="currentPageNum">1</span> of 12</span>
+          <button type="button" class="toolbar-btn" id="nextPageBtn" title="Next Page">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Zoom Controls -->
+      <div class="toolbar-group">
+        <div class="zoom-controls">
+          <button type="button" class="toolbar-btn" id="zoomOutBtn" title="Zoom Out">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+          <span class="zoom-level" id="zoomLevel">100%</span>
+          <button type="button" class="toolbar-btn" id="zoomInBtn" title="Zoom In">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Action Icon Buttons -->
+      <div class="toolbar-group toolbar-actions">
+        <button type="button" class="toolbar-btn" id="downloadDocBtn" title="Download Document">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+        </button>
+        <button type="button" class="toolbar-btn" id="printDocBtn" title="Print Document">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+        </button>
+        <button type="button" class="toolbar-btn" id="expandDocBtn" title="Toggle Full Screen">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"></polyline><polyline points="9 21 3 21 3 15"></polyline><line x1="21" y1="3" x2="14" y2="10"></line><line x1="3" y1="21" x2="10" y2="14"></line></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Contract Scroll Container -->
+    <div class="document-scroll-viewport" id="docViewport">
+      <div class="contract-document-wrapper" id="contractWrapper">
+        <div class="contract-document">
+          <% if (template && template.content_sections) { %>
+            <% let sections = [];
+               try { sections = typeof template.content_sections === 'string' ? JSON.parse(template.content_sections) : template.content_sections; } catch(e){} 
+               sections.forEach(section => { %>
+                <div class="clause-block">
+                  <h3><%= section.title %></h3>
+                  <p style="white-space: pre-wrap;"><%- parseTemplateVars(section.content, contract, settings).replace(/\n/g, '<br>') %></p>
+                </div>
+            <% }) %>
+          <% } else if (template && template.body) { %>
+            <%- parseTemplateVars(template.body, contract, settings) %>
+          <% } else { %>
+            <!-- Fallback if no template sections -->
+            <h3>1. Scope of Work</h3>
+            <p>The Company agrees to perform the following services for the Project <strong><%= contract.project_name || '[Project Name]' %></strong>:</p>
+            <p style="white-space: pre-wrap;"><%= contract.scope_of_work || '[Scope Details]' %></p>
+            
+            <h3>2. Payment Terms</h3>
+            <p>Total Amount: <%= contract.currency || 'INR' %> <%= contract.total_amount || '0' %></p>
+          <% } %>
+
+          <!-- Addendum: Selected Clauses -->
+          <% if (contract.selected_clauses && contract.selected_clauses.length > 0) { %>
+              <h3 style="margin-top: 4rem;">Addendum: Additional Terms</h3>
+              <% contract.selected_clauses.forEach((clause, index) => { %>
+                  <div class="clause-block mb-3">
+                      <strong><%= clause.title || 'Clause' %></strong>
+                      <p class="mb-1"><%- parseTemplateVars(clause.content, contract, settings).replace(/\n/g, '<br>') %></p>
+                  </div>
+              <% }); %>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- 4. Action Footer -->
+<div class="review-alert-box gsap-stagger">
+  <div class="alert-icon-wrapper">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+  </div>
+  <div class="alert-content">
+    <strong>Please review all pages carefully</strong>
+    <p>Verify your information and agreement terms before moving forward to sign.</p>
+  </div>
+</div>
+
+<div class="review-actions-row gsap-stagger">
+  <a href="/c/<%= contract.uuid %>/fill" class="btn btn-secondary btn-edit-details">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"></line>
+      <polyline points="12 19 5 12 12 5"></polyline>
+    </svg>
+    Edit My Details
+  </a>
+
+  <a href="/c/<%= contract.uuid %>/sign" class="btn btn-primary btn-continue-sign">
+    Continue to Sign
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="5" y1="12" x2="19" y2="12"></line>
+      <polyline points="12 5 19 12 12 19"></polyline>
+    </svg>
+  </a>
+</div>
+
+<script src="/js/public/contract-view.js"></script>

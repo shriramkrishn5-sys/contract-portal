@@ -1,0 +1,159 @@
+<% useSignature = true; %>
+<!-- Stepper (Unmodified) -->
+<div class="stepper gsap-stagger">
+  <div class="stepper-progress" style="width: 66.66%;"></div>
+  <div class="step completed">
+    <div class="step-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <div class="step-content">
+      <span class="step-number">01</span>
+      <span class="step-label">Confirm Details</span>
+    </div>
+  </div>
+  <div class="step completed">
+    <div class="step-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    </div>
+    <div class="step-content">
+      <span class="step-number">02</span>
+      <span class="step-label">Review Contract</span>
+    </div>
+  </div>
+  <div class="step active">
+    <div class="step-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+    </div>
+    <div class="step-content">
+      <span class="step-number">03</span>
+      <span class="step-label">Sign & Complete</span>
+    </div>
+  </div>
+  <div class="step ">
+    <div class="step-icon">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+    </div>
+    <div class="step-content">
+      <span class="step-number">04</span>
+      <span class="step-label">Completed</span>
+    </div>
+  </div>
+</div>
+
+<!-- 1. Central Header & Subtitle -->
+<div class="sign-header gsap-stagger">
+  <h1 class="sign-title">Sign & Complete</h1>
+  <p class="sign-subtitle">Please provide your electronic signature to execute this agreement. By signing, you agree to be bound by all terms and conditions of the contract.</p>
+</div>
+
+<!-- 2. Main Signature Card -->
+<div class="card signature-main-card gsap-stagger">
+  <div class="signature-card-header">
+    <h2 class="signature-card-title">Sign Agreement</h2>
+    <p class="signature-card-subtitle">Choose how you would like to sign this agreement.</p>
+  </div>
+  
+  <div class="signature-section">
+    <div class="signature-tabs">
+      <button type="button" class="signature-tab active" data-target="draw">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 20h9"></path>
+          <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+        </svg>
+        Draw Signature
+      </button>
+      <button type="button" class="signature-tab" data-target="type">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="4 7 4 4 20 4 20 7"></polyline>
+          <line x1="9" y1="20" x2="15" y2="20"></line>
+          <line x1="12" y1="4" x2="12" y2="20"></line>
+        </svg>
+        Type Signature
+      </button>
+    </div>
+    
+    <div class="signature-body">
+      <div id="drawWrapper" class="signature-pad-wrapper">
+        <div class="canvas-placeholder" id="canvasPlaceholder">
+          <svg class="placeholder-pen-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+          <span>Draw your signature here / Use your mouse, trackpad, or touchscreen.</span>
+        </div>
+        <canvas id="signature-pad"></canvas>
+      </div>
+      
+      <div id="typeWrapper" class="signature-type-wrapper">
+        <div class="form-group mb-3">
+          <label for="typeInput" class="form-label" style="font-size: 0.9rem; font-weight: 600; color: var(--portal-dark);">Type Your Full Name</label>
+          <input type="text" id="typeInput" class="form-control signature-type-input" placeholder="e.g. Johnathan Doe">
+        </div>
+        <div class="signature-preview-container">
+          <span class="preview-label">Signature Preview</span>
+          <div id="typePreview" class="signature-preview"></div>
+        </div>
+      </div>
+      
+      <div class="signature-controls">
+        <button id="clearBtn" type="button" class="btn btn-secondary btn-clear-signature">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          Clear Signature
+        </button>
+      </div>
+    </div>
+  </div>
+  
+  <form action="/c/<%= contract.uuid %>/sign" method="POST" id="signForm" class="mt-4">
+    <input type="hidden" name="signature" id="signatureData">
+    <input type="hidden" name="signature_type" id="signatureType">
+    
+    <!-- 3. Legally Binding Checkbox Separate Box -->
+    <div class="legally-binding-box mb-4">
+      <div class="binding-shield-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <polyline points="9 12 11 14 15 10"></polyline>
+        </svg>
+      </div>
+      <label class="binding-label" for="agreeCheck">
+        <input type="checkbox" id="agreeCheck" class="custom-checkbox">
+        <span class="binding-text">I agree that this electronic signature is the legally binding equivalent to my handwritten signature, and I have read and accept all terms of the contract.</span>
+      </label>
+    </div>
+    
+    <!-- 4. Navigation -->
+    <div class="sign-actions-row">
+      <a href="/c/<%= contract.uuid %>/review" class="btn btn-secondary btn-back-step">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="19" y1="12" x2="5" y2="12"></line>
+          <polyline points="12 19 5 12 12 5"></polyline>
+        </svg>
+        Back
+      </a>
+      <button type="submit" id="submitBtn" class="btn btn-primary btn-sign-submit" style="pointer-events: none; opacity: 0.5;">
+        Sign & Submit
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+      </button>
+    </div>
+  </form>
+
+  <!-- 5. Secure Footer Banner -->
+  <div class="secure-footer-banner mt-4">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+      <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+    </svg>
+    <span>Your signature and data are securely encrypted and stored in compliance with industry standards.</span>
+  </div>
+</div>
+
+<!-- Load Google font for signature -->
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cedarville+Cursive&display=swap" rel="stylesheet">
+
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.2.0/dist/signature_pad.umd.min.js"></script>
+<script src="/js/public/contract-sign.js"></script>
+
