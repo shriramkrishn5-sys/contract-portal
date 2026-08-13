@@ -231,7 +231,7 @@ router.post('/:uuid/sign', publicLimiter, async (req, res) => {
     if (preCheck && preCheck.status === 'signed') return res.redirect(`/c/${req.params.uuid}/complete`);
 
     await Contract.updateSignature(req.params.uuid, signatureData);
-    await Contract.updateStatus(req.params.uuid, 'signed');
+    await Contract.updateStatus(preCheck.id, 'signed');
     
     const contract = await Contract.findByUuid(req.params.uuid);
     await Client.upsertFromContract(contract);
