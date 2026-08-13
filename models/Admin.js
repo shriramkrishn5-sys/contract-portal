@@ -59,7 +59,7 @@ class Admin {
     try {
       await client.query('BEGIN');
       const res = await client.query('UPDATE contracts SET admin_id = $1 WHERE admin_id = $2', [newAdminId, oldAdminId]);
-      await client.query('UPDATE admins SET deleted_at = CURRENT_TIMESTAMP WHERE id = $1', [oldAdminId]);
+      await client.query('DELETE FROM admins WHERE id = $1', [oldAdminId]);
       await client.query('COMMIT');
       return res.rowCount;
     } catch (err) {

@@ -138,7 +138,7 @@ router.get('/audit-logs', async (req, res) => {
       const d = new Date(log.created_at);
       const timeStr = `${d.getDate()} ${d.toLocaleString('default', { month: 'short' })} ${d.getFullYear()}\n${d.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
       
-      const adminName = log.admin_name || 'System';
+      const adminName = log.admin_name || (log.admin_id ? 'Deleted User' : 'System');
       const initials = adminName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
       
       let actionColor = 'blue';

@@ -28,24 +28,10 @@ router.post('/', requireRole(['superadmin']), async (req, res) => {
   try {
     const { name, email, password, role } = req.body;
     
-    // Check if email already exists (including soft-deleted)
-    const db = await require('../config/database').getDb();
-    const existingUser = await db.get('SELECT * FROM admins WHERE email = ?', [email]);
-    
+    // Check if email already exists
+    const existingUser = await Admin.findByEmail(email);
     if (existingUser) {
-      if (existingUser.deleted_at === null) {
-        return res.status(400).json({ success: false, message: 'Email already exists' });
-      } else {
-        // User was soft-deleted, restore them
-        const bcrypt = require('bcryptjs');
-        const hash = await bcrypt.hash(password, 10);
-        await db.run(
-          'UPDATE admins SET name = ?, password_hash = ?, role = ?, deleted_at = NULL WHERE email = ?',
-          [name, hash, role, email]
-        );
-        await AuditLog.create(req.admin.id, 'Created', 'User', name, `Restored and added ${name} as ${role}`, req.ip);
-        return res.json({ success: true, message: 'User added successfully' });
-      }
+      return res.status(400).json({ success: false, message: 'Email already exists' });
     }
 
     await Admin.create(name, email, password, role);
