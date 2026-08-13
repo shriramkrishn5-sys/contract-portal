@@ -1,4 +1,4 @@
-const cron = require('node-cron');
+// Vercel Cron handles scheduling, node-cron is removed
 const { getDb } = require('../config/database');
 const Setting = require('../models/Setting');
 const { sendReminderEmail } = require('./emailService');
@@ -94,17 +94,6 @@ async function checkAndSendReminders() {
   }
 }
 
-// Start the cron job
-function initReminderService() {
-  // Run every day at 09:00 AM server time (adjust expression as needed)
-  // '0 9 * * *' = 9 AM daily
-  cron.schedule('0 9 * * *', () => {
-    checkAndSendReminders();
-  });
-  console.log('[ReminderService] Scheduled background worker initialized (Daily at 9:00 AM).');
-}
-
 module.exports = {
-  initReminderService,
-  checkAndSendReminders // Exported for manual trigger testing
+  checkAndSendReminders
 };

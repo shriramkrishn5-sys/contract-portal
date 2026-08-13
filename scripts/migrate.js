@@ -175,7 +175,11 @@ async function migrate() {
       
       `CREATE INDEX IF NOT EXISTS idx_contracts_status ON contracts(status)`,
       `CREATE INDEX IF NOT EXISTS idx_contracts_client_email ON contracts(client_email)`,
-      `CREATE INDEX IF NOT EXISTS idx_tracking_contract_id ON tracking_events(contract_id)`
+      `CREATE INDEX IF NOT EXISTS idx_tracking_contract_id ON tracking_events(contract_id)`,
+      `CREATE INDEX IF NOT EXISTS idx_tracking_contract_event ON tracking_events(contract_id, event_type)`,
+      `CREATE INDEX IF NOT EXISTS idx_audit_admin ON audit_logs(admin_id)`,
+      `CREATE INDEX IF NOT EXISTS idx_audit_created ON audit_logs(created_at)`,
+      `CREATE INDEX IF NOT EXISTS idx_audit_type_action ON audit_logs(type, action)`
     ];
 
     for (const sql of queries) {

@@ -250,32 +250,26 @@ router.post('/:uuid/sign', publicLimiter, async (req, res) => {
     else if (ua.includes('Firefox/')) browserName = 'Mozilla Firefox';
     else if (ua.includes('Safari/') && !ua.includes('Chrome')) browserName = 'Safari';
     
-    // Generate PDF
-    const templateData = await Template.findById(contract.template_id);
+    // Generate PDF asynchronously via internal webhook so Vercel spawns a new background instance
+    const internalSecret = process.env.INTERNAL_API_SECRET || 'fallback-secret-for-internal';
+    const appUrl = process.env.APP_URL || `http://${req.headers.host}`;
     
-    const { pdfPath, pdfBuffer } = await generateContractPdf(contract, templateData, signatureData, {
-      ip: req.ip,
-      timestamp: new Date().toISOString(),
-      userAgent: ua,
-      os: osName,
-      browser: browserName,
-      hash: require('crypto').createHash('sha256').update(signatureData.data + contract.uuid).digest('hex')
-    });
-
-    const supabasePdfUrl = await uploadContractPdf(pdfPath, `${contract.uuid}.pdf`);
-    await Contract.updatePdfPath(contract.id, supabasePdfUrl);
-    
-    // On Vercel Serverless, we MUST await background tasks or they will be killed when the response is sent.
-    await Promise.allSettled([
-      sendSignedCopy(contract, pdfBuffer),
-      sendAdminNotification('Signed', contract),
-      triggerWebhooks('contract.signed', {
-        uuid: contract.uuid,
-        client_name: contract.client_name,
-        status: 'signed'
-      }),
-      uploadToDrive(contract, pdfPath)
-    ]);
+    // We intentionally don't await this fetch so the user gets a redirect immediately
+    fetch(`${appUrl}/api/internal/process-signature`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${internalSecret}`
+      },
+      body: JSON.stringify({
+        contractId: contract.id,
+        signatureData,
+        ua,
+        osName,
+        browserName,
+        ip: req.ip
+      })
+    }).catch(e => console.error('Failed to trigger background PDF processing:', e));
     
     res.redirect(`/c/${req.params.uuid}/complete`);
   } catch (err) {

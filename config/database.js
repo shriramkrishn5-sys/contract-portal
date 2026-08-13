@@ -9,7 +9,10 @@ async function getDb() {
   if (process.env.DATABASE_URL) {
       pool = new Pool({
         connectionString: process.env.DATABASE_URL,
-        ssl: { rejectUnauthorized: false } // Supabase requirement
+        ssl: { rejectUnauthorized: false }, // Supabase requirement
+        max: 1, // Crucial for Vercel Serverless to prevent pool exhaustion
+        idleTimeoutMillis: 0,
+        connectionTimeoutMillis: 5000
       });
   } else {
       pool = new Pool({

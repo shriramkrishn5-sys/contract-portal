@@ -7,7 +7,7 @@ const helmet = require('helmet');
 const path = require('path');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const { getDb } = require('./config/database');
-const { initReminderService } = require('./services/reminderService');
+const { checkAndSendReminders } = require('./services/reminderService');
 const Setting = require('./models/Setting');
 
 const app = express();
@@ -15,14 +15,13 @@ const app = express();
 // Trust proxy for rate limiters (required when behind Cloudflare/cPanel Nginx)
 app.set('trust proxy', 1);
 
-// Initialize Reminder Service (Cron Job)
-initReminderService();
+// Vercel Cron handles reminders, no internal setInterval needed.
 
 // Security and middleware
 app.use(helmet({ contentSecurityPolicy: false })); // Allow inline scripts for now
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d' }));
 
 // View engine
 app.set('view engine', 'ejs');
@@ -78,6 +77,16 @@ app.use('/admin/webhooks', webhooksRoutes);
 app.use('/admin/categories', categoriesRoutes);
 app.use('/admin', dashboardRoutes);
 app.use('/c', publicRoutes);
+app.use('/api/internal', require('./routes/internal'));
+
+app.get('/api/cron/reminders', async (req, res) => {
+  const authHeader = req.headers.authorization;
+  if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+    return res.status(401).send('Unauthorized');
+  }
+  await checkAndSendReminders();
+  res.status(200).send('Cron executed');
+});
 
 app.get('/', (req, res) => res.redirect('/auth/login'));
 

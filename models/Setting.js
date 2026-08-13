@@ -1,13 +1,17 @@
 const { getDb } = require('../config/database');
 
 class Setting {
+  static _cache = null;
+
   static async getAll() {
+    if (Setting._cache) return Setting._cache;
     const db = await getDb();
     const rows = await db.all('SELECT "key", "value" FROM settings');
     const settings = {};
     for (const row of rows) {
       settings[row.key] = row.value;
     }
+    Setting._cache = settings;
     return settings;
   }
 
@@ -31,6 +35,7 @@ class Setting {
         );
       }
       await client.query('COMMIT');
+      Setting._cache = null; // Invalidate cache
     } catch (err) {
       await client.query('ROLLBACK');
       throw err;
