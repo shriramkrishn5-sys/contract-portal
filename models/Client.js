@@ -31,8 +31,8 @@ class Client {
 
     if (existing) {
       // Update totals
-      const newTotal = existing.total_spent + (contractData.total_amount || 0);
-      const newCount = existing.contract_count + 1;
+      const newTotal = parseFloat(existing.total_spent || 0) + parseFloat(contractData.total_amount || 0);
+      const newCount = parseInt(existing.contract_count || 0, 10) + 1;
       
       await db.run(
         `UPDATE clients SET 
