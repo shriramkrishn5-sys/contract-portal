@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title><%= contract.project_name || 'Contract' %></title>
-    <!-- Use Merriweather for the document text for a premium legal look -->
-    <link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=Inter:wght@400;600;700&family=Dancing+Script:wght@400;700&family=Lora:wght@400;600;700&display=swap" rel="stylesheet">
+    <!-- Use locally hosted premium fonts -->
+    <link href="/fonts/fonts.css" rel="stylesheet">
     <style>
         :root {
             --primary: #347A5A;
@@ -352,11 +352,11 @@
             <div class="signature-block">
                 <div class="signature-area">
                     <div class="signature-text" style="font-family: 'Dancing Script', cursive, serif; font-size: 24pt; color: var(--primary);">
-                        <%= contract.authorized_signatory || 'Authorized Signatory' %>
+                        <%= settings?.authorized_signatory || contract.authorized_signatory || 'Naman Agarwal' %>
                     </div>
                 </div>
                 <div class="signature-meta">
-                    <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= settings?.authorized_signatory || 'Authorized Signatory' %></p>
+                    <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= settings?.authorized_signatory || 'Naman Agarwal' %></p>
                     <p><%= settings?.company_name || 'KKeyQik Private Limited' %></p>
                     <% if (typeof audit !== 'undefined' && audit && audit.timestamp) { %>
                         <p>Date: <%= new Date(audit.timestamp).toLocaleDateString() %></p>
