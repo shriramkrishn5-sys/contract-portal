@@ -1,5 +1,3 @@
-const puppeteer = require('puppeteer-core');
-const chromium = require('@sparticuz/chromium');
 const ejs = require('ejs');
 const path = require('path');
 const fs = require('fs');
@@ -92,7 +90,10 @@ async function generateContractPdf(contractData, templateData, signatureData, au
     // Vercel /tmp directory
     const pdfPath = path.join('/tmp', `${contractData.uuid || Date.now().toString()}.pdf`);
 
-    // Setup Chromium for Vercel
+    // Setup Chromium for Vercel using dynamic imports (modern standard for CJS -> ESM interoperability)
+    const puppeteer = await import('puppeteer-core').then(m => m.default || m);
+    const chromium = await import('@sparticuz/chromium').then(m => m.default || m);
+    
     const executablePath = await chromium.executablePath();
     const browser = await puppeteer.launch({
       args: chromium.args,
