@@ -157,7 +157,7 @@ router.post('/create', async (req, res) => {
     }
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error creating contract');
+    res.status(500).send('Error creating contract: ' + (err.message || err) + '<br><pre>' + (err.stack || '') + '</pre>');
   }
 });
 

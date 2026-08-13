@@ -112,7 +112,7 @@ router.get('/:uuid', trackContractView, async (req, res) => {
     res.render('public/welcome', { contract, template, settings: res.locals.settings, layout: 'layouts/public', title: "You've received a contract" });
   } catch (err) {
     console.error(err);
-    res.status(500).send('Error loading contract');
+    res.status(500).send('Error loading contract: ' + (err.message || err) + '<br><pre>' + (err.stack || '') + '</pre>');
   }
 });
 

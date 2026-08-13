@@ -165,7 +165,7 @@ router.get('/:id/edit', async (req, res) => {
     });
   } catch (error) {
     console.error(error);
-    res.status(500).send('Error loading template editor');
+    res.status(500).send('Error loading template editor: ' + (error.message || error) + '<br><pre>' + (error.stack || '') + '</pre>');
   }
 });
 
