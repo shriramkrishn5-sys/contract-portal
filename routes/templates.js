@@ -126,7 +126,7 @@ router.post('/', async (req, res) => {
     const db = await require('../config/database').getDb();
     const result = await db.run(
       `INSERT INTO templates (name, slug, description, version, content_sections, default_clauses, fields_schema, client_fields_schema, icon) 
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`,
       [
         newTemplate.name, slug, newTemplate.description, 1,
         JSON.stringify(newTemplate.content_sections), JSON.stringify([]),
@@ -134,7 +134,7 @@ router.post('/', async (req, res) => {
       ]
     );
 
-    const newId = result.insertId;
+    const newId = result.rows ? result.rows[0].id : result.insertId;
 
     await AuditLog.create(req.admin.id, 'Created', 'Template', newTemplate.name, 'Blank template created', req.ip);
 
