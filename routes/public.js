@@ -26,7 +26,7 @@ function parseTemplateVars(text, contract, settings) {
   const amount = parseFloat(contract.total_amount) || 0;
   const currencyCode = contract.currency || 'INR';
   const currencySymbol = currencyCode === 'USD' ? '$' : currencyCode === 'EUR' ? '€' : currencyCode === 'GBP' ? '£' : '₹';
-  const formattedAmount = `${currencySymbol}${amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+  const formattedAmount = amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   
   let renderedText = text;
 
@@ -37,7 +37,7 @@ function parseTemplateVars(text, contract, settings) {
       const varName = match.replace(/[{}]/g, '').trim();
       
       // Identify if this is a key variable that should be auto-bolded
-      const boldVars = ['total_amount', 'start_date', 'end_date', 'company_name', 'client_signatory_name', 'client_name', 'client_company', 'client_designation', 'authorized_signatory'];
+      const boldVars = ['total_amount', 'currency', 'start_date', 'end_date', 'company_name', 'client_signatory_name', 'client_name', 'client_company', 'client_designation', 'authorized_signatory'];
       const shouldBold = boldVars.includes(varName);
       
       let val = '';
@@ -45,6 +45,8 @@ function parseTemplateVars(text, contract, settings) {
       // Special formatting overrides
       if (varName === 'total_amount') {
         val = formattedAmount;
+      } else if (varName === 'currency') {
+        val = currencySymbol;
       } else if (varName === 'start_date' || varName === 'end_date') {
         const d = contract[varName];
         val = d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) : `[${varName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}]`;
@@ -71,8 +73,8 @@ function parseTemplateVars(text, contract, settings) {
       }
 
       if (val !== '') {
-        if (shouldBold) val = `<strong>${val}</strong>`;
-        renderedText = renderedText.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), val);
+        if (shouldBold) val = `<strong style="font-weight: bold;">${val}</strong>`;
+        renderedText = renderedText.split(match).join(val);
       }
     });
   }
@@ -84,7 +86,7 @@ function parseTemplateVars(text, contract, settings) {
   }
   
   // 3. Parse basic Markdown bold (**text**)
-  renderedText = renderedText.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+  renderedText = renderedText.replace(/\*\*([\s\S]*?)\*\*/g, '<strong style="font-weight: bold;">$1</strong>');
 
   return renderedText;
 }
