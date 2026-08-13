@@ -117,7 +117,7 @@ router.post('/create', async (req, res) => {
       company_name: req.body.companyName || req.body.company_name || res.locals.settings?.company_name || 'KKeyQik',
       company_email: req.body.companyEmail || req.body.company_email || res.locals.settings?.company_email || 'hello@kkeyqik.com',
       company_address: req.body.companyAddress || '',
-      authorized_signatory: req.body.companySignatory || res.locals.settings?.authorized_signatory || req.admin.name || 'Admin',
+      authorized_signatory: req.body.companySignatory || res.locals.settings?.authorized_signatory || 'Naman Agarwal',
       project_name: req.body.projectName || req.body.project_name,
       scope_of_work: req.body.scopeOfWork || '',
       total_amount: req.body.amount || req.body.total_amount || 0,
@@ -214,7 +214,7 @@ router.post('/:id/edit', async (req, res) => {
       company_name: req.body.companyName || req.body.company_name,
       company_email: req.body.companyEmail || req.body.company_email,
       company_address: req.body.companyAddress,
-      authorized_signatory: req.body.companySignatory || req.admin.name || 'Admin',
+      authorized_signatory: req.body.companySignatory || res.locals.settings?.authorized_signatory || 'Naman Agarwal',
       project_name: req.body.projectName || req.body.project_name,
       scope_of_work: req.body.scopeOfWork,
       total_amount: req.body.amount || req.body.total_amount || 0,
@@ -342,7 +342,54 @@ router.post('/:id/delete', requireRole(['superadmin']), async (req, res) => {
     await AuditLog.create(req.admin.id, 'Contract Hard Deleted', 'Contract', projectName, `Contract deleted: ${details}`, req.ip);
     res.json({ success: true });
   } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
+    res.status(500).json({ success: false, error: err.message });
+  }
+});
+
+// Retry PDF Generation
+router.post('/:id/retry-pdf', requireRole(['superadmin', 'admin']), async (req, res) => {
+  try {
+    const contract = await Contract.findById(req.params.id);
+    if (!contract || contract.status !== 'generation_failed') {
+      return res.status(400).json({ error: 'Contract not in failed state' });
+    }
+    
+    // We need generateContractPdf, etc.
+    const { executePdfPipeline } = require('../services/pdfPipeline');
+    const { waitUntil } = require('@vercel/functions');
+    
+    waitUntil((async () => {
+      try {
+        const Template = require('../models/Template');
+        const templateData = contract.template_id ? await Template.findById(contract.template_id) : null;
+        let signatureData = null;
+        if (contract.signature_data) {
+          signatureData = typeof contract.signature_data === 'string' ? JSON.parse(contract.signature_data) : contract.signature_data;
+        }
+
+        const auditTrail = {
+          ip: contract.signature_ip || 'N/A',
+          timestamp: contract.signed_at || new Date().toISOString(),
+          userAgent: contract.signature_user_agent || '',
+          os: 'N/A',
+          browser: 'N/A',
+          hash: require('crypto').createHash('sha256').update((signatureData ? signatureData.data || '' : '') + contract.uuid).digest('hex')
+        };
+
+        await executePdfPipeline(contract, templateData, signatureData, auditTrail);
+        
+        await AuditLog.create(req.admin.id, 'Retried', 'Contract', contract.project_name || 'Contract', `Manually retried PDF generation`, req.ip, contract.id);
+      } catch (err) {
+        console.error(`Fatal error in manual PDF retry for contract ${contract.uuid}:`, err);
+        // Stays in generation_failed, log to audit
+        await AuditLog.create(req.admin.id, 'Failed', 'Contract', contract.project_name || 'Contract', `Manual PDF generation failed: ${err.message}`, req.ip, contract.id);
+      }
+    })());
+
+    res.json({ success: true, message: 'Retry triggered in background' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Server error' });
   }
 });
 

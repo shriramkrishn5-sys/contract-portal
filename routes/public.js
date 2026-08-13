@@ -10,6 +10,7 @@ const { sendSignedCopy, sendAdminNotification } = require('../services/emailServ
 const { triggerWebhooks } = require('../services/webhookService');
 const { uploadToDrive } = require('../services/driveService');
 const { uploadContractPdf } = require('../services/storageService');
+const { executePdfPipeline } = require('../services/pdfPipeline');
 const rateLimit = require('express-rate-limit');
 const { waitUntil } = require('@vercel/functions');
 const publicLimiter = rateLimit({
@@ -255,7 +256,7 @@ router.post('/:uuid/sign', publicLimiter, async (req, res) => {
       try {
         const templateData = await Template.findById(contract.template_id);
         
-        const { pdfPath, pdfBuffer } = await generateContractPdf(contract, templateData, signatureData, {
+        await executePdfPipeline(contract, templateData, signatureData, {
           ip: req.ip,
           timestamp: new Date().toISOString(),
           userAgent: ua,
@@ -263,22 +264,9 @@ router.post('/:uuid/sign', publicLimiter, async (req, res) => {
           browser: browserName,
           hash: require('crypto').createHash('sha256').update(signatureData.data + contract.uuid).digest('hex')
         });
-
-        const supabasePdfUrl = await uploadContractPdf(pdfPath, `${contract.uuid}.pdf`);
-        await Contract.updatePdfPath(contract.id, supabasePdfUrl);
-        
-        await Promise.allSettled([
-          sendSignedCopy(contract, pdfBuffer),
-          sendAdminNotification('Signed', contract),
-          triggerWebhooks('contract.signed', {
-            uuid: contract.uuid,
-            client_name: contract.client_name,
-            status: 'signed'
-          }),
-          uploadToDrive(contract, pdfPath)
-        ]);
       } catch (err) {
-        console.error('Fatal error in waitUntil PDF background processing:', err);
+        // executePdfPipeline already logs and sets status to generation_failed
+        console.error('Handled by executePdfPipeline:', err.message);
       }
     })());
     
@@ -298,6 +286,20 @@ router.get('/:uuid/complete', async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Error');
+  }
+});
+
+// Status polling for complete page
+router.get('/:uuid/status', publicLimiter, async (req, res) => {
+  try {
+    const contract = await Contract.findByUuid(req.params.uuid);
+    if (!contract) return res.status(404).json({ error: 'Not found' });
+    res.json({
+      status: contract.status,
+      signed_pdf_path: contract.signed_pdf_path || null
+    });
+  } catch (err) {
+    res.status(500).json({ error: 'Server error' });
   }
 });
 
