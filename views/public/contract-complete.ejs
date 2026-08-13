@@ -49,6 +49,39 @@
       <span class="confetti-piece p4"></span>
       <span class="confetti-piece p5"></span>
       <span class="confetti-piece p6"></span>
+      <script>
+  gsap.fromTo(".confetti-piece", 
+    { y: -50, opacity: 0 },
+    { y: 150, opacity: 1, duration: 2.5, stagger: 0.1, ease: "power2.out" }
+  );
+</script>
+
+<% if (contract.status !== 'generation_failed' && !(contract.status === 'signed' && contract.signed_pdf_path)) { %>
+<script>
+  let pollInterval = setInterval(async () => {
+    try {
+      const res = await fetch('/c/<%= contract.uuid %>/status');
+      const data = await res.json();
+      if (data.status === 'generation_failed') {
+        clearInterval(pollInterval);
+        document.getElementById('statusHeader').innerHTML = `
+          <h1 class="complete-title" style="color: #ef4444;">Document Generation Failed</h1>
+          <p class="complete-subtitle">We received your signature, but encountered an error finalizing the PDF. Our team has been notified and will resolve this shortly.</p>
+        `;
+        document.getElementById('loadingWrapper').style.display = 'none';
+      } else if (data.status === 'signed' && data.signed_pdf_path) {
+        clearInterval(pollInterval);
+        document.getElementById('statusHeader').innerHTML = `
+          <h1 class="complete-title">Contract Signed Successfully!</h1>
+          <p class="complete-subtitle">Thank you, <strong><%= contract.client_name || 'Client' %></strong>. A signed copy has been sent to your email address.</p>
+        `;
+        document.getElementById('loadingWrapper').style.display = 'none';
+        document.getElementById('downloadWrapper').style.display = 'block';
+      }
+    } catch (e) {
+      console.error('Polling error', e);
+    }
+  }, 2000);
       <span class="confetti-piece p7"></span>
       <span class="confetti-piece p8"></span>
     </div>
@@ -62,13 +95,21 @@
   </div>
 
   <!-- 2 & 3. Title & Subtitle -->
-  <div class="complete-header text-center">
-    <h1 class="complete-title">Contract Signed Successfully!</h1>
-    <p class="complete-subtitle">Thank you, <strong><%= contract.client_name || 'Client' %></strong>. A signed copy has been sent to your email address.</p>
+  <div class="complete-header text-center" id="statusHeader">
+    <% if (contract.status === 'generation_failed') { %>
+      <h1 class="complete-title" style="color: #ef4444;">Document Generation Failed</h1>
+      <p class="complete-subtitle">We received your signature, but encountered an error finalizing the PDF. Our team has been notified and will resolve this shortly.</p>
+    <% } else if (contract.status === 'signed' && contract.signed_pdf_path) { %>
+      <h1 class="complete-title">Contract Signed Successfully!</h1>
+      <p class="complete-subtitle">Thank you, <strong><%= contract.client_name || 'Client' %></strong>. A signed copy has been sent to your email address.</p>
+    <% } else { %>
+      <h1 class="complete-title">Your document is being finalized...</h1>
+      <p class="complete-subtitle">Thank you, <strong><%= contract.client_name || 'Client' %></strong>. We are securely generating your signed PDF. This usually takes just a few seconds.</p>
+    <% } %>
   </div>
 
   <!-- 4. Full-Width Green Download Button -->
-  <div class="complete-download-wrapper mb-4">
+  <div class="complete-download-wrapper mb-4" id="downloadWrapper" style="display: <%= (contract.status === 'signed' && contract.signed_pdf_path) ? 'block' : 'none' %>;">
     <a href="/c/<%= contract.uuid %>/download" class="btn btn-primary btn-lg w-100 btn-download-pdf">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
@@ -77,6 +118,15 @@
       </svg>
       Download Signed PDF
     </a>
+  </div>
+  
+  <div class="complete-download-wrapper mb-4 text-center" id="loadingWrapper" style="display: <%= (contract.status === 'generation_failed' || (contract.status === 'signed' && contract.signed_pdf_path)) ? 'none' : 'block' %>;">
+     <div style="padding: 1rem; color: var(--text-light);">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="spin-animation" style="margin-right: 8px;">
+          <line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+        </svg>
+        Preparing PDF...
+     </div>
   </div>
 
   <!-- 5. 4-Column Metadata Grid -->
