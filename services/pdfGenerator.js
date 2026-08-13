@@ -3,6 +3,9 @@ const path = require('path');
 const fs = require('fs');
 const Setting = require('../models/Setting');
 
+let _cachedCompanySignatureUrl = null;
+let _cachedCompanySignatureValid = false;
+
 /**
  * Generates a PDF from the contract data
  * @param {Object} contractData - The contract data
@@ -14,6 +17,34 @@ const Setting = require('../models/Setting');
 async function generateContractPdf(contractData, templateData, signatureData, auditTrail) {
   try {
     const settings = await Setting.getAll();
+    
+    // 1. SIGNATURE VALIDATION
+    if (signatureData) {
+      const sigDataStr = signatureData.image || signatureData.data;
+      if (signatureData.type !== 'type' && (!sigDataStr || !sigDataStr.startsWith('data:image/') || sigDataStr.length < 100)) {
+        throw new Error('SIGNATURE_VALIDATION_FAILED: Client signature data is missing, empty, or not a valid data URI.');
+      }
+    }
+
+    if (settings?.company_signature) {
+      if (_cachedCompanySignatureUrl !== settings.company_signature || !_cachedCompanySignatureValid) {
+        try {
+          let response = await fetch(settings.company_signature, { method: 'HEAD' });
+          if (!response.ok) {
+             // Retry once with GET in case HEAD is blocked
+             response = await fetch(settings.company_signature, { method: 'GET' }); 
+          }
+          if (!response.ok || !response.headers.get('content-type')?.startsWith('image/')) {
+            throw new Error(`Status ${response.status} or invalid content-type: ${response.headers.get('content-type')}`);
+          }
+          _cachedCompanySignatureUrl = settings.company_signature;
+          _cachedCompanySignatureValid = true;
+        } catch (err) {
+          _cachedCompanySignatureValid = false;
+          throw new Error('SIGNATURE_VALIDATION_FAILED: Company signature fetch failed - ' + err.message);
+        }
+      }
+    }
     
     // Determine path to the EJS template
     const templatePath = path.join(__dirname, '../views/pdf/contract.ejs');
@@ -30,7 +61,8 @@ async function generateContractPdf(contractData, templateData, signatureData, au
       let renderedText = text;
 
       // 1. Dynamic replacement for ALL fields inside the contract object
-      const matches = renderedText.match(/\{\{([^}]+)\}\}/g);
+      // Strict regex: matches only alphanumeric + underscores (no spaces/symbols) to prevent false positives on IT/software clauses
+      const matches = renderedText.match(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g);
       if (matches) {
         matches.forEach(match => {
           const varName = match.replace(/[{}]/g, '').trim();
@@ -71,6 +103,13 @@ async function generateContractPdf(contractData, templateData, signatureData, au
       if (settings?.company_signature) {
         const sigHtml = `<br><img src="${settings.company_signature}" alt="Company Signature" style="max-height: 50px; max-width: 250px; mix-blend-mode: multiply;"><br>`;
         renderedText = renderedText.replace(/Signature:\s*_{5,}/i, `Signature: ${sigHtml}`);
+      }
+      
+      // 3. Detect unresolved template variables
+      // Use the exact same strict regex to avoid false-flagging literal software code snippets like {{ return true; }}
+      const strayMatches = renderedText.match(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g);
+      if (strayMatches) {
+        throw new Error(`TEMPLATE_VARIABLE_ERROR: Unresolved template variables detected in contract ${contract.uuid}: ${strayMatches.join(', ')}`);
       }
       
       return renderedText;
