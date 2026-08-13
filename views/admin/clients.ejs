@@ -9,6 +9,11 @@
   </div>
 </div>
 
+<div class="tabs" style="margin-bottom: 20px; display: flex; gap: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+  <a href="/admin/clients" class="btn <%= status === 'active' ? 'btn-primary' : 'btn-outline' %>">Active Clients</a>
+  <a href="/admin/clients?status=removed" class="btn <%= status === 'removed' ? 'btn-primary' : 'btn-outline' %>">Removed Clients</a>
+</div>
+
 <div class="card">
   <% if (clients.length === 0) { %>
     <div class="empty-state" style="padding: 60px 20px; text-align: center;">
@@ -57,7 +62,11 @@
             </td>
             <td class="text-right">
               <a href="/admin/contracts?search=<%= encodeURIComponent(client.email) %>" class="btn btn-outline" style="padding: 4px 12px; font-size: 13px;">View Contracts</a>
-              <button onclick="deleteClient('<%= client.id %>', '<%= client.name %>')" class="btn btn-outline text-danger" style="padding: 4px 12px; font-size: 13px; margin-left: 5px; border-color: #fee2e2; background: #fef2f2;">Delete</button>
+              <% if (status === 'removed') { %>
+                <button onclick="restoreClient('<%= client.id %>', '<%= client.name %>')" class="btn btn-outline" style="padding: 4px 12px; font-size: 13px; margin-left: 5px; border-color: #bbf7d0; background: #f0fdf4; color: #16a34a;">Restore</button>
+              <% } else { %>
+                <button onclick="deleteClient('<%= client.id %>', '<%= client.name %>')" class="btn btn-outline text-danger" style="padding: 4px 12px; font-size: 13px; margin-left: 5px; border-color: #fee2e2; background: #fef2f2;">Delete</button>
+              <% } %>
             </td>
           </tr>
         <% }) %>
@@ -87,6 +96,27 @@ function deleteClient(id, name) {
         window.location.reload();
       } else {
         alert('Failed to delete client: ' + (data.error || 'Unknown error'));
+      }
+    })
+    .catch(err => {
+      console.error(err);
+      alert('Network error occurred.');
+    });
+  }
+}
+
+function restoreClient(id, name) {
+  if (confirm(`Are you sure you want to restore client "${name}" to the active directory?`)) {
+    fetch(`/admin/clients/${id}/restore`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.success) {
+        window.location.reload();
+      } else {
+        alert('Failed to restore client: ' + (data.error || 'Unknown error'));
       }
     })
     .catch(err => {

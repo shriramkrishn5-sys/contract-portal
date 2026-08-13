@@ -3,10 +3,20 @@ const { getDb } = require('../config/database');
 class Client {
   static async findAll() {
     const db = await getDb();
-    return await db.all('SELECT * FROM clients ORDER BY created_at DESC');
+    return await db.all('SELECT * FROM clients WHERE deleted_at IS NULL ORDER BY created_at DESC');
+  }
+
+  static async findDeleted() {
+    const db = await getDb();
+    return await db.all('SELECT * FROM clients WHERE deleted_at IS NOT NULL ORDER BY created_at DESC');
   }
 
   static async findByEmail(email) {
+    const db = await getDb();
+    return await db.get('SELECT * FROM clients WHERE email = ? AND deleted_at IS NULL', [email]);
+  }
+
+  static async findByEmailWithDeleted(email) {
     const db = await getDb();
     return await db.get('SELECT * FROM clients WHERE email = ?', [email]);
   }
@@ -17,7 +27,7 @@ class Client {
 
     const db = await getDb();
     const now = new Date().toISOString();
-    const existing = await this.findByEmail(contractData.client_email);
+    const existing = await this.findByEmailWithDeleted(contractData.client_email);
 
     if (existing) {
       // Update totals
@@ -66,27 +76,12 @@ class Client {
 
   static async delete(id) {
     const db = await getDb();
-    
-    // Fetch the email first
-    const row = await db.get('SELECT email FROM clients WHERE id = ?', [id]);
-    const email = row ? row.email : null;
+    await db.run('UPDATE clients SET deleted_at = CURRENT_TIMESTAMP WHERE id = ?', [id]);
+  }
 
-    if (email) {
-      // Find all contracts for this email
-      const Contract = require('./Contract');
-      const contractIds = [];
-    const _rows = await db.all('SELECT id FROM contracts WHERE client_email = ?', [email]);
-    for (const row of _rows) {
-      contractIds.push(row.id);
-    }
-
-      // Delete all associated contracts (which will trigger cascade deletion of events/notes/pdfs)
-      for (const cId of contractIds) {
-        await Contract.delete(cId);
-      }
-    }
-
-    await db.run('DELETE FROM clients WHERE id = ?', [id]);
+  static async restore(id) {
+    const db = await getDb();
+    await db.run('UPDATE clients SET deleted_at = NULL WHERE id = ?', [id]);
   }
 }
 

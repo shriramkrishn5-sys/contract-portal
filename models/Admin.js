@@ -4,17 +4,17 @@ const bcrypt = require('bcryptjs');
 class Admin {
   static async findByEmail(email) {
     const db = await getDb();
-    return await db.get('SELECT * FROM admins WHERE email = ?', [email]);
+    return await db.get('SELECT * FROM admins WHERE email = ? AND deleted_at IS NULL', [email]);
   }
 
   static async findAll() {
     const db = await getDb();
-    return await db.all('SELECT id, name, email, role, created_at FROM admins ORDER BY created_at ASC');
+    return await db.all('SELECT id, name, email, role, created_at FROM admins WHERE deleted_at IS NULL ORDER BY created_at ASC');
   }
 
   static async findById(id) {
     const db = await getDb();
-    return await db.get('SELECT * FROM admins WHERE id = ?', [id]);
+    return await db.get('SELECT * FROM admins WHERE id = ? AND deleted_at IS NULL', [id]);
   }
 
   static async create(name, email, password, role = 'admin') {
@@ -53,10 +53,21 @@ class Admin {
     return this.findById(id);
   }
 
-  static async delete(id) {
+  static async deleteAndReassign(oldAdminId, newAdminId) {
     const db = await getDb();
-    await db.run('DELETE FROM admins WHERE id = ?', [id]);
-    return true;
+    const client = await db.pool.connect();
+    try {
+      await client.query('BEGIN');
+      const res = await client.query('UPDATE contracts SET admin_id = $1 WHERE admin_id = $2', [newAdminId, oldAdminId]);
+      await client.query('UPDATE admins SET deleted_at = CURRENT_TIMESTAMP WHERE id = $1', [oldAdminId]);
+      await client.query('COMMIT');
+      return res.rowCount;
+    } catch (err) {
+      await client.query('ROLLBACK');
+      throw err;
+    } finally {
+      client.release();
+    }
   }
 
   static async verifyPassword(plainPassword, hashedPassword) {

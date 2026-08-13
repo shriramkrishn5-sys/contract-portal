@@ -4,7 +4,7 @@ const Contract = require('../models/Contract');
 const Template = require('../models/Template');
 const TrackingEvent = require('../models/TrackingEvent');
 const AuditLog = require('../models/AuditLog');
-const { requireAuth } = require('../middleware/auth');
+const { requireAuth, requireRole } = require('../middleware/auth');
 const appConfig = require('../config/app');
 const { getDb } = require('../config/database');
 const { sendContractLink, sendAdminNotification } = require('../services/emailService');
@@ -333,19 +333,20 @@ router.post('/:id/notes', async (req, res) => {
   }
 });
 
-router.post('/:id/delete', async (req, res) => {
+router.post('/:id/delete', requireRole(['superadmin']), async (req, res) => {
   try {
     const contract = await Contract.findById(req.params.id);
     const projectName = contract ? contract.project_name : req.params.id;
+    const details = contract ? `Client: ${contract.client_name} (${contract.client_email}), Company: ${contract.client_company || 'N/A'}, Value: ${contract.total_amount || 0}` : 'Unknown';
     await Contract.delete(req.params.id);
-    await AuditLog.create(req.admin.id, 'Deleted', 'Contract', projectName, 'Contract deleted', req.ip);
+    await AuditLog.create(req.admin.id, 'Contract Hard Deleted', 'Contract', projectName, `Contract deleted: ${details}`, req.ip);
     res.json({ success: true });
   } catch (err) {
     res.status(400).json({ success: false, message: err.message });
   }
 });
 
-router.post('/bulk-delete', async (req, res) => {
+router.post('/bulk-delete', requireRole(['superadmin']), async (req, res) => {
   try {
     const { ids } = req.body;
     if (!ids || !Array.isArray(ids)) {
@@ -359,8 +360,9 @@ router.post('/bulk-delete', async (req, res) => {
       try {
         const contract = await Contract.findById(id);
         const projectName = contract ? contract.project_name : id;
+        const details = contract ? `Client: ${contract.client_name} (${contract.client_email}), Company: ${contract.client_company || 'N/A'}, Value: ${contract.total_amount || 0}` : 'Unknown';
         await Contract.delete(id);
-        await AuditLog.create(req.admin.id, 'Deleted', 'Contract', projectName, 'Contract deleted in bulk', req.ip);
+        await AuditLog.create(req.admin.id, 'Contract Hard Deleted', 'Contract', projectName, `Contract deleted in bulk: ${details}`, req.ip);
         deleted++;
       } catch (err) {
         errors.push(`ID ${id}: ${err.message}`);

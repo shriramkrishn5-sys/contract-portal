@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Admin = require('../models/Admin');
+const Contract = require('../models/Contract');
 const AuditLog = require('../models/AuditLog');
 const { requireAuth, requireRole } = require('../middleware/auth');
 
@@ -88,23 +89,46 @@ router.put('/:id', requireRole(['superadmin']), async (req, res) => {
 router.delete('/:id', requireRole(['superadmin']), async (req, res) => {
   try {
     const userId = req.params.id;
+    const { reassign_to_admin_id } = req.body;
+
+    if (!reassign_to_admin_id) {
+      return res.status(400).json({ success: false, message: 'reassign_to_admin_id is required' });
+    }
 
     if (parseInt(userId) === req.admin.id) {
       return res.status(400).json({ success: false, message: 'You cannot delete your own account' });
     }
 
-    const userToDelete = await Admin.findById(userId);
-    if (!userToDelete) {
-      return res.status(404).json({ success: false, message: 'User not found' });
+    if (parseInt(userId) === parseInt(reassign_to_admin_id)) {
+      return res.status(400).json({ success: false, message: 'Cannot reassign contracts to the admin being deleted' });
     }
 
-    await Admin.delete(userId);
+    const userToDelete = await Admin.findById(userId);
+    if (!userToDelete) {
+      return res.status(404).json({ success: false, message: 'User not found or already deleted' });
+    }
+
+    if (userToDelete.role === 'superadmin') {
+      const activeAdmins = await Admin.findAll();
+      const activeSuperadmins = activeAdmins.filter(a => a.role === 'superadmin');
+      if (activeSuperadmins.length <= 1) {
+        return res.status(400).json({ success: false, message: 'Cannot delete the last active superadmin' });
+      }
+    }
+
+    const targetAdmin = await Admin.findById(reassign_to_admin_id);
+    if (!targetAdmin) {
+      return res.status(404).json({ success: false, message: 'Target admin for reassignment not found or inactive' });
+    }
+
+    const reassignedCount = await Admin.deleteAndReassign(userId, reassign_to_admin_id);
+    
     await AuditLog.create(
       req.admin.id,
-      'Deleted',
+      'Admin Reassigned & Deactivated',
       'User',
       userToDelete.name,
-      `Deleted user ${userToDelete.name} (${userToDelete.email})`,
+      `Deleted user ${userToDelete.name} (${userToDelete.email}) and reassigned ${reassignedCount} contracts to ${targetAdmin.name}`,
       req.ip
     );
 

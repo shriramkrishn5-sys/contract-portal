@@ -188,6 +188,12 @@ class Contract {
     }
   }
 
+  static async reassignAdmin(oldAdminId, newAdminId) {
+    const db = await getDb();
+    const result = await db.run('UPDATE contracts SET admin_id = ? WHERE admin_id = ?', [newAdminId, oldAdminId]);
+    return result.changes;
+  }
+
   static async updateClientDetails(uuid, clientData, finalClauses = null) {
     const db = await getDb();
     const now = new Date().toISOString();

@@ -61,7 +61,7 @@
                   Edit
                 </button>
                 <% if (user.id !== currentUser.id) { %>
-                  <button type="button" class="btn-icon" title="Delete User" onclick="deleteUser(<%= user.id %>, '<%- user.name.replace(/'/g, "\\'") %>')" style="border: 1px solid #fca5a5; background: #fef2f2; border-radius: 6px; padding: 6px 12px; cursor: pointer; color: #dc2626; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+                  <button type="button" class="btn-icon" title="Delete User" onclick="openDeleteModal(<%= user.id %>, '<%- user.name.replace(/'/g, "\\'") %>')" style="border: 1px solid #fca5a5; background: #fef2f2; border-radius: 6px; padding: 6px 12px; cursor: pointer; color: #dc2626; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                     Delete
                   </button>
@@ -117,9 +117,43 @@
   </div>
 </div>
 
+<!-- Reassign and Delete Modal -->
+<div id="deleteModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center;">
+  <div class="modal-content" style="background: white; border-radius: 16px; width: 100%; max-width: 450px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+    <div class="modal-header" style="padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
+      <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #b91c1c;">Remove User</h3>
+      <button class="btn-icon" onclick="closeDeleteModal()" style="border: none; background: none; cursor: pointer; color: #64748b;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+      </button>
+    </div>
+    
+    <form id="deleteForm" style="padding: 24px;">
+      <p style="margin-top: 0; margin-bottom: 20px; color: #475569;">Before removing <strong id="deleteUserName"></strong>, you must reassign their active contracts to another admin.</p>
+      <input type="hidden" id="deleteTargetId" value="">
+      <div class="form-group mb-4">
+        <label>Reassign Contracts To *</label>
+        <select id="reassignSelect" class="form-control" required>
+          <option value="">Select an active admin...</option>
+          <% team.forEach(t => { %>
+            <option value="<%= t.id %>" class="reassign-option"><%= t.name %> (<%= t.role %>)</option>
+          <% }) %>
+        </select>
+      </div>
+      <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 12px;">
+        <button type="button" class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
+        <button type="submit" class="btn btn-primary" id="confirmDeleteBtn" disabled style="background: #dc2626; border-color: #dc2626;">Reassign & Remove</button>
+      </div>
+    </form>
+  </div>
+</div>
+
 <script>
 const modal = document.getElementById('userModal');
 const form = document.getElementById('userForm');
+const deleteModal = document.getElementById('deleteModal');
+const deleteForm = document.getElementById('deleteForm');
+const reassignSelect = document.getElementById('reassignSelect');
+const confirmDeleteBtn = document.getElementById('confirmDeleteBtn');
 
 function openUserModal() {
   form.reset();
@@ -151,14 +185,38 @@ function closeModal() {
   modal.style.display = 'none';
 }
 
-async function deleteUser(id, name) {
-  if (!confirm(`Are you sure you want to delete user "${name}"? This action cannot be undone.`)) {
-    return;
-  }
+function closeDeleteModal() {
+  deleteModal.style.display = 'none';
+}
+
+reassignSelect.addEventListener('change', (e) => {
+  confirmDeleteBtn.disabled = !e.target.value;
+});
+
+function openDeleteModal(id, name) {
+  document.getElementById('deleteTargetId').value = id;
+  document.getElementById('deleteUserName').textContent = name;
+  reassignSelect.value = '';
+  confirmDeleteBtn.disabled = true;
+  
+  document.querySelectorAll('.reassign-option').forEach(opt => {
+    opt.style.display = opt.value === String(id) ? 'none' : '';
+  });
+  
+  deleteModal.style.display = 'flex';
+}
+
+deleteForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  
+  const id = document.getElementById('deleteTargetId').value;
+  const targetAdminId = reassignSelect.value;
+
   try {
     const res = await fetch(`/admin/team/${id}`, {
       method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' }
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reassign_to_admin_id: targetAdminId })
     });
     const data = await res.json();
     if (res.ok && data.success) {
@@ -170,7 +228,7 @@ async function deleteUser(id, name) {
     console.error(err);
     alert('Network error while deleting user');
   }
-}
+});
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
