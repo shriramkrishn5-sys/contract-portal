@@ -7,7 +7,7 @@ const Clause = require('../models/Clause');
 const AuditLog = require('../models/AuditLog');
 const { requireAuth } = require('../middleware/auth');
 
-const upload = multer({ dest: 'tmp/' });
+const upload = multer({ dest: '/tmp' });
 
 router.use(requireAuth);
 
