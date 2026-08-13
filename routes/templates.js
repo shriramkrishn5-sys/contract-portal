@@ -1,7 +1,6 @@
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
-const mammoth = require('mammoth');
 const Template = require('../models/Template');
 const Clause = require('../models/Clause');
 const AuditLog = require('../models/AuditLog');
@@ -17,6 +16,7 @@ router.post('/import', upload.single('file'), async (req, res) => {
     if (!req.file) return res.status(400).send('No file uploaded');
 
     // Parse docx to html
+    const mammoth = require('mammoth');
     const result = await mammoth.convertToHtml({ path: req.file.path });
     const html = result.value;
 

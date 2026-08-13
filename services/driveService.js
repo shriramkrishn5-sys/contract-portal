@@ -1,4 +1,3 @@
-const { google } = require('googleapis');
 const fs = require('fs');
 const path = require('path');
 const Setting = require('../models/Setting');
@@ -18,6 +17,7 @@ async function uploadToDrive(contract, pdfPath) {
       return;
     }
 
+    const { google } = require('googleapis');
     const clientEmail = settings.google_drive_client_email;
     const privateKey = settings.google_drive_private_key;
     const folderId = settings.google_drive_folder_id;
