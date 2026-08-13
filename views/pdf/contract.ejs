@@ -258,23 +258,9 @@
             padding-top: 15px;
             font-family: 'Inter', sans-serif;
         }
-
-        .watermark {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%) rotate(-45deg);
-            font-size: 100pt;
-            font-weight: 800;
-            color: rgba(0, 0, 0, 0.05);
-            z-index: -1;
-            white-space: nowrap;
-            pointer-events: none;
-        }
     </style>
 </head>
 <body>
-    <div class="watermark"><%= contract.status === 'signed' ? 'CONFIDENTIAL' : 'DRAFT' %></div>
     <div class="brand-bar"></div>
     <div class="container inner-container">
         <!-- Header -->
@@ -351,9 +337,13 @@
         <div class="signature-section" style="margin-top: 80px;">
             <div class="signature-block">
                 <div class="signature-area">
-                    <div class="signature-text" style="font-family: 'Dancing Script', cursive, serif; font-size: 24pt; color: var(--primary);">
-                        <%= settings?.authorized_signatory || contract.authorized_signatory || 'Naman Agarwal' %>
-                    </div>
+                    <% if (settings?.company_signature) { %>
+                        <img src="<%= settings.company_signature %>" class="signature-img" alt="Authorized Signature" style="max-height: 50px; max-width: 250px; mix-blend-mode: multiply;">
+                    <% } else { %>
+                        <div class="signature-text" style="font-family: 'Dancing Script', cursive, serif; font-size: 24pt; color: var(--primary);">
+                            <%= settings?.authorized_signatory || contract.authorized_signatory || 'Naman Agarwal' %>
+                        </div>
+                    <% } %>
                 </div>
                 <div class="signature-meta">
                     <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= settings?.authorized_signatory || 'Naman Agarwal' %></p>

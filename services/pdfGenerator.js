@@ -106,12 +106,14 @@ async function generateContractPdf(contractData, templateData, signatureData, au
       }
       
       // 3. Detect unresolved template variables
-      // Use the exact same strict regex to avoid false-flagging literal software code snippets like {{ return true; }}
       const strayMatches = renderedText.match(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g);
       if (strayMatches) {
         throw new Error(`TEMPLATE_VARIABLE_ERROR: Unresolved template variables detected in contract ${contract.uuid}: ${strayMatches.join(', ')}`);
       }
-      
+
+      // 4. Parse basic Markdown bold (**text**)
+      renderedText = renderedText.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+
       return renderedText;
     };
 

@@ -74,6 +74,9 @@ function parseTemplateVars(text, contract, settings) {
     renderedText = renderedText.replace(/Signature:\s*_{5,}/i, `Signature: ${sigHtml}`);
   }
   
+  // 3. Parse basic Markdown bold (**text**)
+  renderedText = renderedText.replace(/\*\*([\s\S]*?)\*\*/g, '<strong>$1</strong>');
+
   return renderedText;
 }
 
