@@ -30,6 +30,7 @@
         <option value="active" <%= filters && filters.status === 'active' ? 'selected' : '' %>>Active</option>
         <option value="draft" <%= filters && filters.status === 'draft' ? 'selected' : '' %>>Draft</option>
         <option value="completed" <%= filters && filters.status === 'completed' ? 'selected' : '' %>>Completed</option>
+        <option value="generation_failed" <%= filters && filters.status === 'generation_failed' ? 'selected' : '' %>>Generation Failed</option>
         <option value="expiring" <%= filters && filters.status === 'expiring' ? 'selected' : '' %>>Expiring Soon</option>
       </select>
       
@@ -146,6 +147,9 @@
             } else if (c.status === 'declined') {
               displayStatus = 'Declined';
               statusClass = 'status-red';
+            } else if (c.status === 'generation_failed') {
+              displayStatus = 'Failed (Retry)';
+              statusClass = 'status-red';
             }
           %>
             <tr data-status="<%= displayStatus.toLowerCase() %>" data-category="<%= catName.toLowerCase() %>">
@@ -173,9 +177,15 @@
               </td>
               <td>
                 <div class="action-buttons" style="position: relative;">
-                  <a href="/admin/contracts/<%= c.id %>" class="btn-icon" title="View">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-                  </a>
+                  <% if (c.status === 'generation_failed') { %>
+                    <button class="btn-icon" onclick="retryPdfGeneration(<%= c.id %>)" title="Retry PDF Generation" style="color: #ef4444;">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                    </button>
+                  <% } else { %>
+                    <a href="/admin/contracts/<%= c.id %>" class="btn-icon" title="View">
+                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                    </a>
+                  <% } %>
                   <button class="btn-icon more-btn" title="More Options" data-id="<%= c.id %>" data-uuid="<%= c.uuid %>" data-status="<%= c.status %>">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
                   </button>
@@ -228,6 +238,26 @@
     </div>
   </div>
 </div>
+
+<!-- Retry PDF Generation Script -->
+<script>
+async function retryPdfGeneration(contractId) {
+  if (!confirm('Are you sure you want to retry generating the PDF for this contract? Make sure you have resolved any signature issues first.')) return;
+  
+  try {
+    const res = await fetch(`/admin/contracts/${contractId}/retry-pdf`, { method: 'POST' });
+    const data = await res.json();
+    if (res.ok) {
+      alert('PDF regeneration triggered successfully. This may take a few seconds in the background.');
+      window.location.reload();
+    } else {
+      alert('Failed to retry: ' + (data.error || 'Unknown error'));
+    }
+  } catch (err) {
+    alert('An error occurred while retrying PDF generation.');
+  }
+}
+</script>
 
 <style>
 /* Reset some base defaults for this page to ensure fidelity */
