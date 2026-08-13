@@ -81,7 +81,7 @@ function parseTemplateVars(text, contract, settings) {
 
   // 2. Inject Admin Signature
   if (settings?.company_signature) {
-    const sigHtml = `<br><img src="${settings.company_signature}" alt="Company Signature" style="max-height: 80px; max-width: 300px; mix-blend-mode: multiply;"><br>`;
+    const sigHtml = `<br><img src="${settings.company_signature}" alt="Company Signature" style="max-height: 80px; max-width: 300px; mix-blend-mode: multiply; transform: scale(1.5); transform-origin: left bottom; margin-left: 10px;"><br>`;
     renderedText = renderedText.replace(/Signature:\s*_{5,}/i, `Signature: ${sigHtml}`);
   }
   

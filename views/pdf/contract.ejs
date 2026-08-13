@@ -338,7 +338,7 @@
             <div class="signature-block">
                 <div class="signature-area">
                     <% if (settings?.company_signature) { %>
-                        <img src="<%= settings.company_signature %>" class="signature-img" alt="Authorized Signature" style="mix-blend-mode: multiply;">
+                        <img src="<%= settings.company_signature %>" class="signature-img" alt="Authorized Signature" style="mix-blend-mode: multiply; transform: scale(1.8); transform-origin: left bottom; margin-left: 10px;">
                     <% } else { %>
                         <div class="signature-text" style="font-family: 'Dancing Script', cursive, serif; font-size: 24pt; color: var(--primary);">
                             <%= settings?.authorized_signatory || contract.authorized_signatory || 'Naman Agarwal' %>
