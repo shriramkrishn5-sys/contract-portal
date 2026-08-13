@@ -36,21 +36,26 @@ function parseTemplateVars(text, contract, settings) {
     matches.forEach(match => {
       const varName = match.replace(/[{}]/g, '').trim();
       
+      // Identify if this is a key variable that should be auto-bolded
+      const boldVars = ['total_amount', 'start_date', 'end_date', 'company_name', 'client_signatory_name', 'client_name', 'client_company', 'client_designation', 'authorized_signatory'];
+      const shouldBold = boldVars.includes(varName);
+      
+      let val = '';
+
       // Special formatting overrides
       if (varName === 'total_amount') {
-        renderedText = renderedText.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), formattedAmount);
+        val = formattedAmount;
       } else if (varName === 'start_date' || varName === 'end_date') {
         const d = contract[varName];
-        const formattedDate = d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) : `[${varName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}]`;
-        renderedText = renderedText.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), formattedDate);
+        val = d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) : `[${varName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}]`;
       } else if (varName === 'company_name') {
-        renderedText = renderedText.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), settings?.company_name || 'KKeyQik Private Limited');
+        val = settings?.company_name || 'KKeyQik Private Limited';
       } else if (varName === 'client_signatory_name') {
-        renderedText = renderedText.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), contract.client_selections?.client_signatory_name || contract.client_name || '[Client Signatory Name]');
+        val = contract.client_selections?.client_signatory_name || contract.client_name || '[Client Signatory Name]';
       } else if (varName === 'client_signatory_title') {
-        renderedText = renderedText.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), contract.client_selections?.client_signatory_title || '[Client Signatory Title]');
+        val = contract.client_selections?.client_signatory_title || '[Client Signatory Title]';
       } else if (varName === 'client_address') {
-        renderedText = renderedText.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), contract.client_selections?.client_address || contract.client_address || contract.client_company || '[Client Address]');
+        val = contract.client_selections?.client_address || contract.client_address || contract.client_company || '[Client Address]';
       } else if (varName === 'payment_terms_section') {
         let terms = "Standard payment terms apply.";
         if (contract.payment_type === 'full_advance') {
@@ -60,10 +65,14 @@ function parseTemplateVars(text, contract, settings) {
         } else if (contract.payment_type === 'milestone') {
           terms = "Payment shall be made in stages based on agreed project milestones as outlined in the invoice.";
         }
-        renderedText = renderedText.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), terms);
+        val = terms;
       } else if (contract[varName] !== undefined && contract[varName] !== null) {
-        // Standard dynamic replacement
-        renderedText = renderedText.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), contract[varName]);
+        val = contract[varName];
+      }
+
+      if (val !== '') {
+        if (shouldBold) val = `<strong>${val}</strong>`;
+        renderedText = renderedText.replace(new RegExp(`\\{\\{${varName}\\}\\}`, 'g'), val);
       }
     });
   }
