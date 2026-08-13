@@ -21,7 +21,7 @@ app.set('trust proxy', 1);
 app.use(helmet({ contentSecurityPolicy: false })); // Allow inline scripts for now
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: '1d' }));
+app.use(express.static(path.join(__dirname, 'public'), { maxAge: '5m' }));
 
 // View engine
 app.set('view engine', 'ejs');
@@ -77,7 +77,6 @@ app.use('/admin/webhooks', webhooksRoutes);
 app.use('/admin/categories', categoriesRoutes);
 app.use('/admin', dashboardRoutes);
 app.use('/c', publicRoutes);
-app.use('/api/internal', require('./routes/internal'));
 
 app.get('/api/cron/reminders', async (req, res) => {
   const authHeader = req.headers.authorization;
