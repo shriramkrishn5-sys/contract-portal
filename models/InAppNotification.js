@@ -18,7 +18,7 @@ class InAppNotification {
     const notifications = [];
     const _rows = await db.all(
       `SELECT * FROM inapp_notifications 
-       WHERE admin_id = ? AND is_read = 0 
+       WHERE admin_id = ? AND is_read = false 
        ORDER BY created_at DESC 
        LIMIT ?`
     , [adminId, limit]);
@@ -27,7 +27,7 @@ class InAppNotification {
     }
     
     // Also get total unread count
-    const row = await db.get('SELECT COUNT(*) as count FROM inapp_notifications WHERE admin_id = ? AND is_read = 0', [adminId]);
+    const row = await db.get('SELECT COUNT(*) as count FROM inapp_notifications WHERE admin_id = ? AND is_read = false', [adminId]);
     let unreadCount = row ? row.count : 0;
     
     return { notifications, unreadCount };
@@ -36,7 +36,7 @@ class InAppNotification {
   static async markAsRead(id, adminId) {
     const db = await getDb();
     await db.run(
-      `UPDATE inapp_notifications SET is_read = 1 WHERE id = ? AND admin_id = ?`,
+      `UPDATE inapp_notifications SET is_read = true WHERE id = ? AND admin_id = ?`,
       [id, adminId]
     );
   }
@@ -44,7 +44,7 @@ class InAppNotification {
   static async markAllAsRead(adminId) {
     const db = await getDb();
     await db.run(
-      `UPDATE inapp_notifications SET is_read = 1 WHERE admin_id = ?`,
+      `UPDATE inapp_notifications SET is_read = true WHERE admin_id = ?`,
       [adminId]
     );
   }

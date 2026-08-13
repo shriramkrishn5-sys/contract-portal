@@ -28,7 +28,7 @@ router.post('/add', async (req, res) => {
     await Webhook.create({ 
       url, 
       event_type, 
-      is_active: is_active === 'on' || is_active === '1' || is_active === 1 ? 1 : 0 
+      is_active: is_active === 'on' || is_active === '1' || is_active === 1 ? true : false 
     });
     res.redirect('/admin/webhooks');
   } catch (err) {
@@ -56,7 +56,7 @@ router.post('/edit/:id', async (req, res) => {
     await Webhook.update(req.params.id, { 
       url, 
       event_type, 
-      is_active: is_active === 'on' || is_active === '1' || is_active === 1 ? 1 : 0 
+      is_active: is_active === 'on' || is_active === '1' || is_active === 1 ? true : false 
     });
     res.redirect('/admin/webhooks');
   } catch (err) {

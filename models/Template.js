@@ -4,7 +4,7 @@ class Template {
   static async findAll() {
     const db = await getDb();
     const templates = [];
-    const _rows = await db.all('SELECT * FROM templates WHERE is_active = 1 ORDER BY name');
+    const _rows = await db.all('SELECT * FROM templates WHERE is_active = true ORDER BY name');
     for (const row of _rows) {
       const tpl = row;
       this._parseJsonFields(tpl);

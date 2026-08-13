@@ -8,7 +8,7 @@ class Webhook {
 
   static async getActiveByEventType(eventType) {
     const db = await getDb();
-    return await db.all('SELECT * FROM webhooks WHERE events = ? AND is_active = 1', [eventType]);
+    return await db.all('SELECT * FROM webhooks WHERE events = ? AND is_active = true', [eventType]);
   }
 
   static async getById(id) {
