@@ -210,6 +210,14 @@ router.get('/:id/edit', async (req, res) => {
 
 router.post('/:id/edit', async (req, res) => {
   try {
+    const contract = await Contract.findById(req.params.id);
+    if (!contract || contract.status !== 'draft') {
+      return res.status(400).render('error', {
+        message: 'This contract has already been sent to the client and cannot be edited.',
+        error: { status: '400 Bad Request' }
+      });
+    }
+
     const contractData = {
       company_name: req.body.companyName || req.body.company_name,
       company_email: req.body.companyEmail || req.body.company_email,

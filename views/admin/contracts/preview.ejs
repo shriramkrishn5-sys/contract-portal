@@ -1,7 +1,9 @@
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h2>Contract Preview</h2>
   <div>
-    <a href="/admin/contracts/<%= contract.id %>/edit" class="btn btn-secondary mr-2">Edit</a>
+    <% if (contract.status === 'draft') { %>
+      <a href="/admin/contracts/<%= contract.id %>/edit" class="btn btn-secondary mr-2">Edit</a>
+    <% } %>
     <form action="/admin/contracts/<%= contract.id %>/send" method="POST" style="display: inline;">
       <button type="submit" id="generateBtn" class="btn btn-primary">Generate & Send Link</button>
     </form>

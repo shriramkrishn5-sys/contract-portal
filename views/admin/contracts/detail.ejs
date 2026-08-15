@@ -12,7 +12,9 @@
         <form action="/admin/contracts/<%= contract.id %>/send" method="POST" style="display: inline;">
           <button type="submit" class="btn btn-primary">Send via Email</button>
         </form>
-        <a href="/admin/contracts/<%= contract.id %>/edit" class="btn btn-outline-primary" style="border: 1px solid var(--portal-primary); color: var(--portal-primary); padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; display: inline-block;">Edit Contract</a>
+        <% if (contract.status === 'draft') { %>
+          <a href="/admin/contracts/<%= contract.id %>/edit" class="btn btn-outline-primary" style="border: 1px solid var(--portal-primary); color: var(--portal-primary); padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; display: inline-block;">Edit Contract</a>
+        <% } %>
         <a href="/admin/contracts/<%= contract.id %>/versions" class="btn btn-outline-secondary" style="border: 1px solid #6c757d; color: #6c757d; padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; display: inline-block;">Version History</a>
       </div>
     </div>
