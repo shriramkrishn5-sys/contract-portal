@@ -4,7 +4,8 @@ const Contract = require('../models/Contract');
 const Setting = require('../models/Setting');
 const AuditLog = require('../models/AuditLog');
 const Admin = require('../models/Admin');
-const { requireAuth } = require('../middleware/auth');
+const nodemailer = require('nodemailer');
+const { requireAuth, requireRole } = require('../middleware/auth');
 
 router.use(requireAuth);
 
@@ -59,7 +60,7 @@ router.get('/', async (req, res) => {
   }
 });
 
-router.get('/settings', async (req, res) => {
+router.get('/settings', requireRole(['superadmin']), async (req, res) => {
   try {
     const settings = await Setting.getAll();
     res.render('admin/settings', {
@@ -73,7 +74,7 @@ router.get('/settings', async (req, res) => {
   }
 });
 
-router.post('/settings', async (req, res) => {
+router.post('/settings', requireRole(['superadmin']), async (req, res) => {
   try {
     // req.body now dynamically contains all fields submitted from any form on the settings page.
     await Setting.updateAll(req.body);
@@ -84,6 +85,48 @@ router.post('/settings', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Error saving settings' });
+  }
+});
+
+router.post('/settings/test-smtp', requireRole(['superadmin']), async (req, res) => {
+  try {
+    const { smtp_host, smtp_port, smtp_user, smtp_pass, smtp_from_email, send_test_email, test_email_to } = req.body;
+    
+    const host = smtp_host || process.env.SMTP_HOST || 'mail.kkeyqik.com';
+    const port = parseInt(smtp_port || process.env.SMTP_PORT) || 465;
+    const secure = port === 465;
+    const user = smtp_user || process.env.SMTP_USER;
+    const pass = smtp_pass || process.env.SMTP_PASS;
+
+    if (!user || !pass) {
+      return res.status(400).json({ success: false, error: 'SMTP Username and Password are required.' });
+    }
+
+    const transporter = nodemailer.createTransport({
+      host,
+      port,
+      secure,
+      auth: { user, pass }
+    });
+
+    // 1. Verify connection and credentials
+    await transporter.verify();
+
+    // 2. If requested, send a real test email
+    if (send_test_email && test_email_to) {
+      const fromEmail = smtp_from_email || user;
+      await transporter.sendMail({
+        from: `"KKeyQik Contracts Test" <${fromEmail}>`,
+        to: test_email_to,
+        subject: 'SMTP Test: Connection Successful',
+        text: 'If you are receiving this email, your SMTP configuration is correct and the server successfully authenticated and sent a test message.'
+      });
+    }
+
+    res.json({ success: true, message: send_test_email ? 'Email sent successfully!' : 'Connected successfully!' });
+  } catch (error) {
+    console.error('SMTP Test Error:', error);
+    res.status(500).json({ success: false, error: error.message || 'Authentication or connection failed.' });
   }
 });
 
@@ -101,7 +144,7 @@ router.get('/notifications', async (req, res) => {
   }
 });
 
-router.post('/notifications', async (req, res) => {
+router.post('/notifications', requireRole(['superadmin']), async (req, res) => {
   try {
     await Setting.updateAll(req.body);
     await AuditLog.create(req.admin.id, 'Updated', 'Settings', 'Notifications', 'Notification preferences updated', req.ip);
@@ -173,7 +216,7 @@ router.get('/audit-logs', async (req, res) => {
   }
 });
 
-router.get('/audit-logs/export', async (req, res) => {
+router.get('/audit-logs/export', requireRole(['superadmin']), async (req, res) => {
   try {
     const filters = {
       q: req.query.q || '',

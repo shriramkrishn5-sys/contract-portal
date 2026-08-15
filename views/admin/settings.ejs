@@ -254,16 +254,22 @@
         <form id="smtpSettingsForm" class="card mb-4">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h3 class="card-title">SMTP Configuration</h3>
-            <button type="button" class="btn btn-save" onclick="saveTabForm('smtpSettingsForm', this)">Save Changes</button>
+            <div style="display: flex; gap: 10px;">
+              <button type="button" class="btn btn-secondary" onclick="testSmtpConnection()" id="testSmtpBtn">Test Connection</button>
+              <button type="button" class="btn btn-save" onclick="saveTabForm('smtpSettingsForm', this)">Save Changes</button>
+            </div>
           </div>
           <div class="form-grid">
+            <div class="form-group" style="grid-column: 1 / span 2;">
+              <p style="font-size: 13px; color: #64748b; margin: 0;">We recommend testing your connection before saving.</p>
+            </div>
             <div class="form-group">
               <label>SMTP Host</label>
-              <input type="text" name="smtp_host" value="<%= settings.smtp_host || '' %>" class="form-control" placeholder="smtp.gmail.com">
+              <input type="text" name="smtp_host" value="<%= settings.smtp_host || 'mail.kkeyqik.com' %>" class="form-control">
             </div>
             <div class="form-group">
               <label>SMTP Port</label>
-              <input type="text" name="smtp_port" value="<%= settings.smtp_port || '' %>" class="form-control" placeholder="587">
+              <input type="text" name="smtp_port" value="<%= settings.smtp_port || '465' %>" class="form-control">
             </div>
             <div class="form-group">
               <label>SMTP Username</label>
@@ -277,6 +283,15 @@
               <label>From Email</label>
               <input type="email" name="smtp_from_email" value="<%= settings.smtp_from_email || '' %>" class="form-control" placeholder="noreply@company.com">
             </div>
+          </div>
+          
+          <!-- Test Connection Result Bar -->
+          <div id="smtpTestResult" style="display: none; padding: 15px; margin: 0 20px 20px 20px; border-radius: 6px; font-size: 13px; font-weight: 500;">
+          </div>
+          <div id="smtpTestEmailDiv" style="display: none; padding: 0 20px 20px 20px; flex-direction: row; align-items: center; gap: 10px;">
+            <label style="font-size: 13px; color: #475569; margin: 0;">Send test email to:</label>
+            <input type="email" id="testEmailTo" class="form-control" style="width: 250px; padding: 6px 12px;" placeholder="admin@example.com">
+            <button type="button" class="btn btn-secondary" style="padding: 6px 12px;" onclick="testSmtpConnection(true)">Send</button>
           </div>
         </form>
       </div>
@@ -761,6 +776,77 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 });
+
+// Live SMTP Testing
+async function testSmtpConnection(sendTestEmail = false) {
+  const form = document.getElementById('smtpSettingsForm');
+  const resultDiv = document.getElementById('smtpTestResult');
+  const emailDiv = document.getElementById('smtpTestEmailDiv');
+  const btn = document.getElementById('testSmtpBtn');
+  const emailToInput = document.getElementById('testEmailTo');
+  
+  if (!form) return;
+  
+  const originalBtnHtml = btn.innerHTML;
+  btn.innerHTML = '<span class="spinner"></span> Testing...';
+  btn.disabled = true;
+  
+  resultDiv.style.display = 'block';
+  resultDiv.style.background = '#f1f5f9';
+  resultDiv.style.color = '#475569';
+  resultDiv.style.border = '1px solid #cbd5e1';
+  resultDiv.innerHTML = 'Testing connection...';
+  
+  const formData = new FormData(form);
+  const payload = {};
+  for (let [key, value] of formData.entries()) {
+    payload[key] = value;
+  }
+  
+  if (sendTestEmail) {
+    payload.send_test_email = true;
+    payload.test_email_to = emailToInput.value;
+    if (!payload.test_email_to) {
+      alert("Please enter an email address to send the test to.");
+      btn.innerHTML = originalBtnHtml;
+      btn.disabled = false;
+      return;
+    }
+    resultDiv.innerHTML = 'Sending test email...';
+  }
+
+  try {
+    const response = await fetch('/admin/settings/test-smtp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (data.success) {
+      resultDiv.style.background = '#dcfce7';
+      resultDiv.style.color = '#16a34a';
+      resultDiv.style.border = '1px solid #bbf7d0';
+      resultDiv.innerHTML = '✓ ' + data.message;
+      
+      if (!sendTestEmail) {
+        emailDiv.style.display = 'flex';
+      }
+    } else {
+      throw new Error(data.error || 'Server error');
+    }
+  } catch (err) {
+    console.error(err);
+    resultDiv.style.background = '#fee2e2';
+    resultDiv.style.color = '#dc2626';
+    resultDiv.style.border = '1px solid #fecaca';
+    resultDiv.innerHTML = '✗ ' + err.message;
+  } finally {
+    btn.innerHTML = originalBtnHtml;
+    btn.disabled = false;
+  }
+}
+
 
 // Dynamic Save Function
 async function saveTabForm(formId, btnElement) {

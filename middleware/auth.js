@@ -31,7 +31,14 @@ async function requireAuth(req, res, next) {
 function requireRole(allowedRoles) {
   return (req, res, next) => {
     if (!req.admin || !allowedRoles.includes(req.admin.role)) {
-      return res.status(403).send('Access Denied: Insufficient Permissions');
+      if (req.method === 'GET') {
+        return res.status(403).render('error', {
+          message: 'Access Denied: You do not have permission to view this page.',
+          error: { status: '403 Forbidden' }
+        });
+      } else {
+        return res.status(403).json({ success: false, error: 'Access Denied: Insufficient Permissions' });
+      }
     }
     next();
   };
