@@ -42,7 +42,7 @@ async function sendContractLink(contract, adminName = null) {
     const html = await ejs.renderFile(templatePath, { contract, settings, adminName });
 
     const info = await transporter.sendMail({
-      from: `"KKeyQik Contracts" <contract@kkeyqik.com>`,
+      from: `"${companyName}" <${fromEmail}>`,
       replyTo: fromEmail,
       to: contract.client_email,
       subject: `Action Required: Review & Sign Contract - ${contract.project_name || contract.client_name || 'Document'}`,
