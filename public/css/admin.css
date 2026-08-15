@@ -1031,5 +1031,5 @@
   background-color: #FEE2E2;
   color: #DC2626;
 }
-[data-theme="dark"] .sidebar-logo-dark { display: none !important; }
+[data-theme="dark"] .sidebar-logo-dark.has-light-logo { display: none !important; }
 [data-theme="dark"] .sidebar-logo-light { display: block !important; }

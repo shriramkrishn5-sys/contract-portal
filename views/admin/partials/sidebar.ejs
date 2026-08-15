@@ -2,7 +2,7 @@
   <div class="sidebar-brand">
     <% if (locals.settings && (locals.settings.company_logo || locals.settings.company_logo_light)) { %>
       <% if (locals.settings.company_logo) { %>
-        <img src="<%= locals.settings.company_logo %>" alt="<%= locals.settings.company_short_name || 'Logo' %>" class="sidebar-logo-dark" style="max-width: 100%; max-height: 32px;">
+        <img src="<%= locals.settings.company_logo %>" alt="<%= locals.settings.company_short_name || 'Logo' %>" class="sidebar-logo-dark <%= locals.settings.company_logo_light ? 'has-light-logo' : '' %>" style="max-width: 100%; max-height: 32px;">
       <% } %>
       <% if (locals.settings.company_logo_light) { %>
         <img src="<%= locals.settings.company_logo_light %>" alt="<%= locals.settings.company_short_name || 'Logo' %>" class="sidebar-logo-light" style="max-width: 100%; max-height: 32px; display: none;">
