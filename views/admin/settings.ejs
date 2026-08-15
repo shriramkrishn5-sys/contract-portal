@@ -91,6 +91,21 @@
               </div>
             </div>
             <div class="form-group" style="grid-column: 2; grid-row: 6;">
+              <label>Company Logo (Light Theme)</label>
+              <input type="hidden" name="company_logo_light" id="companyLogoLightValue" value="<%= settings.company_logo_light || '' %>">
+              <input type="file" id="logoLightFileInput" accept="image/png, image/jpeg, image/svg+xml" style="display: none;">
+              <div class="logo-upload-container">
+                <div class="logo-preview" style="background-color: #0f172a;">
+                  <img src="<%= settings.company_logo_light || '/images/logo.svg' %>" alt="Company Logo Light" id="logoLightPreviewImg" style="max-height: 40px; max-width: 100%; display: <%= settings.company_logo_light ? 'block' : 'none' %>;">
+                  <span id="logoLightPlaceholderText" style="font-size: 11px; color: #94a3b8; display: <%= settings.company_logo_light ? 'none' : 'block' %>;">No light logo uploaded</span>
+                </div>
+                <div class="logo-upload-btn" id="uploadLogoLightBtn" style="padding: 10px;">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                  <div style="font-size: 11px; margin-top: 4px; font-weight: 500; color: #1e293b;">Upload Light Logo</div>
+                </div>
+              </div>
+            </div>
+            <div class="form-group" style="grid-column: 2; grid-row: 7;">
               <label>Authorized Signature (Auto-applied to contracts)</label>
               <input type="hidden" name="company_signature" id="companySignatureValue" value="<%= settings.company_signature || '' %>">
               <input type="file" id="signatureFileInput" accept="image/png, image/jpeg" style="display: none;">
@@ -709,6 +724,39 @@ document.addEventListener('DOMContentLoaded', () => {
         const base64Data = event.target.result;
         logoPreviewImg.src = base64Data;
         companyLogoValue.value = base64Data;
+      };
+      reader.readAsDataURL(file);
+    });
+  }
+
+  // Logo Light Upload Logic
+  const uploadLogoLightBtn = document.getElementById('uploadLogoLightBtn');
+  const logoLightFileInput = document.getElementById('logoLightFileInput');
+  const logoLightPreviewImg = document.getElementById('logoLightPreviewImg');
+  const companyLogoLightValue = document.getElementById('companyLogoLightValue');
+  const logoLightPlaceholderText = document.getElementById('logoLightPlaceholderText');
+
+  if (uploadLogoLightBtn && logoLightFileInput) {
+    uploadLogoLightBtn.addEventListener('click', () => {
+      logoLightFileInput.click();
+    });
+
+    logoLightFileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      if (file.size > 2 * 1024 * 1024) {
+        alert('File size must be less than 2MB');
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const base64Data = event.target.result;
+        logoLightPreviewImg.src = base64Data;
+        logoLightPreviewImg.style.display = 'block';
+        if(logoLightPlaceholderText) logoLightPlaceholderText.style.display = 'none';
+        companyLogoLightValue.value = base64Data;
       };
       reader.readAsDataURL(file);
     });

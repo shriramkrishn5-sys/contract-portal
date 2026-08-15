@@ -15,14 +15,16 @@
                     <!-- Header -->
                     <tr>
                         <td align="center" style="background-color: #1a472a; padding: 35px 20px; color: #ffffff;">
-                            <% if (locals.settings && locals.settings.company_logo) { 
-                                 let logoUrl = locals.settings.company_logo;
-                                 if (logoUrl.startsWith('/')) {
-                                   logoUrl = (process.env.APP_URL || 'http://localhost:3000') + logoUrl;
-                                 }
-                            %>
-                                <img src="<%= logoUrl %>" alt="<%= locals.settings.company_name || 'KKeyQik' %>" style="max-height: 40px; margin-bottom: 5px;">
-                            <% } else { %>
+                             <% if (locals.settings && (locals.settings.company_logo_light || locals.settings.company_logo)) { %>
+                                 <% 
+                                     let logoUrl = locals.settings.company_logo_light || locals.settings.company_logo;
+                                     if (logoUrl.startsWith('/')) {
+                                         // If it's a relative path, construct full absolute URL
+                                         logoUrl = (process.env.APP_URL || 'http://localhost:3000') + logoUrl;
+                                     }
+                                 %>
+                                 <img src="<%= logoUrl %>" alt="<%= locals.settings.company_short_name || 'KKeyQik' %>" width="160" style="display: block; width: 160px; max-width: 160px; height: auto;">
+                             <% } else { %>
                                 <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: #ffffff;"><%= locals.settings?.company_short_name || 'KeyQik' %></h1>
                             <% } %>
                             <p style="margin: 5px 0 0 0; font-size: 13px; font-weight: 400; color: #a7f3d0; letter-spacing: 0.5px;">Smart Contracts. Simplified.</p>
