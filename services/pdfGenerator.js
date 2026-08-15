@@ -133,7 +133,8 @@ async function generateContractPdf(contractData, templateData, signatureData, au
     let qrCodeDataUri = null;
     if (contractData && contractData.uuid) {
       try {
-        const qrUrl = `${settings?.app_url || 'https://contract.kkeyqik.com'}/c/${contractData.uuid}/complete`;
+        const portalUrl = process.env.APP_URL || 'http://localhost:3000';
+        const qrUrl = `${portalUrl}/c/${contractData.uuid}/complete`;
         qrCodeDataUri = await qrcode.toDataURL(qrUrl, { margin: 1, width: 120 });
       } catch (err) {
         throw new Error(`QR_CODE_ERROR: Failed to generate QR code for contract ${contractData.uuid}: ${err.message}`);

@@ -302,7 +302,7 @@ router.post('/:id/send', async (req, res) => {
     contract.contractUrl = `${process.env.APP_URL || 'http://localhost:3000'}/c/${contract.uuid}`;
     
     // Attempt send first
-    const sendResult = await sendContractLink(contract);
+    const sendResult = await sendContractLink(contract, req.admin.name);
     if (!sendResult.success) {
       return res.status(500).json({ success: false, error: 'Email failed to send: ' + (sendResult.error || 'Unknown error') });
     }

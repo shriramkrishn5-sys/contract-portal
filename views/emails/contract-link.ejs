@@ -15,8 +15,13 @@
                     <!-- Header -->
                     <tr>
                         <td align="center" style="background-color: <%= locals.settings?.brand_primary_color || '#2563eb' %>; padding: 40px 20px; color: #ffffff;">
-                            <% if (locals.settings && locals.settings.company_logo) { %>
-                                <img src="<%= locals.settings.company_logo %>" alt="<%= locals.settings.company_name || 'KKeyQik' %>" style="max-height: 60px; margin-bottom: 0;">
+                            <% if (locals.settings && locals.settings.company_logo) { 
+                                 let logoUrl = locals.settings.company_logo;
+                                 if (logoUrl.startsWith('/')) {
+                                   logoUrl = (process.env.APP_URL || 'http://localhost:3000') + logoUrl;
+                                 }
+                            %>
+                                <img src="<%= logoUrl %>" alt="<%= locals.settings.company_name || 'KKeyQik' %>" style="max-height: 60px; margin-bottom: 0;">
                             <% } else { %>
                                 <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;"><%= locals.settings?.company_short_name || 'KKeyQik' %></h1>
                                 <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; font-weight: 300;"><%= locals.settings?.company_name || 'Private Limited' %></p>
@@ -29,16 +34,23 @@
                         <td style="padding: 40px 40px 20px 40px;">
                             <h2 style="margin: 0 0 20px 0; font-size: 22px; color: #111827;">Action Required: Signature Requested</h2>
                             
-                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-top: 0;">Dear <strong><%= contract.clientName %></strong>,</p>
+                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-top: 0;">Dear <strong><%= contract.client_name %></strong>,</p>
                             
-                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">KKeyQik Private Limited has sent you a document to review and sign. Please click the button below to view the secure document.</p>
+                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">
+                                <% if (typeof adminName !== 'undefined' && adminName) { %>
+                                    <%= adminName %> has sent you a document to review and sign.
+                                <% } else { %>
+                                    <%= locals.settings?.company_name || 'KKeyQik Private Limited' %> has sent you a document to review and sign.
+                                <% } %>
+                                Please click the button below to view the secure document.
+                            </p>
                             
                             <!-- Document Details Box -->
                             <table border="0" cellpadding="20" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin: 30px 0;">
                                 <tr>
                                     <td>
                                         <p style="margin: 0 0 10px 0; font-size: 13px; text-transform: uppercase; color: #64748b; font-weight: 600; letter-spacing: 0.5px;">Document Details</p>
-                                        <p style="margin: 0 0 8px 0; font-size: 16px; color: #0f172a;"><strong><%= contract.projectName || contract.title || 'Contract Agreement' %></strong></p>
+                                        <p style="margin: 0 0 8px 0; font-size: 16px; color: #0f172a;"><strong><%= contract.project_name || contract.title || 'Contract Agreement' %></strong></p>
                                         <% if (contract.amount) { %>
                                             <p style="margin: 0; font-size: 15px; color: #16a34a; font-weight: 600;"><%= contract.amount %></p>
                                         <% } %>

@@ -27,18 +27,25 @@ async function getEmailConfig() {
 /**
  * Send a contract link to the client
  * @param {Object} contract - Contract data
+ * @param {String} adminName - Name of the admin sending the link
  * @returns {Promise<{success: boolean, messageId?: string, error?: string}>}
  */
-async function sendContractLink(contract) {
+async function sendContractLink(contract, adminName = null) {
   try {
     const { transporter, fromEmail, companyName, settings } = await getEmailConfig();
+    
+    // Ensure linkUrl is set
+    const portalUrl = process.env.APP_URL || 'http://localhost:3000';
+    contract.linkUrl = `${portalUrl}/c/${contract.uuid}`;
+
     const templatePath = path.join(__dirname, '../views/emails/contract-link.ejs');
-    const html = await ejs.renderFile(templatePath, { contract, settings });
+    const html = await ejs.renderFile(templatePath, { contract, settings, adminName });
 
     const info = await transporter.sendMail({
-      from: `"${companyName}" <${fromEmail}>`,
+      from: `"KKeyQik Contracts" <contract@kkeyqik.com>`,
+      replyTo: fromEmail,
       to: contract.client_email,
-      subject: `Action Required: Review & Sign Contract - ${contract.project_name || contract.title}`,
+      subject: `Action Required: Review & Sign Contract - ${contract.project_name || contract.client_name || 'Document'}`,
       html: html
     });
 
