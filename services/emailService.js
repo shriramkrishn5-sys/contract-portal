@@ -19,7 +19,7 @@ async function getEmailConfig() {
   });
 
   const fromEmail = settings.smtp_from_email || user || 'contracts@kkeyqik.com';
-  const companyName = settings.company_name || 'KKeyQik Contracts';
+  const companyName = settings.smtp_from_name || 'KKeyQik Contracts';
 
   return { transporter, fromEmail, companyName, settings };
 }
