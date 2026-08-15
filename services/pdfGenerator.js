@@ -1,6 +1,7 @@
 const ejs = require('ejs');
 const path = require('path');
 const fs = require('fs');
+const qrcode = require('qrcode');
 const Setting = require('../models/Setting');
 
 let _cachedCompanySignatureUrl = null;
@@ -128,6 +129,17 @@ async function generateContractPdf(contractData, templateData, signatureData, au
       return renderedText;
     };
 
+    // 5. Generate QR Code Data URI
+    let qrCodeDataUri = null;
+    if (contractData && contractData.uuid) {
+      try {
+        const qrUrl = `${settings?.app_url || 'https://contract.kkeyqik.com'}/c/${contractData.uuid}/complete`;
+        qrCodeDataUri = await qrcode.toDataURL(qrUrl, { margin: 1, width: 120 });
+      } catch (err) {
+        throw new Error(`QR_CODE_ERROR: Failed to generate QR code for contract ${contractData.uuid}: ${err.message}`);
+      }
+    }
+
     // Read and render the template
     const templateContent = fs.readFileSync(templatePath, 'utf8');
     const html = ejs.render(templateContent, {
@@ -136,6 +148,7 @@ async function generateContractPdf(contractData, templateData, signatureData, au
       signature: signatureData,
       audit: auditTrail,
       settings: settings,
+      qrCodeDataUri: qrCodeDataUri,
       parseTemplateVars: parseTemplateVars
     });
 

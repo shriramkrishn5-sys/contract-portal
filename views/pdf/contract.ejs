@@ -447,7 +447,9 @@
                     </div>
                 </div>
                 <div style="margin-left: 20px; text-align: center;">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=<%= encodeURIComponent(settings?.app_url || 'https://contract.kkeyqik.com') %>/c/<%= contract.uuid %>/complete" alt="Verification QR Code" style="width: 100px; height: 100px; border-radius: 4px; border: 1px solid #ccc; padding: 4px; background: white;">
+                    <% if (typeof qrCodeDataUri !== 'undefined' && qrCodeDataUri) { %>
+                        <img src="<%= qrCodeDataUri %>" alt="Verification QR Code" style="width: 100px; height: 100px; border-radius: 4px; border: 1px solid #ccc; padding: 4px; background: white;">
+                    <% } %>
                     <div style="font-size: 7pt; color: var(--text-light); margin-top: 5px;">Scan to Verify</div>
                 </div>
             </div>
