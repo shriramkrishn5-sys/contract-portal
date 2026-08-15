@@ -5,38 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contract Review Request</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; color: #1f2937; -webkit-font-smoothing: antialiased;">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f3f4f6; padding: 40px 20px;">
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f9fafb; color: #374151; -webkit-font-smoothing: antialiased;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f9fafb; padding: 40px 10px;">
         <tr>
             <td align="center">
                 <!-- Main Container -->
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);">
+                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; border: 1px solid #e5e7eb; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
                     
                     <!-- Header -->
                     <tr>
-                        <td align="center" style="background-color: <%= locals.settings?.brand_primary_color || '#2563eb' %>; padding: 40px 20px; color: #ffffff;">
+                        <td align="center" style="background-color: #1a472a; padding: 35px 20px; color: #ffffff;">
                             <% if (locals.settings && locals.settings.company_logo) { 
                                  let logoUrl = locals.settings.company_logo;
                                  if (logoUrl.startsWith('/')) {
                                    logoUrl = (process.env.APP_URL || 'http://localhost:3000') + logoUrl;
                                  }
                             %>
-                                <img src="<%= logoUrl %>" alt="<%= locals.settings.company_name || 'KKeyQik' %>" style="max-height: 60px; margin-bottom: 0;">
+                                <img src="<%= logoUrl %>" alt="<%= locals.settings.company_name || 'KKeyQik' %>" style="max-height: 40px; margin-bottom: 5px;">
                             <% } else { %>
-                                <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px;"><%= locals.settings?.company_short_name || 'KKeyQik' %></h1>
-                                <p style="margin: 5px 0 0 0; font-size: 14px; opacity: 0.9; font-weight: 300;"><%= locals.settings?.company_name || 'Private Limited' %></p>
+                                <h1 style="margin: 0; font-size: 28px; font-weight: 700; letter-spacing: -0.5px; color: #ffffff;"><%= locals.settings?.company_short_name || 'KeyQik' %></h1>
                             <% } %>
+                            <p style="margin: 5px 0 0 0; font-size: 13px; font-weight: 400; color: #a7f3d0; letter-spacing: 0.5px;">Smart Contracts. Simplified.</p>
                         </td>
                     </tr>
                     
                     <!-- Body Content -->
                     <tr>
                         <td style="padding: 40px 40px 20px 40px;">
-                            <h2 style="margin: 0 0 20px 0; font-size: 22px; color: #111827;">Action Required: Signature Requested</h2>
                             
-                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-top: 0;">Dear <strong><%= contract.client_name %></strong>,</p>
+                            <!-- Title Block -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 30px;">
+                                <tr>
+                                    <td width="70" valign="top">
+                                        <div style="background-color: #f0fdf4; border-radius: 16px; width: 56px; height: 56px; line-height: 56px; text-align: center; font-size: 28px; border: 1px solid #dcfce7;">
+                                            📄
+                                        </div>
+                                    </td>
+                                    <td valign="top">
+                                        <h2 style="margin: 0; font-size: 26px; color: #111827; font-weight: 700; line-height: 1.2;">
+                                            Action Required:<br>
+                                            Signature Requested
+                                        </h2>
+                                        <div style="width: 40px; height: 4px; background-color: #1a472a; border-radius: 2px; margin-top: 15px;"></div>
+                                    </td>
+                                </tr>
+                            </table>
                             
-                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">
+                            <!-- Greeting -->
+                            <p style="font-size: 16px; line-height: 1.6; color: #374151; margin: 0 0 15px 0;">Dear <strong><%= contract.client_name %></strong>,</p>
+                            
+                            <p style="font-size: 16px; line-height: 1.6; color: #374151; margin: 0 0 30px 0;">
                                 <% if (typeof adminName !== 'undefined' && adminName) { %>
                                     <%= adminName %> has sent you a document to review and sign.
                                 <% } else { %>
@@ -46,43 +64,89 @@
                             </p>
                             
                             <!-- Document Details Box -->
-                            <table border="0" cellpadding="20" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin: 30px 0;">
+                            <table border="0" cellpadding="20" cellspacing="0" width="100%" style="background-color: #f9fafb; border: 1px solid #f3f4f6; border-radius: 8px; margin-bottom: 30px;">
                                 <tr>
                                     <td>
-                                        <p style="margin: 0 0 10px 0; font-size: 13px; text-transform: uppercase; color: #64748b; font-weight: 600; letter-spacing: 0.5px;">Document Details</p>
-                                        <p style="margin: 0 0 8px 0; font-size: 16px; color: #0f172a;"><strong><%= contract.project_name || contract.title || 'Contract Agreement' %></strong></p>
-                                        <% if (contract.amount) { %>
-                                            <p style="margin: 0; font-size: 15px; color: #16a34a; font-weight: 600;"><%= contract.amount %></p>
-                                        <% } %>
+                                        <p style="margin: 0 0 10px 0; font-size: 11px; text-transform: uppercase; color: #166534; font-weight: 700; letter-spacing: 0.5px;">DOCUMENT DETAILS</p>
+                                        <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                            <tr>
+                                                <td width="24" valign="middle" style="font-size: 18px; color: #1a472a;">📄</td>
+                                                <td valign="middle">
+                                                    <p style="margin: 0; font-size: 16px; color: #111827; font-weight: 700;"><%= contract.project_name || contract.title || 'Contract Agreement' %></p>
+                                                </td>
+                                            </tr>
+                                        </table>
                                     </td>
                                 </tr>
                             </table>
                             
                             <!-- Primary CTA -->
-                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin: 35px 0;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 20px;">
                                 <tr>
                                     <td align="center">
-                                        <a href="<%= contract.linkUrl || 'https://contract.kkeyqik.com' %>" target="_blank" style="display: inline-block; padding: 16px 36px; background-color: <%= locals.settings?.brand_primary_color || '#2563eb' %>; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 6px; text-align: center;">
-                                            Review & Sign Document
+                                        <a href="<%= contract.linkUrl || 'https://contract.kkeyqik.com' %>" target="_blank" style="display: inline-block; padding: 16px 36px; background-color: #1a472a; color: #ffffff; text-decoration: none; font-size: 16px; font-weight: 600; border-radius: 8px; text-align: center; box-shadow: 0 4px 6px -1px rgba(26, 71, 42, 0.2);">
+                                            <span style="margin-right: 8px;">🔒</span> Review & Sign Document
                                         </a>
                                     </td>
                                 </tr>
                             </table>
-                            
-                            <!-- Fallback Link -->
-                            <div style="background-color: #f9fafb; padding: 15px; border-radius: 6px; margin-top: 30px;">
-                                <p style="font-size: 13px; color: #6b7280; line-height: 1.5; margin: 0 0 8px 0;">If the button above does not work, copy and paste this link into your browser:</p>
-                                <a href="<%= contract.linkUrl %>" style="color: <%= locals.settings?.brand_primary_color || '#2563eb' %>; font-size: 13px; word-break: break-all; text-decoration: none;"><%= contract.linkUrl %></a>
-                            </div>
+
+                            <!-- Security Pill -->
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 40px;">
+                                <tr>
+                                    <td align="center">
+                                        <div style="background-color: #f0fdf4; border-radius: 20px; padding: 8px 20px; display: inline-block; font-size: 13px; color: #166534; font-weight: 600;">
+                                            🛡️ Secure &nbsp;&bull;&nbsp; Encrypted &nbsp;&bull;&nbsp; Legally Binding
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
                         </td>
                     </tr>
                     
-                    <!-- Footer -->
+                    <!-- Trust Footer (3 Columns) -->
                     <tr>
-                        <td align="center" style="background-color: #f8fafc; padding: 30px 40px; font-size: 13px; color: #94a3b8; border-top: 1px solid #f1f5f9;">
-                            <p style="margin: 0 0 10px 0; font-weight: 600; color: #64748b;"><%= locals.settings?.company_name || 'KKeyQik Private Limited' %></p>
-                            <p style="margin: 0 0 15px 0;"><%= locals.settings?.smtp_from_email || locals.settings?.company_email || 'contracts@kkeyqik.com' %></p>
-                            <p style="margin: 0; font-size: 12px; line-height: 1.5;">This email and its contents are confidential. If you received this in error, please disregard it and notify the sender.</p>
+                        <td style="padding: 30px 40px; border-top: 1px solid #f3f4f6; background-color: #ffffff;">
+                            <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                <tr>
+                                    <!-- Col 1 -->
+                                    <td width="33%" align="center" valign="top" style="padding: 0 10px;">
+                                        <div style="background-color: #f0fdf4; border-radius: 50%; width: 36px; height: 36px; line-height: 36px; text-align: center; font-size: 18px; margin: 0 auto 10px auto;">🛡️</div>
+                                        <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 700; color: #111827;">Secure & Encrypted</p>
+                                        <p style="margin: 0; font-size: 11px; color: #6b7280;">256-bit SSL protection</p>
+                                    </td>
+                                    <!-- Col 2 -->
+                                    <td width="33%" align="center" valign="top" style="padding: 0 10px; border-left: 1px solid #f3f4f6; border-right: 1px solid #f3f4f6;">
+                                        <div style="background-color: #f0fdf4; border-radius: 50%; width: 36px; height: 36px; line-height: 36px; text-align: center; font-size: 18px; margin: 0 auto 10px auto;">🎗️</div>
+                                        <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 700; color: #111827;">Legally Binding</p>
+                                        <p style="margin: 0; font-size: 11px; color: #6b7280;">eSign Act Compliant</p>
+                                    </td>
+                                    <!-- Col 3 -->
+                                    <td width="33%" align="center" valign="top" style="padding: 0 10px;">
+                                        <div style="background-color: #f0fdf4; border-radius: 50%; width: 36px; height: 36px; line-height: 36px; text-align: center; font-size: 18px; margin: 0 auto 10px auto;">⏱️</div>
+                                        <p style="margin: 0 0 4px 0; font-size: 12px; font-weight: 700; color: #111827;">Time Sensitive</p>
+                                        <p style="margin: 0; font-size: 11px; color: #6b7280;">Action requested</p>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+
+                    <!-- Fallback Link & Standard Footer -->
+                    <tr>
+                        <td align="center" style="background-color: #f9fafb; padding: 30px 40px; font-size: 12px; color: #6b7280; border-top: 1px solid #e5e7eb;">
+                            <div style="margin-bottom: 25px;">
+                                <p style="margin: 0 0 8px 0;">If the button above does not work, copy and paste this link:</p>
+                                <a href="<%= contract.linkUrl %>" style="color: #1a472a; word-break: break-all; text-decoration: underline;"><%= contract.linkUrl %></a>
+                            </div>
+
+                            <p style="margin: 0 0 8px 0; font-weight: 600; color: #374151;"><%= locals.settings?.company_name || 'KeyQik Private Limited' %></p>
+                            <p style="margin: 0 0 15px 0;">
+                                <a href="mailto:<%= locals.settings?.smtp_from_email || locals.settings?.company_email || 'contracts@kkeyqik.com' %>" style="color: #6b7280; text-decoration: none;"><%= locals.settings?.smtp_from_email || locals.settings?.company_email || 'contracts@kkeyqik.com' %></a>
+                                &nbsp;|&nbsp; 
+                                <a href="https://www.keyqik.com" style="color: #1a472a; text-decoration: underline;">www.keyqik.com</a>
+                            </p>
+                            <p style="margin: 0; font-size: 11px; line-height: 1.5; color: #9ca3af;">This email and its contents are confidential. If you received this in error, please disregard it and notify the sender.</p>
                         </td>
                     </tr>
                 </table>
