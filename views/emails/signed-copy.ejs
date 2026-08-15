@@ -1,65 +1,302 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contract Signed</title>
+    <title>Contract Signed Successfully</title>
 </head>
-<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; background-color: #f3f4f6; color: #1f2937; -webkit-font-smoothing: antialiased;">
-    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f3f4f6; padding: 40px 20px;">
-        <tr>
-            <td align="center">
-                <!-- Main Container -->
-                <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);">
-                    
-                    <!-- Header -->
-                    <tr>
-                        <td align="center" style="background-color: <%= locals.settings?.brand_primary_color || '#059669' %>; padding: 40px 20px; color: #ffffff;">
-                            <% if (locals.settings && locals.settings.company_logo) { %>
-                                <img src="<%= locals.settings.company_logo %>" alt="<%= locals.settings.company_name || 'Company Logo' %>" style="max-height: 50px; margin-bottom: 15px; display: block; margin-left: auto; margin-right: auto;">
-                            <% } %>
-                            <div style="margin-bottom: 15px;">
-                                <!-- Success Checkmark Icon -->
-                                <img src="https://img.icons8.com/ios-filled/50/ffffff/checked--v1.png" alt="Success" width="40" height="40" style="display: block; margin: 0 auto;">
+<body style="margin: 0; padding: 0; font-family: 'Segoe UI', Arial, sans-serif; background-color: #f9fafb; color: #1f2937;">
+    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color: #f9fafb; padding: 40px 10px;">
+        <tr><td align="center">
+            <table border="0" cellpadding="0" cellspacing="0" width="100%" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);">
+                <!-- HEADER -->
+                <tr>
+                    <td align="center" style="background-color: #1a472a; padding: 35px 20px;">
+                        <% if (locals.settings && (locals.settings.company_logo_light || locals.settings.company_logo)) { %>
+                             <% 
+                                 let logoUrl = locals.settings.company_logo_light || locals.settings.company_logo;
+                                 if (logoUrl.startsWith('/')) {
+                                     logoUrl = (process.env.APP_URL || 'http://localhost:3000') + logoUrl;
+                                 }
+                             %>
+                             <img src="<%= logoUrl %>" alt="<%= locals.settings.company_short_name || 'KKeyQik' %>" width="160" style="display: block; width: 160px; max-width: 160px; height: auto;">
+                         <% } else { %>
+                            <h1 style="margin: 0; font-size: 28px; font-weight: 700; color: #ffffff;"><%= locals.settings?.company_short_name || 'KeyQik' %></h1>
+                        <% } %>
+                        <p style="margin: 5px 0 0 0; font-size: 13px; color: #a7f3d0;">Smart Contracts. Simplified.</p>
+                    </td>
+                </tr>
+
+                <!-- HERO SECTION -->
+                <tr>
+                    <td align="center" style="padding: 40px 30px 20px 30px;">
+                        <!-- Concentric circles checkmark icon -->
+                        <div style="width: 64px; height: 64px; background-color: #d1fae5; border-radius: 50%; display: inline-block; padding: 8px; margin-bottom: 20px;">
+                            <div style="width: 100%; height: 100%; background-color: #a7f3d0; border-radius: 50%; display: table;">
+                                <div style="display: table-cell; vertical-align: middle; text-align: center;">
+                                    <img src="https://img.icons8.com/ios-filled/50/059669/checkmark--v1.png" width="32" height="32" style="display: inline-block; vertical-align: middle;">
+                                </div>
                             </div>
-                            <h1 style="margin: 0; font-size: 24px; font-weight: 700;">Document Completed</h1>
-                        </td>
-                    </tr>
-                    
-                    <!-- Body Content -->
-                    <tr>
-                        <td style="padding: 40px;">
-                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-top: 0;">Dear <strong><%= contract.clientName %></strong>,</p>
-                            
-                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">Thank you for completing the signing process. The document has been successfully signed by all parties.</p>
-                            
-                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563; font-weight: 600;">A legally binding copy of your signed document and audit trail is attached to this email as a PDF.</p>
-                            
-                            <!-- Document Details Box -->
-                            <table border="0" cellpadding="20" cellspacing="0" width="100%" style="background-color: #ecfdf5; border: 1px solid #a7f3d0; border-radius: 8px; margin: 30px 0;">
-                                <tr>
-                                    <td>
-                                        <p style="margin: 0 0 10px 0; font-size: 13px; text-transform: uppercase; color: #059669; font-weight: 600; letter-spacing: 0.5px;">Summary</p>
-                                        <p style="margin: 0 0 8px 0; font-size: 16px; color: #064e3b;"><strong><%= contract.projectName || contract.title %></strong></p>
-                                        <p style="margin: 0; font-size: 14px; color: #047857;">Signed on: <%= new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) %></p>
-                                    </td>
-                                </tr>
-                            </table>
-                            
-                            <p style="font-size: 14px; color: #6b7280; text-align: center; margin-top: 30px;">Please download and retain the attached PDF for your permanent records.</p>
-                        </td>
-                    </tr>
-                    
-                    <!-- Footer -->
-                    <tr>
-                        <td align="center" style="background-color: #f8fafc; padding: 30px 40px; font-size: 13px; color: #94a3b8; border-top: 1px solid #f1f5f9;">
-                            <p style="margin: 0 0 10px 0; font-weight: 600; color: #64748b;"><%= locals.settings?.company_name || 'KKeyQik Private Limited' %></p>
-                            <p style="margin: 0;"><%= locals.settings?.smtp_from_email || locals.settings?.company_email || 'contracts@kkeyqik.com' %></p>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-        </tr>
+                        </div>
+                        <h2 style="margin: 0 0 10px 0; font-size: 24px; color: #111827; font-weight: 700;">Contract Signed Successfully!</h2>
+                        <p style="margin: 0 0 15px 0; font-size: 14px; color: #374151;">Hi <strong><%= contract.clientName || contract.client_name %></strong>,</p>
+                        <p style="margin: 0; font-size: 14px; color: #4b5563; line-height: 1.5;">Your electronic signature has been successfully recorded for the agreement below.<br>A completed copy of the signed contract is attached to this email for your records.</p>
+                    </td>
+                </tr>
+
+                <!-- DETAILS CARD -->
+                <tr>
+                    <td style="padding: 10px 30px 20px 30px;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+                            <tr>
+                                <td style="padding: 20px;">
+                                    <!-- Header of Details Card -->
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 20px;">
+                                        <tr>
+                                            <td width="30" valign="top">
+                                                <img src="https://img.icons8.com/ios/50/059669/document--v1.png" width="20" height="20">
+                                            </td>
+                                            <td>
+                                                <div style="font-size: 11px; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.5px;">CONTRACT DETAILS</div>
+                                                <div style="font-size: 16px; font-weight: 700; color: #111827; margin-top: 4px;"><%= contract.projectName || contract.project_name || contract.title %></div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    <!-- Grid Details -->
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+                                        <tr>
+                                            <td width="50%" valign="top" style="padding-bottom: 20px; padding-right: 10px;">
+                                                <table border="0" cellpadding="0" cellspacing="0">
+                                                    <tr>
+                                                        <td width="24" valign="top"><img src="https://img.icons8.com/windows/32/059669/file.png" width="16"></td>
+                                                        <td>
+                                                            <div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">Document ID</div>
+                                                            <div style="font-size: 13px; color: #111827;"><%= contract.uuid ? 'CON-' + contract.uuid.substring(0,8).toUpperCase() : 'CON-N/A' %></div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <td width="50%" valign="top" style="padding-bottom: 20px;">
+                                                <table border="0" cellpadding="0" cellspacing="0">
+                                                    <tr>
+                                                        <td width="24" valign="top"><img src="https://img.icons8.com/windows/32/059669/calendar.png" width="16"></td>
+                                                        <td>
+                                                            <div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">Signed On</div>
+                                                            <div style="font-size: 13px; color: #111827;"><%= new Date(contract.signed_at || new Date()).toLocaleString('en-US', { day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' }) %></div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="50%" valign="top" style="padding-bottom: 20px; padding-right: 10px;">
+                                                <table border="0" cellpadding="0" cellspacing="0">
+                                                    <tr>
+                                                        <td width="24" valign="top"><img src="https://img.icons8.com/windows/32/059669/user.png" width="16"></td>
+                                                        <td>
+                                                            <div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">Signed By</div>
+                                                            <div style="font-size: 13px; color: #111827;"><%= contract.clientName || contract.client_name %></div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <td width="50%" valign="top" style="padding-bottom: 20px;">
+                                                <table border="0" cellpadding="0" cellspacing="0">
+                                                    <tr>
+                                                        <td width="24" valign="top"><img src="https://img.icons8.com/windows/32/059669/checked--v1.png" width="16"></td>
+                                                        <td>
+                                                            <div style="font-size: 11px; color: #6b7280; margin-bottom: 4px;">Status</div>
+                                                            <div style="font-size: 11px; font-weight: 600; color: #065f46; background-color: #d1fae5; padding: 4px 8px; border-radius: 12px; display: inline-block;">Signed & Completed</div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td width="50%" valign="top" style="padding-right: 10px;">
+                                                <table border="0" cellpadding="0" cellspacing="0">
+                                                    <tr>
+                                                        <td width="24" valign="top"><img src="https://img.icons8.com/windows/32/059669/company.png" width="16"></td>
+                                                        <td>
+                                                            <div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">Company</div>
+                                                            <div style="font-size: 13px; color: #111827;"><%= contract.clientCompany || contract.company_name || 'N/A' %></div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                            <td width="50%" valign="top">
+                                                <table border="0" cellpadding="0" cellspacing="0">
+                                                    <tr>
+                                                        <td width="24" valign="top"><img src="https://img.icons8.com/windows/32/059669/file.png" width="16"></td>
+                                                        <td>
+                                                            <div style="font-size: 11px; color: #6b7280; margin-bottom: 2px;">Document Version</div>
+                                                            <div style="font-size: 13px; color: #111827;">1.0</div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- ACTIONS -->
+                <tr>
+                    <td align="center" style="padding: 10px 30px 30px 30px;">
+                        <% 
+                            let contractUrl = contract.linkUrl;
+                            if (!contractUrl && contract.uuid) {
+                                contractUrl = (process.env.APP_URL || 'http://localhost:3000') + '/c/' + contract.uuid;
+                            }
+                        %>
+                        <a href="<%= contractUrl %>" style="display: inline-block; padding: 14px 35px; background-color: #1a472a; color: #ffffff; text-decoration: none; font-size: 15px; font-weight: 600; border-radius: 6px;">
+                            <img src="https://img.icons8.com/ios-filled/50/ffffff/download--v1.png" width="14" style="vertical-align: middle; margin-right: 6px; padding-bottom: 2px;"> Download Signed Contract
+                        </a>
+                        <div style="margin-top: 20px;">
+                            <a href="<%= contractUrl %>" style="color: #1a472a; font-size: 14px; font-weight: 600; text-decoration: none;">View Contract Online &rarr;</a>
+                        </div>
+                    </td>
+                </tr>
+
+                <!-- SIGNATURE RECORD -->
+                <tr>
+                    <td style="padding: 0 30px 20px 30px;">
+                        <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border: 1px solid #e5e7eb; border-radius: 8px; overflow: hidden;">
+                            <tr>
+                                <td style="padding: 20px;">
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="margin-bottom: 15px;">
+                                        <tr>
+                                            <td width="30" valign="top">
+                                                <img src="https://img.icons8.com/ios/50/059669/security-checked.png" width="20" height="20">
+                                            </td>
+                                            <td>
+                                                <div style="font-size: 11px; font-weight: 700; color: #059669; text-transform: uppercase; letter-spacing: 0.5px;">SIGNATURE RECORD</div>
+                                                <div style="font-size: 12px; color: #6b7280; margin-top: 2px;">Your signature was submitted through the <%= locals.settings?.company_short_name || 'KeyQik' %> Contract Portal.</div>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                    <!-- Signature Record Data Grid -->
+                                    <table border="0" cellpadding="0" cellspacing="0" width="100%" style="border-bottom: 1px solid #e5e7eb; padding-bottom: 15px; margin-bottom: 15px;">
+                                        <tr>
+                                            <td width="25%" valign="top" style="padding-right: 5px;">
+                                                <table border="0" cellpadding="0" cellspacing="0"><tr><td width="20" valign="top"><img src="https://img.icons8.com/windows/32/059669/user.png" width="14" style="margin-top: 1px;"></td><td>
+                                                    <div style="font-size: 10px; color: #6b7280; margin-bottom: 1px;">Signer</div>
+                                                    <div style="font-size: 11px; color: #111827;"><%= contract.clientName || contract.client_name %></div>
+                                                </td></tr></table>
+                                            </td>
+                                            <td width="30%" valign="top" style="padding-right: 5px;">
+                                                <table border="0" cellpadding="0" cellspacing="0"><tr><td width="20" valign="top"><img src="https://img.icons8.com/windows/32/059669/new-post.png" width="14" style="margin-top: 1px;"></td><td>
+                                                    <div style="font-size: 10px; color: #6b7280; margin-bottom: 1px;">Email</div>
+                                                    <div style="font-size: 11px; color: #111827; word-break: break-all;"><%= contract.clientEmail || contract.client_email %></div>
+                                                </td></tr></table>
+                                            </td>
+                                            <td width="25%" valign="top" style="padding-right: 5px;">
+                                                <table border="0" cellpadding="0" cellspacing="0"><tr><td width="20" valign="top"><img src="https://img.icons8.com/windows/32/059669/calendar.png" width="14" style="margin-top: 1px;"></td><td>
+                                                    <div style="font-size: 10px; color: #6b7280; margin-bottom: 1px;">Signed On</div>
+                                                    <div style="font-size: 11px; color: #111827;"><%= new Date(contract.signed_at || new Date()).toLocaleString('en-US', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' }) %></div>
+                                                </td></tr></table>
+                                            </td>
+                                            <td width="20%" valign="top">
+                                                <table border="0" cellpadding="0" cellspacing="0"><tr><td width="20" valign="top"><img src="https://img.icons8.com/windows/32/059669/globe--v1.png" width="14" style="margin-top: 1px;"></td><td>
+                                                    <div style="font-size: 10px; color: #6b7280; margin-bottom: 1px;">IP Address</div>
+                                                    <div style="font-size: 11px; color: #111827;"><%= contract.signer_ip || 'Verified via Portal' %></div>
+                                                </td></tr></table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                    
+                                    <div style="font-size: 12px; font-weight: 700; color: #374151;">
+                                        Document ID: <%= contract.uuid ? 'CON-' + contract.uuid.substring(0,8).toUpperCase() : 'CON-N/A' %>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <!-- INFO MODULES -->
+                <tr>
+                    <td style="padding: 10px 30px 30px 30px;">
+                        
+                        <!-- Securely Stored -->
+                        <table border="0" cellpadding="15" cellspacing="0" width="100%" style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; margin-bottom: 15px;">
+                            <tr>
+                                <td width="30" valign="top">
+                                    <div style="width: 32px; height: 32px; background-color: #d1fae5; border-radius: 50%; display: table;">
+                                        <div style="display: table-cell; vertical-align: middle; text-align: center;">
+                                            <img src="https://img.icons8.com/ios-filled/50/059669/lock.png" width="16" height="16" style="display: inline-block; vertical-align: middle;">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 4px;">Your signed document is securely stored</div>
+                                    <div style="font-size: 12px; color: #4b5563; line-height: 1.4;">Your completed agreement is securely stored in the <%= locals.settings?.company_short_name || 'KeyQik' %> Contract Portal. Please retain this email and the attached signed copy for your records.</div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- What's Next? -->
+                        <table border="0" cellpadding="15" cellspacing="0" width="100%" style="margin-bottom: 15px;">
+                            <tr>
+                                <td width="30" valign="top">
+                                    <div style="width: 32px; height: 32px; background-color: #f3f4f6; border-radius: 50%; display: table;">
+                                        <div style="display: table-cell; vertical-align: middle; text-align: center;">
+                                            <img src="https://img.icons8.com/ios-filled/50/059669/paper-plane.png" width="16" height="16" style="display: inline-block; vertical-align: middle;">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 4px;">What's Next?</div>
+                                    <div style="font-size: 12px; color: #4b5563; line-height: 1.4;">No further action is required from you.<br>Please keep the signed copy for your records.</div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        <!-- Questions -->
+                        <table border="0" cellpadding="15" cellspacing="0" width="100%">
+                            <tr>
+                                <td width="30" valign="top">
+                                    <div style="width: 32px; height: 32px; background-color: #f3f4f6; border-radius: 50%; display: table;">
+                                        <div style="display: table-cell; vertical-align: middle; text-align: center;">
+                                            <img src="https://img.icons8.com/ios-filled/50/059669/headphones.png" width="16" height="16" style="display: inline-block; vertical-align: middle;">
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 13px; font-weight: 700; color: #111827; margin-bottom: 4px;">Have a question about this agreement?</div>
+                                    <div style="font-size: 12px; color: #4b5563; line-height: 1.4;">
+                                        We're here to help. Contact us at 
+                                        <a href="mailto:<%= locals.settings?.smtp_from_email || 'hello@kkeyqik.com' %>" style="color: #059669; font-weight: 600; text-decoration: none;">
+                                            <%= locals.settings?.smtp_from_email || 'hello@kkeyqik.com' %>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                </tr>
+
+                <!-- FOOTER -->
+                <tr>
+                    <td align="center" style="background-color: #ffffff; padding: 20px 30px; border-top: 1px solid #f3f4f6;">
+                        <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #111827;">KKeyQik Contracts</p>
+                        <p style="margin: 0 0 15px 0; font-size: 12px;">
+                            <a href="https://www.kkeyqik.com" style="color: #059669; text-decoration: none;">www.kkeyqik.com</a>
+                            &nbsp;|&nbsp; 
+                            <a href="mailto:contract@kkeyqik.com" style="color: #059669; text-decoration: none;">contract@kkeyqik.com</a>
+                        </p>
+                        <p style="margin: 0; font-size: 11px; color: #9ca3af; line-height: 1.5;">
+                            This email and its contents are confidential.<br>
+                            If you received this in error, please disregard it and notify the sender.
+                        </p>
+                    </td>
+                </tr>
+            </table>
+        </td></tr>
     </table>
 </body>
 </html>
