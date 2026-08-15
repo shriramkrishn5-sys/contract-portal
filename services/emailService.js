@@ -37,8 +37,8 @@ async function sendContractLink(contract) {
 
     const info = await transporter.sendMail({
       from: `"${companyName}" <${fromEmail}>`,
-      to: contract.clientEmail,
-      subject: `Action Required: Review & Sign Contract - ${contract.projectName || contract.title}`,
+      to: contract.client_email,
+      subject: `Action Required: Review & Sign Contract - ${contract.project_name || contract.title}`,
       html: html
     });
 
@@ -91,8 +91,8 @@ async function sendSignedCopy(contract, pdfBuffer) {
 
     const info = await transporter.sendMail({
       from: `"${companyName}" <${fromEmail}>`,
-      to: contract.clientEmail,
-      subject: `Contract Signed: ${contract.projectName || contract.title}`,
+      to: contract.client_email,
+      subject: `Contract Signed: ${contract.project_name || contract.title}`,
       html: html,
       attachments: [
         {

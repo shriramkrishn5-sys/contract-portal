@@ -4,7 +4,7 @@
     <% if (contract.status === 'draft') { %>
       <a href="/admin/contracts/<%= contract.id %>/edit" class="btn btn-secondary mr-2">Edit</a>
     <% } %>
-    <form action="/admin/contracts/<%= contract.id %>/send" method="POST" style="display: inline;">
+    <form id="sendEmailForm" action="/admin/contracts/<%= contract.id %>/send" method="POST" style="display: inline;">
       <button type="submit" id="generateBtn" class="btn btn-primary">Generate & Send Link</button>
     </form>
   </div>
@@ -38,3 +38,37 @@
     </div>
   </div>
 </div>
+
+<script>
+  const sendEmailForm = document.getElementById('sendEmailForm');
+  if (sendEmailForm) {
+    sendEmailForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('generateBtn');
+      const originalText = btn.innerText;
+      btn.innerText = 'Sending...';
+      btn.disabled = true;
+      
+      try {
+        const response = await fetch(this.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+          alert('Email sent successfully!');
+          window.location.href = `/admin/contracts/<%= contract.id %>`;
+        } else {
+          alert(result.error || 'Failed to send email.');
+          btn.innerText = originalText;
+          btn.disabled = false;
+        }
+      } catch (err) {
+        alert('A network error occurred.');
+        btn.innerText = originalText;
+        btn.disabled = false;
+      }
+    });
+  }
+</script>

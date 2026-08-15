@@ -9,8 +9,8 @@
       <p><strong>Amount:</strong> <%= typeof contract !== 'undefined' && contract.total_amount ? contract.total_amount : 'Not specified' %></p>
       <div class="mt-4 d-flex gap-2">
         <button id="copyLinkBtn" class="btn btn-secondary" data-url="<%= typeof appUrl !== 'undefined' ? appUrl : 'http://localhost:3000' %>/c/<%= contract.uuid %>">Copy Link</button>
-        <form action="/admin/contracts/<%= contract.id %>/send" method="POST" style="display: inline;">
-          <button type="submit" class="btn btn-primary">Send via Email</button>
+        <form id="sendEmailForm" action="/admin/contracts/<%= contract.id %>/send" method="POST" style="display: inline;">
+          <button type="submit" id="sendEmailBtn" class="btn btn-primary">Send via Email</button>
         </form>
         <% if (contract.status === 'draft') { %>
           <a href="/admin/contracts/<%= contract.id %>/edit" class="btn btn-outline-primary" style="border: 1px solid var(--portal-primary); color: var(--portal-primary); padding: 0.5rem 1rem; border-radius: 4px; text-decoration: none; display: inline-block;">Edit Contract</a>
@@ -76,4 +76,36 @@
       setTimeout(() => this.innerText = originalText, 2000);
     });
   });
+
+  const sendEmailForm = document.getElementById('sendEmailForm');
+  if (sendEmailForm) {
+    sendEmailForm.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const btn = document.getElementById('sendEmailBtn');
+      const originalText = btn.innerText;
+      btn.innerText = 'Sending...';
+      btn.disabled = true;
+      
+      try {
+        const response = await fetch(this.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        const result = await response.json();
+        
+        if (result.success) {
+          alert('Email sent successfully!');
+          window.location.reload();
+        } else {
+          alert(result.error || 'Failed to send email.');
+          btn.innerText = originalText;
+          btn.disabled = false;
+        }
+      } catch (err) {
+        alert('A network error occurred.');
+        btn.innerText = originalText;
+        btn.disabled = false;
+      }
+    });
+  }
 </script>

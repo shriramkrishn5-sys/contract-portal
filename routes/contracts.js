@@ -296,18 +296,28 @@ router.get('/:id/preview', async (req, res) => {
 
 router.post('/:id/send', async (req, res) => {
   try {
-    await Contract.updateStatus(req.params.id, 'sent');
     const contract = await Contract.findById(req.params.id);
+    if (!contract) return res.status(404).json({ success: false, error: 'Contract not found' });
+
     contract.contractUrl = `${process.env.APP_URL || 'http://localhost:3000'}/c/${contract.uuid}`;
-    sendContractLink(contract).catch(e => console.error('Error sending contract link', e));
+    
+    // Attempt send first
+    const sendResult = await sendContractLink(contract);
+    if (!sendResult.success) {
+      return res.status(500).json({ success: false, error: 'Email failed to send: ' + (sendResult.error || 'Unknown error') });
+    }
 
+    // Now update status
+    await Contract.updateStatus(req.params.id, 'sent');
+    
+    // Notifications and logs
     sendAdminNotification('Sent', contract).catch(e => console.error('Failed admin notification', e));
-
     await AuditLog.create(req.admin.id, 'Sent', 'Contract', contract.project_name || req.params.id, `Contract sent to ${contract.client_email}`, req.ip);
 
-    res.redirect(`/admin/contracts/${req.params.id}`);
+    res.json({ success: true, message: 'Contract sent successfully' });
   } catch (err) {
-    res.status(500).send('Error sending');
+    console.error(err);
+    res.status(500).json({ success: false, error: 'An unexpected error occurred while sending the contract' });
   }
 });
 
