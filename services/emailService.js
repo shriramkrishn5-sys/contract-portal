@@ -59,7 +59,7 @@ async function sendContractLink(contract, adminName = null) {
 /**
  * Send a reminder email to the client
  */
-async function sendReminderEmail(contract) {
+async function sendReminderEmail(contract, urgency = 'normal') {
   try {
     const { transporter, fromEmail, companyName, settings } = await getEmailConfig();
     
@@ -68,12 +68,16 @@ async function sendReminderEmail(contract) {
     contract.linkUrl = `${portalUrl}/contract/${contract.uuid}`;
 
     const templatePath = path.join(__dirname, '../views/emails/reminder.ejs');
-    const html = await ejs.renderFile(templatePath, { contract, settings });
+    const html = await ejs.renderFile(templatePath, { contract, settings, urgency });
+
+    const subject = urgency === 'urgent' 
+      ? `URGENT: Contract Expiring Soon - Action Required on ${contract.projectName || contract.project_name || 'Contract'}` 
+      : `Reminder: Action Required on ${contract.projectName || contract.project_name || 'Contract'}`;
 
     const info = await transporter.sendMail({
       from: `"${companyName}" <${fromEmail}>`,
       to: contract.clientEmail || contract.client_email,
-      subject: `Reminder: Action Required on ${contract.projectName || contract.project_name || 'Contract'}`,
+      subject,
       html
     });
 

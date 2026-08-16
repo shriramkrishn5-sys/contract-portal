@@ -81,7 +81,8 @@ async function migrate() {
         signed_at TIMESTAMP,
         expires_at TIMESTAMP,
         reminder_count INT DEFAULT 0,
-        last_reminder_at TIMESTAMP
+        last_reminder_at TIMESTAMP,
+        urgent_reminder_sent BOOLEAN DEFAULT 0
       )`,
       
       `CREATE TABLE IF NOT EXISTS tracking_events (

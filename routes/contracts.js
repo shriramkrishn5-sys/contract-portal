@@ -137,13 +137,7 @@ router.post('/create', async (req, res) => {
       end_date: endDate.toISOString()
     };
 
-    if (req.body.expires_in && req.body.expires_in !== 'none') {
-      const days = parseInt(req.body.expires_in);
-      const expiresAt = new Date();
-      expiresAt.setDate(expiresAt.getDate() + days);
-      contractData.expires_at = expiresAt.toISOString();
-    }
-
+    // Expiration is now calculated when the contract is actually sent, not when created.
     const contract = await Contract.create(contractData);
 
     await AuditLog.create(req.admin.id, 'Created', 'Contract', contractData.project_name, `Contract created for ${contractData.client_name}`, req.ip);
@@ -307,8 +301,14 @@ router.post('/:id/send', async (req, res) => {
       return res.status(500).json({ success: false, error: 'Email failed to send: ' + (sendResult.error || 'Unknown error') });
     }
 
-    // Now update status
+    // Now update status and set expiration
     await Contract.updateStatus(req.params.id, 'sent');
+    
+    const defaultDays = parseInt(res.locals.settings?.default_expiration_days) || 5;
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + defaultDays);
+    const db = await getDb();
+    await db.run('UPDATE contracts SET expires_at = ? WHERE id = ?', [expiresAt.toISOString(), req.params.id]);
     
     // Notifications and logs
     sendAdminNotification('Sent', contract).catch(e => console.error('Failed admin notification', e));
@@ -322,7 +322,31 @@ router.post('/:id/send', async (req, res) => {
 });
 
 router.post('/:id/resend', async (req, res) => {
-  res.redirect(`/admin/contracts/${req.params.id}`);
+  try {
+    const contract = await Contract.findById(req.params.id);
+    if (!contract) return res.status(404).send('Not found');
+
+    contract.contractUrl = `${process.env.APP_URL || 'http://localhost:3000'}/c/${contract.uuid}`;
+    
+    const sendResult = await sendContractLink(contract, req.admin.name);
+    if (!sendResult.success) {
+      return res.status(500).json({ success: false, error: 'Email failed to send' });
+    }
+
+    const defaultDays = parseInt(res.locals.settings?.default_expiration_days) || 5;
+    const expiresAt = new Date();
+    expiresAt.setDate(expiresAt.getDate() + defaultDays);
+    
+    const db = await getDb();
+    await db.run('UPDATE contracts SET expires_at = ?, status = ? WHERE id = ?', [expiresAt.toISOString(), 'sent', contract.id]);
+
+    await AuditLog.create(req.admin.id, 'Resent', 'Contract', contract.project_name || req.params.id, `Contract link resent to ${contract.client_email} and expiration extended`, req.ip);
+
+    res.json({ success: true, message: 'Contract resent successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, error: 'Error resending contract' });
+  }
 });
 
 router.post('/:id/cancel', async (req, res) => {

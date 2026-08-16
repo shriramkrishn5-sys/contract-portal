@@ -1,9 +1,17 @@
-<div class="card text-center py-5">
-  <div style="font-size: 4rem; color: var(--portal-danger); margin-bottom: 1rem;">⚠️</div>
-  <h2 class="mb-3">This Contract Link Has Expired</h2>
-  <p class="text-muted mb-4">The time allowed to view or sign this contract has passed. Please request a new link.</p>
+<div class="card text-center py-5 shadow-sm" style="max-width: 500px; margin: 0 auto; border-radius: 12px; border: 1px solid var(--portal-border);">
+  <div style="font-size: 4rem; color: #dc3545; margin-bottom: 1rem;">⚠️</div>
+  <h2 class="mb-3" style="font-weight: 600; color: var(--portal-text);">Link Expired</h2>
+  <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.5;">
+    The time allowed to view or sign this contract has passed. For security, contract links expire after a set period.
+  </p>
   
+  <form action="/c/<%= contract.uuid %>/request-resend" method="POST" class="mb-4">
+    <button type="submit" class="btn btn-primary btn-lg px-4" style="border-radius: 8px; font-weight: 500;">
+      Request a New Link
+    </button>
+  </form>
+
   <div class="mt-4 pt-4 border-top text-muted" style="font-size: 0.875rem;">
-    Contact us at hello@kkeyqik.com
+    If you need immediate assistance, contact us at <a href="mailto:contract@kkeyqik.com" style="color: var(--portal-primary); text-decoration: none;">contract@kkeyqik.com</a>
   </div>
 </div>

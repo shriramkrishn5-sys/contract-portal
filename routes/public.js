@@ -99,16 +99,34 @@ router.use('/:uuid', (req, res, next) => {
   next();
 });
 
+// Expiration Check Middleware for pre-signature routes
+async function checkExpiration(req, res, next) {
+  try {
+    const contract = await Contract.findByUuid(req.params.uuid);
+    if (!contract) return res.status(404).send('Contract not found');
+
+    // Never block signed, completed, or declined contracts
+    if (['signed', 'completed', 'declined'].includes(contract.status)) {
+      return next();
+    }
+    
+    if (contract.status === 'expired' || (contract.expires_at && new Date(contract.expires_at) < new Date())) {
+      return res.render('public/contract-expired', { contract, layout: 'layouts/public', title: 'Contract Expired' });
+    }
+
+    next();
+  } catch(err) {
+    next(err);
+  }
+}
+
 // Welcome page (Step 1)
-router.get('/:uuid', trackContractView, async (req, res) => {
+router.get('/:uuid', trackContractView, checkExpiration, async (req, res) => {
   try {
     const contract = await Contract.findByUuid(req.params.uuid);
     if (!contract) return res.status(404).send('Contract not found');
     const template = await Template.findById(contract.template_id);
 
-    if (contract.expires_at && new Date(contract.expires_at) < new Date()) {
-      return res.render('public/contract-expired', { layout: 'layouts/public', title: 'Contract Expired' });
-    }
     if (contract.status === 'signed') {
       return res.render('public/contract-complete', { contract, layout: 'layouts/public', title: 'Contract Signed' });
     }
@@ -131,7 +149,7 @@ router.get('/:uuid', trackContractView, async (req, res) => {
 });
 
 // View contract document (Step 2)
-router.get('/:uuid/review', async (req, res) => {
+router.get('/:uuid/review', checkExpiration, async (req, res) => {
   try {
     const contract = await Contract.findByUuid(req.params.uuid);
     if (!contract) return res.status(404).send('Contract not found');
@@ -148,7 +166,7 @@ router.get('/:uuid/review', async (req, res) => {
 });
 
 // Decline contract
-router.post('/:uuid/decline', async (req, res) => {
+router.post('/:uuid/decline', checkExpiration, async (req, res) => {
   try {
     const contract = await Contract.findByUuid(req.params.uuid);
     if (!contract) return res.status(404).send('Contract not found');
@@ -166,7 +184,7 @@ router.post('/:uuid/decline', async (req, res) => {
 
 
 // Fill form
-router.get('/:uuid/fill', async (req, res) => {
+router.get('/:uuid/fill', checkExpiration, async (req, res) => {
   try {
     const contract = await Contract.findByUuid(req.params.uuid);
     if (!contract) return res.status(404).send('Not found');
@@ -179,7 +197,7 @@ router.get('/:uuid/fill', async (req, res) => {
   }
 });
 
-router.post('/:uuid/fill', publicLimiter, async (req, res) => {
+router.post('/:uuid/fill', publicLimiter, checkExpiration, async (req, res) => {
   try {
     const contract = await Contract.findByUuid(req.params.uuid);
     if (!contract) return res.status(404).send('Not found');
@@ -214,7 +232,7 @@ router.post('/:uuid/fill', publicLimiter, async (req, res) => {
 });
 
 // Sign
-router.get('/:uuid/sign', async (req, res) => {
+router.get('/:uuid/sign', checkExpiration, async (req, res) => {
   try {
     const contract = await Contract.findByUuid(req.params.uuid);
     if (!contract) return res.status(404).send('Not found');
@@ -240,9 +258,13 @@ router.post('/:uuid/sign', publicLimiter, async (req, res) => {
       userAgent: req.headers['user-agent']
     };
 
-    // Prevent double-signing
+    // Prevent double-signing and expired signing
     const preCheck = await Contract.findByUuid(req.params.uuid);
-    if (preCheck && preCheck.status === 'signed') return res.redirect(`/c/${req.params.uuid}/complete`);
+    if (!preCheck) return res.status(404).send('Not found');
+    if (preCheck.status === 'signed' || preCheck.status === 'completed') return res.redirect(`/c/${req.params.uuid}/complete`);
+    if (preCheck.status === 'expired' || (preCheck.expires_at && new Date(preCheck.expires_at) < new Date())) {
+      return res.render('public/contract-expired', { contract: preCheck, layout: 'layouts/public', title: 'Contract Expired' });
+    }
 
     await Contract.updateSignature(req.params.uuid, signatureData);
     await Contract.updateStatus(preCheck.id, 'signed');
@@ -357,6 +379,30 @@ router.get('/:uuid/download', publicLimiter, async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).send('Error downloading');
+  }
+});
+
+// Request new link (expired contract)
+router.post('/:uuid/request-resend', publicLimiter, async (req, res) => {
+  try {
+    const contract = await Contract.findByUuid(req.params.uuid);
+    if (!contract) return res.status(404).send('Not found');
+
+    const msg = `Client ${contract.client_email} requested a new link for expired contract: ${contract.project_name || contract.uuid}`;
+    sendAdminNotification('Resend Requested', contract).catch(e => console.error(e)); 
+    
+    // Quick in-app notification
+    const { getDb } = require('../config/database');
+    const db = await getDb();
+    await db.run(
+      'INSERT INTO inapp_notifications (admin_id, message, link, is_read, created_at) VALUES (?, ?, ?, ?, ?)',
+      [contract.admin_id, msg, `/admin/contracts/${contract.id}`, false, new Date().toISOString()]
+    );
+
+    res.render('public/contract-expired-requested', { contract, layout: 'layouts/public', title: 'Request Sent' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Error requesting new link');
   }
 });
 

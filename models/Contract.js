@@ -48,8 +48,11 @@ class Contract {
 
     if (filters.status) {
       if (filters.status === 'expiring') {
-        conditions.push("DATE_ADD(created_at, INTERVAL 1 YEAR) BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 30 DAY)");
-        conditions.push("status NOT IN ('completed', 'declined', 'archived')");
+        const now = new Date();
+        const in48h = new Date(now.getTime() + (48 * 60 * 60 * 1000));
+        conditions.push("expires_at BETWEEN ? AND ?");
+        params.push(now.toISOString(), in48h.toISOString());
+        conditions.push("status IN ('sent', 'opened', 'filled')");
       } else {
         conditions.push('status = ?');
         params.push(filters.status);

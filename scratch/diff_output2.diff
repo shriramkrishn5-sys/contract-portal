@@ -1,0 +1,480 @@
+﻿diff --git a/models/Contract.js b/models/Contract.js
+index e8c6899..cec8726 100644
+--- a/models/Contract.js
++++ b/models/Contract.js
+@@ -48,8 +48,11 @@ class Contract {
+ 
+     if (filters.status) {
+       if (filters.status === 'expiring') {
+-        conditions.push("DATE_ADD(created_at, INTERVAL 1 YEAR) BETWEEN NOW() AND DATE_ADD(NOW(), INTERVAL 30 DAY)");
+-        conditions.push("status NOT IN ('completed', 'declined', 'archived')");
++        const now = new Date();
++        const in48h = new Date(now.getTime() + (48 * 60 * 60 * 1000));
++        conditions.push("expires_at BETWEEN ? AND ?");
++        params.push(now.toISOString(), in48h.toISOString());
++        conditions.push("status IN ('sent', 'opened', 'filled')");
+       } else {
+         conditions.push('status = ?');
+         params.push(filters.status);
+diff --git a/routes/contracts.js b/routes/contracts.js
+index 6903a16..fea049a 100644
+--- a/routes/contracts.js
++++ b/routes/contracts.js
+@@ -137,13 +137,7 @@ router.post('/create', async (req, res) => {
+       end_date: endDate.toISOString()
+     };
+ 
+-    if (req.body.expires_in && req.body.expires_in !== 'none') {
+-      const days = parseInt(req.body.expires_in);
+-      const expiresAt = new Date();
+-      expiresAt.setDate(expiresAt.getDate() + days);
+-      contractData.expires_at = expiresAt.toISOString();
+-    }
+-
++    // Expiration is now calculated when the contract is actually sent, not when created.
+     const contract = await Contract.create(contractData);
+ 
+     await AuditLog.create(req.admin.id, 'Created', 'Contract', contractData.project_name, `Contract created for ${contractData.client_name}`, req.ip);
+@@ -307,9 +301,15 @@ router.post('/:id/send', async (req, res) => {
+       return res.status(500).json({ success: false, error: 'Email failed to send: ' + (sendResult.error || 'Unknown error') });
+     }
+ 
+-    // Now update status
++    // Now update status and set expiration
+     await Contract.updateStatus(req.params.id, 'sent');
+     
++    const defaultDays = parseInt(res.locals.settings?.default_expiration_days) || 5;
++    const expiresAt = new Date();
++    expiresAt.setDate(expiresAt.getDate() + defaultDays);
++    const db = await getDb();
++    await db.run('UPDATE contracts SET expires_at = ? WHERE id = ?', [expiresAt.toISOString(), req.params.id]);
++    
+     // Notifications and logs
+     sendAdminNotification('Sent', contract).catch(e => console.error('Failed admin notification', e));
+     await AuditLog.create(req.admin.id, 'Sent', 'Contract', contract.project_name || req.params.id, `Contract sent to ${contract.client_email}`, req.ip);
+@@ -322,7 +322,31 @@ router.post('/:id/send', async (req, res) => {
+ });
+ 
+ router.post('/:id/resend', async (req, res) => {
+-  res.redirect(`/admin/contracts/${req.params.id}`);
++  try {
++    const contract = await Contract.findById(req.params.id);
++    if (!contract) return res.status(404).send('Not found');
++
++    contract.contractUrl = `${process.env.APP_URL || 'http://localhost:3000'}/c/${contract.uuid}`;
++    
++    const sendResult = await sendContractLink(contract, req.admin.name);
++    if (!sendResult.success) {
++      return res.status(500).json({ success: false, error: 'Email failed to send' });
++    }
++
++    const defaultDays = parseInt(res.locals.settings?.default_expiration_days) || 5;
++    const expiresAt = new Date();
++    expiresAt.setDate(expiresAt.getDate() + defaultDays);
++    
++    const db = await getDb();
++    await db.run('UPDATE contracts SET expires_at = ?, status = ? WHERE id = ?', [expiresAt.toISOString(), 'sent', contract.id]);
++
++    await AuditLog.create(req.admin.id, 'Resent', 'Contract', contract.project_name || req.params.id, `Contract link resent to ${contract.client_email} and expiration extended`, req.ip);
++
++    res.json({ success: true, message: 'Contract resent successfully' });
++  } catch (err) {
++    console.error(err);
++    res.status(500).json({ success: false, error: 'Error resending contract' });
++  }
+ });
+ 
+ router.post('/:id/cancel', async (req, res) => {
+diff --git a/routes/public.js b/routes/public.js
+index 0ac682d..3aee614 100644
+--- a/routes/public.js
++++ b/routes/public.js
+@@ -99,16 +99,34 @@ router.use('/:uuid', (req, res, next) => {
+   next();
+ });
+ 
++// Expiration Check Middleware for pre-signature routes
++async function checkExpiration(req, res, next) {
++  try {
++    const contract = await Contract.findByUuid(req.params.uuid);
++    if (!contract) return res.status(404).send('Contract not found');
++
++    // Never block signed, completed, or declined contracts
++    if (['signed', 'completed', 'declined'].includes(contract.status)) {
++      return next();
++    }
++    
++    if (contract.status === 'expired' || (contract.expires_at && new Date(contract.expires_at) < new Date())) {
++      return res.render('public/contract-expired', { contract, layout: 'layouts/public', title: 'Contract Expired' });
++    }
++
++    next();
++  } catch(err) {
++    next(err);
++  }
++}
++
+ // Welcome page (Step 1)
+-router.get('/:uuid', trackContractView, async (req, res) => {
++router.get('/:uuid', trackContractView, checkExpiration, async (req, res) => {
+   try {
+     const contract = await Contract.findByUuid(req.params.uuid);
+     if (!contract) return res.status(404).send('Contract not found');
+     const template = await Template.findById(contract.template_id);
+ 
+-    if (contract.expires_at && new Date(contract.expires_at) < new Date()) {
+-      return res.render('public/contract-expired', { layout: 'layouts/public', title: 'Contract Expired' });
+-    }
+     if (contract.status === 'signed') {
+       return res.render('public/contract-complete', { contract, layout: 'layouts/public', title: 'Contract Signed' });
+     }
+@@ -131,7 +149,7 @@ router.get('/:uuid', trackContractView, async (req, res) => {
+ });
+ 
+ // View contract document (Step 2)
+-router.get('/:uuid/review', async (req, res) => {
++router.get('/:uuid/review', checkExpiration, async (req, res) => {
+   try {
+     const contract = await Contract.findByUuid(req.params.uuid);
+     if (!contract) return res.status(404).send('Contract not found');
+@@ -148,7 +166,7 @@ router.get('/:uuid/review', async (req, res) => {
+ });
+ 
+ // Decline contract
+-router.post('/:uuid/decline', async (req, res) => {
++router.post('/:uuid/decline', checkExpiration, async (req, res) => {
+   try {
+     const contract = await Contract.findByUuid(req.params.uuid);
+     if (!contract) return res.status(404).send('Contract not found');
+@@ -166,7 +184,7 @@ router.post('/:uuid/decline', async (req, res) => {
+ 
+ 
+ // Fill form
+-router.get('/:uuid/fill', async (req, res) => {
++router.get('/:uuid/fill', checkExpiration, async (req, res) => {
+   try {
+     const contract = await Contract.findByUuid(req.params.uuid);
+     if (!contract) return res.status(404).send('Not found');
+@@ -179,7 +197,7 @@ router.get('/:uuid/fill', async (req, res) => {
+   }
+ });
+ 
+-router.post('/:uuid/fill', publicLimiter, async (req, res) => {
++router.post('/:uuid/fill', publicLimiter, checkExpiration, async (req, res) => {
+   try {
+     const contract = await Contract.findByUuid(req.params.uuid);
+     if (!contract) return res.status(404).send('Not found');
+@@ -214,7 +232,7 @@ router.post('/:uuid/fill', publicLimiter, async (req, res) => {
+ });
+ 
+ // Sign
+-router.get('/:uuid/sign', async (req, res) => {
++router.get('/:uuid/sign', checkExpiration, async (req, res) => {
+   try {
+     const contract = await Contract.findByUuid(req.params.uuid);
+     if (!contract) return res.status(404).send('Not found');
+@@ -240,9 +258,13 @@ router.post('/:uuid/sign', publicLimiter, async (req, res) => {
+       userAgent: req.headers['user-agent']
+     };
+ 
+-    // Prevent double-signing
++    // Prevent double-signing and expired signing
+     const preCheck = await Contract.findByUuid(req.params.uuid);
+-    if (preCheck && preCheck.status === 'signed') return res.redirect(`/c/${req.params.uuid}/complete`);
++    if (!preCheck) return res.status(404).send('Not found');
++    if (preCheck.status === 'signed' || preCheck.status === 'completed') return res.redirect(`/c/${req.params.uuid}/complete`);
++    if (preCheck.status === 'expired' || (preCheck.expires_at && new Date(preCheck.expires_at) < new Date())) {
++      return res.render('public/contract-expired', { contract: preCheck, layout: 'layouts/public', title: 'Contract Expired' });
++    }
+ 
+     await Contract.updateSignature(req.params.uuid, signatureData);
+     await Contract.updateStatus(preCheck.id, 'signed');
+@@ -360,4 +382,28 @@ router.get('/:uuid/download', publicLimiter, async (req, res) => {
+   }
+ });
+ 
++// Request new link (expired contract)
++router.post('/:uuid/request-resend', publicLimiter, async (req, res) => {
++  try {
++    const contract = await Contract.findByUuid(req.params.uuid);
++    if (!contract) return res.status(404).send('Not found');
++
++    const msg = `Client ${contract.client_email} requested a new link for expired contract: ${contract.project_name || contract.uuid}`;
++    sendAdminNotification('Resend Requested', contract).catch(e => console.error(e)); 
++    
++    // Quick in-app notification
++    const { getDb } = require('../config/database');
++    const db = await getDb();
++    await db.run(
++      'INSERT INTO inapp_notifications (admin_id, message, link, is_read, created_at) VALUES (?, ?, ?, ?, ?)',
++      [contract.admin_id, msg, `/admin/contracts/${contract.id}`, false, new Date().toISOString()]
++    );
++
++    res.render('public/contract-expired-requested', { contract, layout: 'layouts/public', title: 'Request Sent' });
++  } catch (err) {
++    console.error(err);
++    res.status(500).send('Error requesting new link');
++  }
++});
++
+ module.exports = router;
+diff --git a/scripts/migrate.js b/scripts/migrate.js
+index 01cb43d..8ae4fdc 100644
+--- a/scripts/migrate.js
++++ b/scripts/migrate.js
+@@ -81,7 +81,8 @@ async function migrate() {
+         signed_at TIMESTAMP,
+         expires_at TIMESTAMP,
+         reminder_count INT DEFAULT 0,
+-        last_reminder_at TIMESTAMP
++        last_reminder_at TIMESTAMP,
++        urgent_reminder_sent BOOLEAN DEFAULT 0
+       )`,
+       
+       `CREATE TABLE IF NOT EXISTS tracking_events (
+diff --git a/services/emailService.js b/services/emailService.js
+index c116665..2497ee6 100644
+--- a/services/emailService.js
++++ b/services/emailService.js
+@@ -59,7 +59,7 @@ async function sendContractLink(contract, adminName = null) {
+ /**
+  * Send a reminder email to the client
+  */
+-async function sendReminderEmail(contract) {
++async function sendReminderEmail(contract, urgency = 'normal') {
+   try {
+     const { transporter, fromEmail, companyName, settings } = await getEmailConfig();
+     
+@@ -68,12 +68,16 @@ async function sendReminderEmail(contract) {
+     contract.linkUrl = `${portalUrl}/contract/${contract.uuid}`;
+ 
+     const templatePath = path.join(__dirname, '../views/emails/reminder.ejs');
+-    const html = await ejs.renderFile(templatePath, { contract, settings });
++    const html = await ejs.renderFile(templatePath, { contract, settings, urgency });
++
++    const subject = urgency === 'urgent' 
++      ? `URGENT: Contract Expiring Soon - Action Required on ${contract.projectName || contract.project_name || 'Contract'}` 
++      : `Reminder: Action Required on ${contract.projectName || contract.project_name || 'Contract'}`;
+ 
+     const info = await transporter.sendMail({
+       from: `"${companyName}" <${fromEmail}>`,
+       to: contract.clientEmail || contract.client_email,
+-      subject: `Reminder: Action Required on ${contract.projectName || contract.project_name || 'Contract'}`,
++      subject,
+       html
+     });
+ 
+diff --git a/services/reminderService.js b/services/reminderService.js
+index 3d04e19..4f5037e 100644
+--- a/services/reminderService.js
++++ b/services/reminderService.js
+@@ -5,90 +5,87 @@ const { sendReminderEmail } = require('./emailService');
+ const AuditLog = require('../models/AuditLog');
+ 
+ async function checkAndSendReminders() {
+-  console.log('[ReminderService] Running scheduled reminder check...');
++  console.log('[ReminderService] Running scheduled reminder and expiration check...');
+   try {
++    const db = await getDb();
+     const settings = await Setting.getAll();
++    const now = new Date();
+     
+-    if (settings.reminders_enabled !== 'true') {
+-      console.log('[ReminderService] Reminders are disabled in settings. Skipping.');
+-      return;
+-    }
+-
+-    const firstDays = parseInt(settings.reminder_first_days) || 3;
+-    const intervalDays = parseInt(settings.reminder_interval_days) || 2;
+-    const maxCount = parseInt(settings.reminder_max_count) || 3;
+-
+-    const db = await getDb();
++    // Get all in-flight contracts
++    const contracts = await db.all("SELECT * FROM contracts WHERE status IN ('sent', 'opened', 'filled')");
+     
+-    // Get all contracts that are currently 'sent'
+-    const contracts = await db.all("SELECT * FROM contracts WHERE status = 'sent'");
+-
+-    const now = new Date();
+-    let sentCount = 0;
++    let expiredCount = 0;
++    let reminderCountTotal = 0;
++    let urgentCount = 0;
+ 
+     for (const contract of contracts) {
++      const expiresAt = contract.expires_at ? new Date(contract.expires_at) : null;
++      
++      // Sweep 1: Mark as Expired
++      if (expiresAt && expiresAt < now) {
++        console.log(`[ReminderService] Contract ${contract.uuid} has expired.`);
++        await db.run("UPDATE contracts SET status = 'expired' WHERE id = ?", [contract.id]);
++        await AuditLog.create(contract.admin_id, 'Expired', 'Contract', contract.uuid, `Contract automatically expired`, 'system');
++        expiredCount++;
++        continue;
++      }
++      
++      // If we made it here, contract is not expired.
++      if (settings.reminders_enabled !== 'true') continue;
++
+       const sentAt = new Date(contract.sent_at);
+       const reminderCount = contract.reminder_count || 0;
+       const lastReminderAt = contract.last_reminder_at ? new Date(contract.last_reminder_at) : null;
+ 
+-      if (reminderCount >= maxCount) {
+-        continue; // Reached max limit
++      // Sweep 2: Urgent 24-hour reminder
++      const urgentSent = contract.urgent_reminder_sent === 1 || contract.urgent_reminder_sent === true;
++      if (expiresAt && !urgentSent) {
++        const hoursUntilExpiry = (expiresAt - now) / (1000 * 60 * 60);
++        if (hoursUntilExpiry > 0 && hoursUntilExpiry <= 24) {
++          console.log(`[ReminderService] Sending URGENT 24h reminder for contract ${contract.uuid}`);
++          
++          const emailResult = await sendReminderEmail(contract, 'urgent');
++          
++          if (emailResult.success) {
++            await db.run("UPDATE contracts SET urgent_reminder_sent = ? WHERE id = ?", [true, contract.id]);
++            await AuditLog.create(contract.admin_id, 'Reminder Sent', 'Contract', contract.uuid, `Sent URGENT 24h reminder to ${contract.client_email}`, 'system');
++            urgentCount++;
++          }
++          continue; // Don't send normal reminder
++        }
+       }
+ 
+-      let shouldSend = false;
++      // Sweep 3: Normal Reminders
++      const firstDays = parseInt(settings.reminder_first_days) || 3;
++      const intervalDays = parseInt(settings.reminder_interval_days) || 2;
++      const maxCount = parseInt(settings.reminder_max_count) || 3;
++
++      if (reminderCount >= maxCount) continue;
+ 
++      let shouldSend = false;
+       if (reminderCount === 0) {
+-        // First reminder
+         const daysSinceSent = (now - sentAt) / (1000 * 60 * 60 * 24);
+-        if (daysSinceSent >= firstDays) {
+-          shouldSend = true;
+-        }
+-      } else {
+-        // Subsequent reminders
++        if (daysSinceSent >= firstDays) shouldSend = true;
++      } else if (reminderCount < maxCount) {
+         if (lastReminderAt) {
+           const daysSinceLast = (now - lastReminderAt) / (1000 * 60 * 60 * 24);
+-          if (daysSinceLast >= intervalDays) {
+-            shouldSend = true;
+-          }
++          if (daysSinceLast >= intervalDays) shouldSend = true;
+         }
+       }
+ 
+       if (shouldSend) {
+         console.log(`[ReminderService] Sending reminder ${reminderCount + 1} for contract ${contract.uuid}`);
+-        
+-        // Send email
+         const emailResult = await sendReminderEmail(contract);
+         
+         if (emailResult.success) {
+-          const newNow = new Date().toISOString();
+-          
+-          // Update database
+-          await db.run(
+-            `UPDATE contracts SET reminder_count = reminder_count + 1, last_reminder_at = ? WHERE id = ?`,
+-            [newNow, contract.id]
+-          );
+-          
+-          // Log to audit log
+-          await AuditLog.create(
+-            contract.admin_id,
+-            'Reminder Sent',
+-            'Contract',
+-            contract.uuid,
+-            `Sent automated reminder #${reminderCount + 1} to ${contract.client_email || contract.clientEmail}`,
+-            'system'
+-          );
+-          
+-          sentCount++;
++          await db.run("UPDATE contracts SET reminder_count = reminder_count + 1, last_reminder_at = ? WHERE id = ?", [now.toISOString(), contract.id]);
++          await AuditLog.create(contract.admin_id, 'Reminder Sent', 'Contract', contract.uuid, `Sent automated reminder #${reminderCount + 1} to ${contract.client_email}`, 'system');
++          reminderCountTotal++;
+         }
+       }
+     }
+     
+-    if (sentCount > 0) {
+-      console.log(`[ReminderService] Successfully sent ${sentCount} reminders.`);
+-    } else {
+-      console.log('[ReminderService] No reminders needed at this time.');
+-    }
+-
++    console.log(`[ReminderService] Done. Expired: ${expiredCount}. Urgent Reminders: ${urgentCount}. Normal Reminders: ${reminderCountTotal}.`);
+   } catch (err) {
+     console.error('[ReminderService] Error during reminder check:', err);
+   }
+diff --git a/views/admin/settings.ejs b/views/admin/settings.ejs
+index 349c4b3..3a2e424 100644
+--- a/views/admin/settings.ejs
++++ b/views/admin/settings.ejs
+@@ -236,6 +236,10 @@
+               <label>Default Jurisdiction</label>
+               <input type="text" name="default_jurisdiction" value="<%= settings.default_jurisdiction || 'New Delhi, India' %>" class="form-control">
+             </div>
++            <div class="form-group">
++              <label>Default Expiration (Days)</label>
++              <input type="number" name="default_expiration_days" value="<%= settings.default_expiration_days || '5' %>" class="form-control" min="1" max="90">
++            </div>
+             <div class="form-group">
+               <label>Default Notice Period</label>
+               <input type="text" name="default_notice_period" value="<%= settings.default_notice_period || '30 Days' %>" class="form-control">
+diff --git a/views/emails/reminder.ejs b/views/emails/reminder.ejs
+index bfcdee6..f18f6b6 100644
+--- a/views/emails/reminder.ejs
++++ b/views/emails/reminder.ejs
+@@ -27,11 +27,15 @@
+                     <!-- Body Content -->
+                     <tr>
+                         <td style="padding: 40px 40px 20px 40px;">
+-                            <h2 style="margin: 0 0 20px 0; font-size: 22px; color: #111827;">Reminder: Signature Requested</h2>
+-                            
+-                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-top: 0;">Dear <strong><%= contract.clientName %></strong>,</p>
+-                            
+-                            <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">This is a gentle reminder that <%= locals.settings?.company_name || 'KKeyQik Private Limited' %> is waiting for your signature on the following document. Please review and sign it at your earliest convenience.</p>
++                            <% if (locals.urgency === 'urgent') { %>
++                                <h2 style="margin: 0 0 20px 0; font-size: 22px; color: #dc2626;">URGENT: Contract Expiring Soon</h2>
++                                <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-top: 0;">Dear <strong><%= contract.clientName || contract.client_name %></strong>,</p>
++                                <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">This is an urgent reminder that your contract link will expire in less than 24 hours. Please review and sign the document immediately to avoid having to request a new link.</p>
++                            <% } else { %>
++                                <h2 style="margin: 0 0 20px 0; font-size: 22px; color: #111827;">Reminder: Signature Requested</h2>
++                                <p style="font-size: 16px; line-height: 1.6; color: #4b5563; margin-top: 0;">Dear <strong><%= contract.clientName || contract.client_name %></strong>,</p>
++                                <p style="font-size: 16px; line-height: 1.6; color: #4b5563;">This is a gentle reminder that <%= locals.settings?.company_name || 'KKeyQik Contracts' %> is waiting for your signature on the following document. Please review and sign it at your earliest convenience.</p>
++                            <% } %>
+                             
+                             <!-- Document Details Box -->
+                             <table border="0" cellpadding="20" cellspacing="0" width="100%" style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; margin: 30px 0;">
+diff --git a/views/public/contract-expired.ejs b/views/public/contract-expired.ejs
+index 791fbd1..3349bda 100644
+--- a/views/public/contract-expired.ejs
++++ b/views/public/contract-expired.ejs
+@@ -1,9 +1,17 @@
+-<div class="card text-center py-5">
+-  <div style="font-size: 4rem; color: var(--portal-danger); margin-bottom: 1rem;">ΓÜá∩╕Å</div>
+-  <h2 class="mb-3">This Contract Link Has Expired</h2>
+-  <p class="text-muted mb-4">The time allowed to view or sign this contract has passed. Please request a new link.</p>
++<div class="card text-center py-5 shadow-sm" style="max-width: 500px; margin: 0 auto; border-radius: 12px; border: 1px solid var(--portal-border);">
++  <div style="font-size: 4rem; color: #dc3545; margin-bottom: 1rem;">ΓÜá∩╕Å</div>
++  <h2 class="mb-3" style="font-weight: 600; color: var(--portal-text);">Link Expired</h2>
++  <p class="text-muted mb-4" style="font-size: 1.1rem; line-height: 1.5;">
++    The time allowed to view or sign this contract has passed. For security, contract links expire after a set period.
++  </p>
+   
++  <form action="/c/<%= contract.uuid %>/request-resend" method="POST" class="mb-4">
++    <button type="submit" class="btn btn-primary btn-lg px-4" style="border-radius: 8px; font-weight: 500;">
++      Request a New Link
++    </button>
++  </form>
++
+   <div class="mt-4 pt-4 border-top text-muted" style="font-size: 0.875rem;">
+-    Contact us at hello@kkeyqik.com
++    If you need immediate assistance, contact us at <a href="mailto:contract@kkeyqik.com" style="color: var(--portal-primary); text-decoration: none;">contract@kkeyqik.com</a>
+   </div>
+ </div>

@@ -237,6 +237,10 @@
               <input type="text" name="default_jurisdiction" value="<%= settings.default_jurisdiction || 'New Delhi, India' %>" class="form-control">
             </div>
             <div class="form-group">
+              <label>Default Expiration (Days)</label>
+              <input type="number" name="default_expiration_days" value="<%= settings.default_expiration_days || '5' %>" class="form-control" min="1" max="90">
+            </div>
+            <div class="form-group">
               <label>Default Notice Period</label>
               <input type="text" name="default_notice_period" value="<%= settings.default_notice_period || '30 Days' %>" class="form-control">
             </div>
