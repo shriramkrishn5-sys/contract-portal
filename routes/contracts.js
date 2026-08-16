@@ -127,6 +127,7 @@ router.post('/create', async (req, res) => {
       client_name: req.body.clientName || req.body.client_name,
       client_email: req.body.clientEmail || req.body.client_email,
       client_region: req.body.clientRegion || res.locals.settings?.default_region || 'international',
+      client_type: req.body.clientType || 'company',
       selected_clauses: req.body.clauses ? Object.values(req.body.clauses).filter(c => c.enabled === 'true').map(c => ({
         title: c.title,
         content: c.content,
@@ -225,7 +226,8 @@ router.post('/:id/edit', async (req, res) => {
       timeline: req.body.timePeriod || '',
       client_name: req.body.clientName || req.body.client_name,
       client_email: req.body.clientEmail || req.body.client_email,
-      client_region: req.body.clientRegion
+      client_region: req.body.clientRegion,
+      client_type: req.body.clientType || 'company'
     };
 
     const db = await getDb();

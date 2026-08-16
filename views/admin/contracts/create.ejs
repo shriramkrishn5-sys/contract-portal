@@ -36,6 +36,15 @@
               ? 'selected' : '' %>>Foreign</option>
           </select>
         </div>
+        <div class="form-group">
+          <label class="form-label">Client Type</label>
+          <select name="clientType" id="clientType" class="form-control" required>
+            <option value="company" <%=(typeof contract !=='undefined' && contract.client_type==='company' )
+              ? 'selected' : '' %>>Company</option>
+            <option value="individual" <%=(typeof contract !=='undefined' && contract.client_type==='individual' )
+              ? 'selected' : '' %>>Individual</option>
+          </select>
+        </div>
       </div>
     </div>
 

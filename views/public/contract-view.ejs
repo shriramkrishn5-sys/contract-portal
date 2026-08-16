@@ -177,7 +177,13 @@
           <% if (template && template.content_sections) { %>
             <% let sections = [];
                try { sections = typeof template.content_sections === 'string' ? JSON.parse(template.content_sections) : template.content_sections; } catch(e){} 
-               sections.forEach(section => { %>
+               sections.forEach(section => {
+                 // Check section-level condition (e.g. "client_type:company")
+                 if (section.condition) {
+                   const [field, value] = section.condition.split(':');
+                   if (contract[field] !== value) return; // skip this section
+                 }
+               %>
                 <div class="clause-block">
                   <h3><%= section.title %></h3>
                   <p style="white-space: pre-wrap;"><%- parseTemplateVars(section.content, contract, settings).replace(/\n/g, '<br>') %></p>

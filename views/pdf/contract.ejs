@@ -300,7 +300,13 @@
                try { sections = typeof template.content_sections === 'string' ? JSON.parse(template.content_sections) : template.content_sections; } catch(e){}
                // Skip the last section if it's a "Signatures" section to avoid duplication
                const filteredSections = sections.filter(s => !s.title.toLowerCase().includes('signature'));
-               filteredSections.forEach(section => { %>
+               filteredSections.forEach(section => {
+                 // Check section-level condition (e.g. "client_type:company")
+                 if (section.condition) {
+                   const [field, value] = section.condition.split(':');
+                   if (contract[field] !== value) return;
+                 }
+               %>
                 <div class="section">
                     <div class="section-title"><%= section.title %></div>
                     <div class="clause-content" style="white-space: pre-wrap;"><%- parseTemplateVars(section.content, contract, settings).replace(/\n/g, '<br>') %></div>
@@ -318,7 +324,7 @@
                 <div class="clause-content">Amount: <%= contract.currency || 'USD' %> <%= contract.total_amount %></div>
             </div>
             <% } %>
-        <% } %>
+        <% } %>      </div>
 
         <% const activeClauses = (contract.selected_clauses || []).filter(c => c.defaultEnabled !== false);
            if (activeClauses.length > 0) { %>
@@ -367,8 +373,13 @@
                     <% } %>
                 </div>
                 <div class="signature-meta">
+                    <% if (contract.client_type !== 'individual') { %>
                     <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= contract.client_selections?.client_signatory_name || contract.client_name || 'Authorized Signatory' %></p>
-                    <p><%= contract.client_selections?.client_designation || contract.client_designation || contract.client_company || 'Client' %></p>
+                    <p>Authorized Signatory</p>
+                    <p><%= contract.client_name || contract.client_company || 'Client' %></p>
+                    <% } else { %>
+                    <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= contract.client_name || 'Client' %></p>
+                    <% } %>
                     <% if (typeof audit !== 'undefined' && audit && audit.timestamp) { %>
                         <p>Date: <%= new Date(audit.timestamp).toLocaleDateString() %></p>
                         <p>IP: <%= (audit.ip === '::1' || audit.ip === '127.0.0.1') ? 'Local Network' : (audit.ip || 'N/A') %></p>

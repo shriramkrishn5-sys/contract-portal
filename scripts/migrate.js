@@ -66,6 +66,7 @@ async function migrate() {
         client_phone VARCHAR(50),
         client_address TEXT,
         client_region VARCHAR(50) DEFAULT 'indian',
+        client_type VARCHAR(50) DEFAULT 'company',
         client_selections TEXT,
         client_filled_at TIMESTAMP,
         signature_data TEXT,

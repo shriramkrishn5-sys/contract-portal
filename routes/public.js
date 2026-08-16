@@ -30,6 +30,22 @@ function parseTemplateVars(text, contract, settings) {
   
   let renderedText = text;
 
+  // 0. Process conditional blocks BEFORE variable replacement
+  // Supports: {{#if_company}}...{{/if_company}}, {{#if_individual}}...{{/if_individual}},
+  //           {{#if_indian}}...{{/if_indian}}, {{#if_foreign}}...{{/if_foreign}}
+  const conditionals = {
+    company: contract.client_type !== 'individual',
+    individual: contract.client_type === 'individual',
+    indian: (contract.client_region || '').toLowerCase() === 'indian',
+    foreign: (contract.client_region || '').toLowerCase() !== 'indian'
+  };
+
+  renderedText = renderedText.replace(
+    /\{\{#if_(company|individual|indian|foreign)\}\}([\s\S]*?)\{\{\/if_\1\}\}/g,
+    (match, type, content) => conditionals[type] ? content : ''
+  );
+
+
   // 1. Dynamic replacement for ALL fields inside the contract object
   const matches = renderedText.match(/\{\{([^}]+)\}\}/g);
   if (matches) {
@@ -51,7 +67,15 @@ function parseTemplateVars(text, contract, settings) {
         const d = contract[varName];
         val = d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) : `[${varName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}]`;
       } else if (varName === 'company_name') {
-        val = settings?.company_name || 'KKeyQik Private Limited';
+        val = contract.company_name || settings?.company_name || 'KKeyQik Private Limited';
+      } else if (varName === 'company_cin') {
+        val = contract.company_cin || settings?.company_cin || 'U73100UP2025PTC224880';
+      } else if (varName === 'company_gstin') {
+        val = contract.company_gstin || settings?.company_gstin || '09AALCK9039M1ZP';
+      } else if (varName === 'company_address') {
+        val = contract.company_address || settings?.company_address || 'H-235 A, Sector-12, Pratap Vihar, Ghaziabad - 201009, Uttar Pradesh, India';
+      } else if (varName === 'authorized_signatory') {
+        val = contract.authorized_signatory || settings?.authorized_signatory || 'Naman Agarwal';
       } else if (varName === 'client_signatory_name') {
         val = contract.client_selections?.client_signatory_name || contract.client_name || '[Client Signatory Name]';
       } else if (varName === 'client_signatory_title') {
@@ -79,10 +103,20 @@ function parseTemplateVars(text, contract, settings) {
     });
   }
 
-  // 2. Inject Admin Signature
+  // 2. Inject Admin & Client Signatures
   if (settings?.company_signature) {
-    const sigHtml = `<br><img src="${settings.company_signature}" alt="Company Signature" style="max-height: 80px; max-width: 300px; mix-blend-mode: multiply; transform: scale(1.5); transform-origin: left bottom; margin-left: 10px;"><br>`;
+    const sigHtml = `<br><img src="${settings.company_signature}" alt="Company Signature" style="max-height: 70px; max-width: 250px; mix-blend-mode: multiply; transform: scale(1.4); transform-origin: left bottom; margin-top: 5px;"><br>`;
     renderedText = renderedText.replace(/Signature:\s*_{5,}/i, `Signature: ${sigHtml}`);
+  } else {
+    const sigTextHtml = `<br><span style="font-family: 'Dancing Script', cursive, serif; font-size: 20pt; color: #1e293b;">${contract.authorized_signatory || settings?.authorized_signatory || 'Naman Agarwal'}</span><br>`;
+    renderedText = renderedText.replace(/Signature:\s*_{5,}/i, `Signature: ${sigTextHtml}`);
+  }
+
+  if (contract.signature_data) {
+    const clientSigHtml = `<br><img src="${contract.signature_data}" alt="Client Signature" style="max-height: 70px; max-width: 250px; mix-blend-mode: multiply; margin-top: 5px;"><br>`;
+    renderedText = renderedText.replace(/Signature:\s*_{5,}/i, `Signature: ${clientSigHtml}`);
+  } else {
+    renderedText = renderedText.replace(/Signature:\s*_{5,}/i, `Signature: <span style="color: #94a3b8; font-style: italic;">[Awaiting Electronic Signature]</span>`);
   }
   
   // 3. Parse basic Markdown bold (**text**)
