@@ -11,7 +11,7 @@ async function run() {
         title: '1. Parties',
         order: 1,
         required: true,
-        content: `This Video Production Agreement (the "Agreement") is entered into as of {{start_date}} (the "Effective Date"), by and between the following parties:\n\n1.1 Service Provider. {{company_name}}, a company incorporated under the Companies Act, 2013, with CIN U73100UP2025PTC224880 and GSTIN 09AALCK9039M1ZP, having its registered office at {{company_address}} ("Service Provider" or "Company"), represented by {{authorized_signatory}}, its duly authorized signatory.\n\n1.2 Client. {{#if_company}}{{client_name}}, located at {{client_address}} ("Client"), acting through its authorized signatory, {{client_signatory_name}}, in connection with Client's product "{{project_name}}."{{/if_company}}{{#if_individual}}{{client_name}}, located at {{client_address}} ("Client").{{/if_individual}}`
+        content: `This Video Production Agreement (the "Agreement") is entered into as of {{start_date}} (the "Effective Date"), by and between the following parties:\n\n1.1 Service Provider. {{company_name}}, a company incorporated under the Companies Act, 2013, with CIN U73100UP2025PTC224880 and GSTIN 09AALCK9039M1ZP, having its registered office at {{company_address}} ("Service Provider" or "Company"), represented by {{authorized_signatory}}, its duly authorized signatory.\n\n1.2 Client. {{#if_company}}{{client_display_name}}, {{client_entity_type_phrase}}located at {{client_address}} ("Client"), acting through its authorized signatory, {{client_signatory_name}} ({{client_signatory_title}}), in connection with Client's product "{{project_name}}."{{/if_company}}{{#if_individual}}{{client_name}}, located at {{client_address}} ("Client").{{/if_individual}}`
       },
       {
         id: 'liability_client',
@@ -19,7 +19,7 @@ async function run() {
         order: 2,
         required: true,
         condition: 'client_type:company',
-        content: `The Client's obligations under this Agreement are obligations solely of {{client_name}}. No member, manager, officer, employee, representative, or authorized signatory of {{client_name}} \u2014 including {{client_signatory_name}} \u2014 shall have personal liability under this Agreement solely because they sign this Agreement or act on behalf of {{client_name}}.`
+        content: `The Client's obligations under this Agreement are obligations solely of {{client_display_name}}. No member, manager, officer, employee, representative, or authorized signatory of {{client_display_name}} \u2014 including {{client_signatory_name}} \u2014 shall have personal liability under this Agreement solely because they sign this Agreement or act on behalf of {{client_display_name}}.`
       },
       {
         id: 'liability_provider',

@@ -50,6 +50,11 @@
   </div>
   
   <form action="/c/<%= contract.uuid %>/fill" method="POST" id="fillForm">
+    <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+      <div class="alert alert-danger mb-4" style="background-color: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; padding: 1rem 1.25rem; border-radius: 8px; font-weight: 500;">
+        <strong>Validation Error:</strong> <%= errorMessage %>
+      </div>
+    <% } %>
     <div class="form-layout-wrapper mt-4">
       
       <!-- Left Column: Inputs -->
@@ -57,23 +62,54 @@
         <h4 style="font-size: 1.1rem; font-weight: 600; color: var(--portal-dark); margin-bottom: 1.25rem;">Your Information <span style="font-size: 0.8rem; color: var(--portal-text-muted); font-weight: 400; margin-left: 0.5rem;">All fields marked with * are required.</span></h4>
         
         <div class="form-inputs-section">
-          <!-- Full Name -->
+          <!-- Full Name / Signatory Name -->
           <div class="form-group">
-            <label class="form-label">Full Legal Name *</label>
+            <label class="form-label"><%= contract.client_type === 'individual' ? 'Full Legal Name *' : 'Authorized Signatory Name *' %></label>
             <div class="input-with-icon">
               <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-              <input type="text" name="client_name" class="form-control" value="<%= contract.client_name || '' %>" required placeholder="Viral Kohli">
+              <input type="text" name="client_name" class="form-control" value="<%= contract.client_name || '' %>" required placeholder="<%= contract.client_type === 'individual' ? 'Viral Kohli' : 'Saroj Powar' %>">
             </div>
           </div>
           
-          <!-- Company Name -->
+          <% if (contract.client_type !== 'individual') { %>
+          <!-- Company Legal Name -->
           <div class="form-group">
-            <label class="form-label">Company / Business Name <span style="color: var(--portal-text-muted); font-weight: normal;">(Optional)</span></label>
+            <label class="form-label">Company / Entity Legal Name *</label>
             <div class="input-with-icon">
               <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>
-              <input type="text" name="client_company" class="form-control" value="<%= contract.client_company || '' %>" placeholder="Enter company or business name">
+              <input type="text" name="client_company" class="form-control" value="<%= contract.client_company || '' %>" required placeholder="Bind AI LLC">
             </div>
           </div>
+
+          <!-- Entity Structure Type -->
+          <div class="form-group">
+            <label class="form-label">Company / Entity Type *</label>
+            <div class="input-with-icon">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16"></path><path d="M9 7h6"></path><path d="M9 11h6"></path><path d="M9 15h6"></path></svg>
+              <select name="client_entity_type" id="entityTypeSelect" class="form-control" required onchange="toggleCustomEntityInput(this.value)">
+                <option value="" disabled <%= !contract.client_entity_type ? 'selected' : '' %>>-- Select Company Structure --</option>
+                <option value="llc" <%= contract.client_entity_type === 'llc' ? 'selected' : '' %>>Limited Liability Company (LLC)</option>
+                <option value="pvt_ltd" <%= contract.client_entity_type === 'pvt_ltd' ? 'selected' : '' %>>Private Limited Company (Pvt Ltd)</option>
+                <option value="public_ltd" <%= contract.client_entity_type === 'public_ltd' ? 'selected' : '' %>>Public Limited Company (Ltd)</option>
+                <option value="corp" <%= contract.client_entity_type === 'corp' ? 'selected' : '' %>>Corporation (Inc. / Corp.)</option>
+                <option value="partnership" <%= contract.client_entity_type === 'partnership' ? 'selected' : '' %>>Partnership Firm / LLP</option>
+                <option value="proprietorship" <%= contract.client_entity_type === 'proprietorship' ? 'selected' : '' %>>Sole Proprietorship</option>
+                <option value="non_profit" <%= contract.client_entity_type === 'non_profit' ? 'selected' : '' %>>Non-Profit Organization / NGO</option>
+                <option value="society_trust" <%= contract.client_entity_type === 'society_trust' ? 'selected' : '' %>>Society / Trust / Foundation</option>
+                <option value="other" <%= contract.client_entity_type === 'other' ? 'selected' : '' %>>Other Legal Entity (Specify Below)</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Custom Entity Type Input (shown when "other" selected) -->
+          <div class="form-group full-width" id="customEntityTypeGroup" style="display: <%= contract.client_entity_type === 'other' ? 'block' : 'none' %>;">
+            <label class="form-label">Please Specify Entity Type *</label>
+            <div class="input-with-icon">
+              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+              <input type="text" name="client_entity_type_custom" id="customEntityTypeInput" class="form-control" value="<%= contract.client_entity_type_custom || '' %>" placeholder="e.g. Statutory Body, Joint Venture, Government Entity" <%= contract.client_entity_type === 'other' ? 'required' : '' %>>
+            </div>
+          </div>
+          <% } %>
 
           <!-- Email -->
           <div class="form-group">
@@ -116,12 +152,28 @@
 
           <!-- Designation -->
           <div class="form-group full-width" style="margin-bottom: 0;">
-            <label class="form-label">Designation / Your Role <span style="color: var(--portal-text-muted); font-weight: normal;">(Optional)</span></label>
+            <label class="form-label"><%= contract.client_type === 'individual' ? 'Designation / Your Role (Optional)' : 'Designation / Your Role *' %></label>
             <div class="input-with-icon">
               <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path></svg>
-              <input type="text" name="client_designation" class="form-control" value="<%= contract.client_designation || '' %>" placeholder="e.g. Director, Founder, Project Manager">
+              <input type="text" name="client_designation" class="form-control" value="<%= contract.client_designation || '' %>" <%= contract.client_type === 'individual' ? '' : 'required' %> placeholder="e.g. Director, Founder, Project Manager">
             </div>
           </div>
+        </div>
+
+        <script>
+          function toggleCustomEntityInput(val) {
+            const group = document.getElementById('customEntityTypeGroup');
+            const input = document.getElementById('customEntityTypeInput');
+            if (val === 'other') {
+              group.style.display = 'block';
+              input.setAttribute('required', 'required');
+            } else {
+              group.style.display = 'none';
+              input.removeAttribute('required');
+              input.value = '';
+            }
+          }
+        </script>
         </div>
       </div>
       

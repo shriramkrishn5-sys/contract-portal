@@ -86,8 +86,8 @@
   <div class="metadata-right">
     <div class="meta-party-col">
       <span class="party-label">Prepared for</span>
-      <strong class="party-name"><%= contract.client_name || 'Client' %></strong>
-      <span class="party-sub"><%= contract.client_address || contract.client_email || 'Client Address' %></span>
+      <strong class="party-name"><%= (contract.client_type !== 'individual' && contract.client_company) ? contract.client_company : (contract.client_name || 'Client') %></strong>
+      <span class="party-sub"><%= contract.client_type !== 'individual' ? ('Represented by ' + (contract.client_name || 'Authorized Representative') + (contract.client_designation ? ' (' + contract.client_designation + ')' : '')) : (contract.client_address || contract.client_email || 'Client Address') %></span>
     </div>
     <div class="meta-party-col">
       <span class="party-label">Prepared by</span>

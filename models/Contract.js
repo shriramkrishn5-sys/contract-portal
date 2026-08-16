@@ -205,7 +205,8 @@ class Contract {
     let updateFields = `
         client_name = ?, client_email = ?, client_company = ?, 
         client_designation = ?, client_phone = ?, client_address = ?, 
-        client_region = ?, client_selections = ?, client_filled_at = ?,
+        client_region = ?, client_entity_type = ?, client_entity_type_custom = ?,
+        client_selections = ?, client_filled_at = ?,
         status = 'filled'`;
 
     let params = [
@@ -216,6 +217,8 @@ class Contract {
       clientData.client_phone || '',
       clientData.client_address || '',
       clientData.client_region || 'international',
+      clientData.client_entity_type || null,
+      clientData.client_entity_type_custom || null,
       selections,
       now
     ];

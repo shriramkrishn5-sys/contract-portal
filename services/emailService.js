@@ -65,7 +65,7 @@ async function sendReminderEmail(contract, urgency = 'normal') {
     
     // Build the public link for the client
     const portalUrl = process.env.APP_URL || 'http://localhost:3000';
-    contract.linkUrl = `${portalUrl}/contract/${contract.uuid}`;
+    contract.linkUrl = `${portalUrl}/c/${contract.uuid}`;
 
     const templatePath = path.join(__dirname, '../views/emails/reminder.ejs');
     const html = await ejs.renderFile(templatePath, { contract, settings, urgency });

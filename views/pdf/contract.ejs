@@ -292,7 +292,7 @@
             
             <p style="text-align: center; font-style: italic; margin: 15px 0;">AND</p>
             
-            <p><strong><%= contract.client_name || '[Client Name]' %></strong>, having its principal place of business at <%= contract.client_selections?.client_address || contract.client_address || contract.client_company || '[Client Address]' %> ("Client").</p>
+            <p><strong><%= (contract.client_type !== 'individual' && contract.client_company) ? contract.client_company : (contract.client_name || '[Client Name]') %></strong>, having its principal place of business at <%= contract.client_selections?.client_address || contract.client_address || contract.client_company || '[Client Address]' %> ("Client").</p>
         </div>
 
         <% if (template && template.content_sections) { %>

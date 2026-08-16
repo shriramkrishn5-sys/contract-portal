@@ -50,6 +50,22 @@ async function generateContractPdf(contractData, templateData, signatureData, au
     // Determine path to the EJS template
     const templatePath = path.join(__dirname, '../views/pdf/contract.ejs');
     
+    const getClientEntityTypeLabel = (contract) => {
+      if (!contract) return '';
+      const entityType = contract.client_entity_type;
+      const customType = contract.client_entity_type_custom;
+      if (entityType === 'llc') return 'a Limited Liability Company';
+      if (entityType === 'pvt_ltd') return 'a Private Limited Company';
+      if (entityType === 'public_ltd') return 'a Public Limited Company';
+      if (entityType === 'corp') return 'a Corporation';
+      if (entityType === 'partnership') return 'a Partnership Firm';
+      if (entityType === 'proprietorship') return 'a Sole Proprietorship';
+      if (entityType === 'non_profit') return 'a Non-Profit Organization';
+      if (entityType === 'society_trust') return 'a Society/Trust';
+      if (entityType === 'other' && customType) return `a ${customType}`;
+      return '';
+    };
+
     const parseTemplateVars = (text, contract, settings) => {
       if (!text) return '';
       
@@ -106,10 +122,17 @@ async function generateContractPdf(contractData, templateData, signatureData, au
             val = contract.company_address || settings?.company_address || 'H-235 A, Sector-12, Pratap Vihar, Ghaziabad - 201009, Uttar Pradesh, India';
           } else if (varName === 'authorized_signatory') {
             val = contract.authorized_signatory || settings?.authorized_signatory || 'Naman Agarwal';
+          } else if (varName === 'client_display_name') {
+            val = (contract.client_type !== 'individual' && contract.client_company) ? contract.client_company : (contract.client_name || '[Client Name]');
+          } else if (varName === 'client_entity_type_label') {
+            val = getClientEntityTypeLabel(contract);
+          } else if (varName === 'client_entity_type_phrase') {
+            const label = getClientEntityTypeLabel(contract);
+            val = label ? `${label}, ` : '';
           } else if (varName === 'client_signatory_name') {
             val = contract.client_selections?.client_signatory_name || contract.client_name || '[Client Signatory Name]';
           } else if (varName === 'client_signatory_title') {
-            val = contract.client_selections?.client_signatory_title || '[Client Signatory Title]';
+            val = contract.client_selections?.client_signatory_title || contract.client_designation || '[Client Signatory Title]';
           } else if (varName === 'client_address') {
             val = contract.client_selections?.client_address || contract.client_address || contract.client_company || '[Client Address]';
           } else if (varName === 'payment_terms_section') {
@@ -126,8 +149,8 @@ async function generateContractPdf(contractData, templateData, signatureData, au
             val = contract[varName];
           }
 
-          if (val !== '') {
-            if (shouldBold) val = `<strong style="font-weight: bold;">${val}</strong>`;
+          if (val !== undefined && val !== null) {
+            if (shouldBold && val !== '') val = `<strong style="font-weight: bold;">${val}</strong>`;
             renderedText = renderedText.split(match).join(val);
           }
         });
