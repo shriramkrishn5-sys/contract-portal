@@ -184,9 +184,9 @@
                    if (contract[field] !== value) return; // skip this section
                  }
                %>
-                <div class="clause-block">
+                 <div class="clause-block">
                   <h3><%= section.title %></h3>
-                  <p style="white-space: pre-wrap;"><%- parseTemplateVars(section.content, contract, settings).replace(/\n/g, '<br>') %></p>
+                  <p style="white-space: pre-wrap;"><%- parseTemplateVars(section.content, contract, settings) %></p>
                 </div>
             <% }) %>
           <% } else if (template && template.body) { %>
@@ -207,7 +207,7 @@
               <% contract.selected_clauses.forEach((clause, index) => { %>
                   <div class="clause-block mb-3">
                       <strong><%= clause.title || 'Clause' %></strong>
-                      <p class="mb-1"><%- parseTemplateVars(clause.content, contract, settings).replace(/\n/g, '<br>') %></p>
+                      <p class="mb-1" style="white-space: pre-wrap;"><%- parseTemplateVars(clause.content, contract, settings) %></p>
                   </div>
               <% }); %>
           <% } %>

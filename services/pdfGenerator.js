@@ -69,6 +69,9 @@ async function generateContractPdf(contractData, templateData, signatureData, au
     const parseTemplateVars = (text, contract, settings) => {
       if (!text) return '';
       
+      // Normalize Windows CRLF (\r\n) to LF (\n)
+      text = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+      
       // Format currency properly
       const amount = parseFloat(contract.total_amount) || 0;
       const currencyCode = contract.currency || 'INR';
@@ -147,6 +150,7 @@ async function generateContractPdf(contractData, templateData, signatureData, au
             val = terms;
           } else if (contract[varName] !== undefined && contract[varName] !== null) {
             val = contract[varName];
+            if (typeof val === 'string') val = val.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
           }
 
           if (val !== undefined && val !== null) {

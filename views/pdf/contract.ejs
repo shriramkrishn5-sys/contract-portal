@@ -309,7 +309,7 @@
                %>
                 <div class="section">
                     <div class="section-title"><%= section.title %></div>
-                    <div class="clause-content" style="white-space: pre-wrap;"><%- parseTemplateVars(section.content, contract, settings).replace(/\n/g, '<br>') %></div>
+                    <div class="clause-content" style="white-space: pre-wrap;"><%- parseTemplateVars(section.content, contract, settings) %></div>
                 </div>
             <% }) %>
         <% } else { %>
@@ -333,7 +333,7 @@
                 <% activeClauses.forEach((clause, index) => { %>
                     <div class="clause">
                         <div class="clause-title"><%= (index + 1) + '. ' + (clause.title || 'Clause') %></div>
-                        <div class="clause-content"><%- parseTemplateVars(clause.content, contract, settings).replace(/\n/g, '<br>') %></div>
+                        <div class="clause-content" style="white-space: pre-wrap;"><%- parseTemplateVars(clause.content, contract, settings) %></div>
                     </div>
                 <% }); %>
             </div>
