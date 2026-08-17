@@ -38,32 +38,32 @@
   </div>
 </div>
 
-<div class="card gsap-stagger" style="max-width: 1120px; margin: 0 auto; padding: 2.5rem 3rem;">
-  <div class="d-flex align-items-start gap-3 mb-4">
-    <div class="card-header-icon">
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-    </div>
-    <div>
-      <h2 style="color: var(--portal-dark); font-weight: 700; margin: 0 0 0.25rem 0; font-size: 1.5rem;">Confirm Your Details</h2>
-      <p class="text-muted m-0" style="font-size: 0.95rem;">Please provide your official information. These details will be used to personalize your agreement and will appear in the final document.</p>
-    </div>
-  </div>
-  
-  <form action="/c/<%= contract.uuid %>/fill" method="POST" id="fillForm">
-    <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
-      <div class="alert alert-danger mb-4" style="background-color: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; padding: 1rem 1.25rem; border-radius: 8px; font-weight: 500;">
-        <strong>Validation Error:</strong> <%= errorMessage %>
+<div class="fill-page-layout gsap-stagger">
+  <!-- Left Side: Main Form Card -->
+  <div class="card fill-form-card">
+    <div class="d-flex align-items-start gap-3 mb-4">
+      <div class="card-header-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
       </div>
-    <% } %>
-    <div class="form-layout-wrapper mt-4">
+      <div>
+        <h2 style="color: var(--portal-dark); font-weight: 700; margin: 0 0 0.25rem 0; font-size: 1.5rem;">Confirm Your Details</h2>
+        <p class="text-muted m-0" style="font-size: 0.95rem;">Please provide your official information. These details will be used to personalize your agreement and will appear in the final document.</p>
+      </div>
+    </div>
+    
+    <form action="/c/<%= contract.uuid %>/fill" method="POST" id="fillForm">
+      <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
+        <div class="alert alert-danger mb-4" style="background-color: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; padding: 1rem 1.25rem; border-radius: 8px; font-weight: 500;">
+          <strong>Validation Error:</strong> <%= errorMessage %>
+        </div>
+      <% } %>
       
-      <!-- Left Column: Inputs -->
       <div>
         <h4 style="font-size: 1.1rem; font-weight: 600; color: var(--portal-dark); margin-bottom: 1.25rem;">Your Information <span style="font-size: 0.8rem; color: var(--portal-text-muted); font-weight: 400; margin-left: 0.5rem;">All fields marked with * are required.</span></h4>
         
         <div class="form-inputs-section">
           <!-- Full Name / Signatory Name -->
-          <div class="form-group">
+          <div class="form-group full-width">
             <label class="form-label"><%= contract.client_type === 'individual' ? 'Full Legal Name *' : 'Authorized Signatory Name *' %></label>
             <div class="input-with-icon">
               <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -73,7 +73,7 @@
           
           <% if (contract.client_type !== 'individual') { %>
           <!-- Company Legal Name -->
-          <div class="form-group">
+          <div class="form-group full-width">
             <label class="form-label">Company / Entity Legal Name *</label>
             <div class="input-with-icon">
               <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><path d="M9 22v-4h6v4"></path><path d="M8 6h.01"></path><path d="M16 6h.01"></path><path d="M12 6h.01"></path><path d="M12 10h.01"></path><path d="M12 14h.01"></path><path d="M16 10h.01"></path><path d="M16 14h.01"></path><path d="M8 10h.01"></path><path d="M8 14h.01"></path></svg>
@@ -81,12 +81,27 @@
             </div>
           </div>
 
-          <!-- Entity Structure Type -->
-          <div class="form-group">
+          <!-- Entity Structure Type (Portal UI Custom Select) -->
+          <div class="form-group full-width">
             <label class="form-label">Company / Entity Type *</label>
-            <div class="input-with-icon">
-              <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16"></path><path d="M9 7h6"></path><path d="M9 11h6"></path><path d="M9 15h6"></path></svg>
-              <select name="client_entity_type" id="entityTypeSelect" class="form-control" required onchange="toggleCustomEntityInput(this.value)">
+            <div class="custom-select-container" id="entityTypeCustomSelect">
+              <div class="custom-select-trigger" id="customSelectTrigger" tabindex="0">
+                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16"></path><path d="M9 7h6"></path><path d="M9 11h6"></path><path d="M9 15h6"></path></svg>
+                <span class="custom-select-value placeholder" id="customSelectValueText">-- Select Company Structure --</span>
+                <svg class="custom-select-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              </div>
+              <div class="custom-select-menu" id="customSelectMenu">
+                <div class="custom-option" data-value="llc">Limited Liability Company (LLC)</div>
+                <div class="custom-option" data-value="pvt_ltd">Private Limited Company (Pvt Ltd)</div>
+                <div class="custom-option" data-value="public_ltd">Public Limited Company (Ltd)</div>
+                <div class="custom-option" data-value="corp">Corporation (Inc. / Corp.)</div>
+                <div class="custom-option" data-value="partnership">Partnership Firm / LLP</div>
+                <div class="custom-option" data-value="proprietorship">Sole Proprietorship</div>
+                <div class="custom-option" data-value="non_profit">Non-Profit Organization / NGO</div>
+                <div class="custom-option" data-value="society_trust">Society / Trust / Foundation</div>
+                <div class="custom-option" data-value="other">Other Legal Entity (Specify Below)</div>
+              </div>
+              <select name="client_entity_type" id="entityTypeSelect" style="display: none;" required onchange="toggleCustomEntityInput(this.value)">
                 <option value="" disabled <%= !contract.client_entity_type ? 'selected' : '' %>>-- Select Company Structure --</option>
                 <option value="llc" <%= contract.client_entity_type === 'llc' ? 'selected' : '' %>>Limited Liability Company (LLC)</option>
                 <option value="pvt_ltd" <%= contract.client_entity_type === 'pvt_ltd' ? 'selected' : '' %>>Private Limited Company (Pvt Ltd)</option>
@@ -112,7 +127,7 @@
           <% } %>
 
           <!-- Email -->
-          <div class="form-group">
+          <div class="form-group full-width">
             <label class="form-label">Email Address *</label>
             <div class="input-with-icon input-with-badge">
               <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
@@ -125,7 +140,7 @@
           </div>
 
           <!-- Phone -->
-          <div class="form-group">
+          <div class="form-group full-width">
             <label class="form-label">Phone Number *</label>
             <div class="phone-input-group" style="display: flex; gap: 0; border-radius: 8px; overflow: hidden;">
               <select name="client_phone_code" class="form-control" style="width: auto; border-top-left-radius: 8px; border-bottom-left-radius: 8px; border-top-right-radius: 0; border-bottom-right-radius: 0; background-color: #f8f9fa; border-right: none; padding-right: 2rem; font-weight: 500; height: 46px;">
@@ -173,68 +188,12 @@
               input.value = '';
             }
           }
-        </script>
-        </div>
-      </div>
-      
-      <!-- Right Column: Summary -->
-      <div>
-        <div class="contract-summary-panel">
-          <div class="summary-header">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            Contract Details
-          </div>
-          
-          <div class="summary-row">
-            <span class="summary-label">Contract Title</span>
-            <span class="summary-value"><%= contract.project_name || 'Services Agreement' %></span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">Document ID</span>
-            <span class="summary-value" style="font-family: monospace; font-size: 0.8rem;"><%= contract.uuid %></span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">Sent by</span>
-            <span class="summary-value"><%= contract.authorized_signatory || 'Admin' %></span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">Company</span>
-            <span class="summary-value"><%= settings?.company_name || 'KeyQik Private Limited' %></span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">Sent on</span>
-            <span class="summary-value"><%= contract.created_at ? new Date(contract.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) : 'N/A' %></span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">Expires on</span>
-            <span class="summary-value highlight">
-              <% 
-                let expires = new Date(contract.created_at);
-                expires.setDate(expires.getDate() + 14); // default 14 days 
-              %>
-              <%= expires.toLocaleDateString('en-GB', { day: 'numeric', month: 'long', year: 'numeric' }) %>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--portal-primary)" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
-            </span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">Pages</span>
-            <span class="summary-value highlight">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--portal-dark)" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
-              8 pages
-            </span>
-          </div>
-        </div>
-      </div>
-      
-    </div>
-
-    <!-- Optional Permissions -->
-    <% 
-      let toggleableClauses = [];
-      if (contract.selected_clauses) {
-        toggleableClauses = contract.selected_clauses.filter(c => c.clientToggleable);
-      }
-    %>
+      <% 
+        let toggleableClauses = [];
+        if (contract.selected_clauses) {
+          toggleableClauses = contract.selected_clauses.filter(c => c.clientToggleable);
+        }
+      %>
     <% if (toggleableClauses.length > 0) { %>
       <div class="permissions-box">
         <div class="permissions-header">
