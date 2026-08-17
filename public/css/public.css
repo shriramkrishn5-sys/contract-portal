@@ -533,6 +533,7 @@ body {
 }
 
 .custom-select-trigger {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -546,6 +547,18 @@ body {
   cursor: pointer;
   user-select: none;
   transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.custom-select-trigger .input-icon {
+  position: absolute;
+  left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--portal-text-muted, #64748b);
+  width: 18px !important;
+  height: 18px !important;
+  pointer-events: none;
+  z-index: 2;
 }
 
 .custom-select-trigger:focus,
