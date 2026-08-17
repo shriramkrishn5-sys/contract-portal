@@ -352,7 +352,8 @@
                     <% } %>
                 </div>
                 <div class="signature-meta">
-                    <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= settings?.authorized_signatory || 'Naman Agarwal' %></p>
+                    <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= settings?.authorized_signatory || contract.authorized_signatory || 'Naman Agarwal' %></p>
+                    <p>Director</p>
                     <p><%= settings?.company_name || 'KKeyQik Private Limited' %></p>
                     <% if (typeof audit !== 'undefined' && audit && audit.timestamp) { %>
                         <p>Date: <%= new Date(audit.timestamp).toLocaleDateString() %></p>
@@ -374,15 +375,19 @@
                 </div>
                 <div class="signature-meta">
                     <% if (contract.client_type !== 'individual') { %>
-                    <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= contract.client_selections?.client_signatory_name || contract.client_name || 'Authorized Signatory' %></p>
-                    <p>Authorized Signatory</p>
-                    <p><%= contract.client_name || contract.client_company || 'Client' %></p>
+                        <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= contract.client_selections?.client_signatory_name || contract.client_name || 'Authorized Signatory' %></p>
+                        <p><%= contract.client_designation || 'Authorized Signatory' %></p>
+                        <% if (contract.client_company) { %>
+                            <p><%= contract.client_company %></p>
+                        <% } %>
                     <% } else { %>
-                    <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= contract.client_name || 'Client' %></p>
+                        <p style="font-weight: 600; color: var(--text-dark); font-size: 11pt;"><%= contract.client_name || 'Client' %></p>
+                        <% if (contract.client_designation) { %>
+                            <p><%= contract.client_designation %></p>
+                        <% } %>
                     <% } %>
                     <% if (typeof audit !== 'undefined' && audit && audit.timestamp) { %>
                         <p>Date: <%= new Date(audit.timestamp).toLocaleDateString() %></p>
-                        <p>IP: <%= (audit.ip === '::1' || audit.ip === '127.0.0.1') ? 'Local Network' : (audit.ip || 'N/A') %></p>
                     <% } else { %>
                         <p>Date: ________________</p>
                     <% } %>
