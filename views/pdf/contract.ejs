@@ -266,7 +266,11 @@
         <!-- Header -->
         <div class="header">
             <div class="company-info">
-                <div class="company-name"><%= settings?.company_name || 'KKeyQik Private Limited' %><span class="accent-dot">.</span></div>
+                <% if (typeof companyLogoUri !== 'undefined' && companyLogoUri) { %>
+                    <img src="<%= companyLogoUri %>" alt="<%= settings?.company_name || 'Company Logo' %>" style="max-height: 48px; max-width: 220px; object-fit: contain; margin-bottom: 6px; display: block;">
+                <% } else { %>
+                    <div class="company-name"><%= settings?.company_name || 'KKeyQik Private Limited' %><span class="accent-dot">.</span></div>
+                <% } %>
                 <div class="company-details">
                     <%= settings?.company_address || 'H-235 A, Sector -12, Pratap Vihar, Ghaziabad - 201009' %>
                 </div>

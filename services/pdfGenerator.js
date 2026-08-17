@@ -200,6 +200,28 @@ async function generateContractPdf(contractData, templateData, signatureData, au
       }
     }
 
+    // 6. Resolve Company Logo Data URI for PDF
+    let companyLogoUri = null;
+    try {
+      const logoSetting = settings?.company_logo || '/images/logo.svg';
+      if (logoSetting.startsWith('data:image/')) {
+        companyLogoUri = logoSetting;
+      } else if (logoSetting.startsWith('http://') || logoSetting.startsWith('https://')) {
+        companyLogoUri = logoSetting;
+      } else {
+        const relPath = logoSetting.startsWith('/') ? logoSetting.slice(1) : logoSetting;
+        const localFile = path.join(__dirname, '../public', relPath);
+        if (fs.existsSync(localFile)) {
+          const fileBuf = fs.readFileSync(localFile);
+          const ext = path.extname(localFile).toLowerCase();
+          const mimeType = ext === '.svg' ? 'image/svg+xml' : (ext === '.jpg' || ext === '.jpeg') ? 'image/jpeg' : 'image/png';
+          companyLogoUri = `data:${mimeType};base64,${fileBuf.toString('base64')}`;
+        }
+      }
+    } catch (err) {
+      console.warn("Could not process company logo for PDF:", err.message);
+    }
+
     // Read and render the template
     const templateContent = fs.readFileSync(templatePath, 'utf8');
     const html = ejs.render(templateContent, {
@@ -209,6 +231,7 @@ async function generateContractPdf(contractData, templateData, signatureData, au
       audit: auditTrail,
       settings: settings,
       qrCodeDataUri: qrCodeDataUri,
+      companyLogoUri: companyLogoUri,
       parseTemplateVars: parseTemplateVars
     });
 
