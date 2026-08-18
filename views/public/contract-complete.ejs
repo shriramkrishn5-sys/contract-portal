@@ -50,10 +50,14 @@
       <span class="confetti-piece p5"></span>
       <span class="confetti-piece p6"></span>
       <script>
-  gsap.fromTo(".confetti-piece", 
-    { y: -50, opacity: 0 },
-    { y: 150, opacity: 1, duration: 2.5, stagger: 0.1, ease: "power2.out" }
-  );
+  document.addEventListener('DOMContentLoaded', function() {
+    if (typeof gsap !== 'undefined') {
+      gsap.fromTo(".confetti-piece", 
+        { y: -50, opacity: 0 },
+        { y: 150, opacity: 1, duration: 2.5, stagger: 0.1, ease: "power2.out" }
+      );
+    }
+  });
 </script>
 
 <% if (contract.status !== 'generation_failed' && !(contract.status === 'signed' && contract.signed_pdf_path)) { %>
