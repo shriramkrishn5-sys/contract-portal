@@ -99,16 +99,43 @@ router.get('/create/:templateSlug', async (req, res) => {
   }
 });
 
+function calculateEndDate(startDateInput, timePeriodStr) {
+  const startDate = new Date(startDateInput);
+  if (isNaN(startDate.getTime())) return new Date().toISOString();
+
+  const endDate = new Date(startDate);
+  const text = (timePeriodStr || '').trim().toLowerCase();
+
+  const yearMatch = text.match(/(\d+)\s*(?:year|yr|y)/);
+  const monthMatch = text.match(/(\d+)\s*(?:month|mo|m)/);
+  const weekMatch = text.match(/(\d+)\s*(?:week|wk|w)/);
+  const dayMatch = text.match(/(\d+)\s*(?:day|d)/);
+
+  if (yearMatch) {
+    endDate.setFullYear(endDate.getFullYear() + parseInt(yearMatch[1], 10));
+  } else if (monthMatch) {
+    endDate.setMonth(endDate.getMonth() + parseInt(monthMatch[1], 10));
+  } else if (weekMatch) {
+    endDate.setDate(endDate.getDate() + (parseInt(weekMatch[1], 10) * 7));
+  } else if (dayMatch) {
+    endDate.setDate(endDate.getDate() + parseInt(dayMatch[1], 10));
+  } else {
+    // Default fallback if no numeric duration is found in string
+    endDate.setMonth(endDate.getMonth() + 1);
+  }
+
+  return endDate.toISOString();
+}
+
 router.post('/create', async (req, res) => {
   try {
     const template = await Template.findById(req.body.templateId || req.body.template_id);
     if (!template) return res.status(404).send('Template not found');
 
-    const now = new Date();
-    const startDate = new Date(now);
-    startDate.setDate(startDate.getDate() + 7); // 1 week after creation
-    const endDate = new Date(startDate);
-    endDate.setMonth(endDate.getMonth() + 1); // 1 month after start date
+    const effectiveInput = req.body.effectiveDate || req.body.start_date;
+    const startDate = effectiveInput ? new Date(effectiveInput) : new Date();
+    const timePeriod = req.body.timePeriod || req.body.timeline || '1 Month';
+    const endDateISO = calculateEndDate(startDate, timePeriod);
 
     const contractData = {
       template_id: template.id,
@@ -123,7 +150,7 @@ router.post('/create', async (req, res) => {
       total_amount: req.body.amount || req.body.total_amount || 0,
       currency: req.body.currency || 'USD',
       payment_type: req.body.paymentType || 'full_advance',
-      timeline: req.body.timePeriod || '',
+      timeline: timePeriod,
       client_name: req.body.clientName || req.body.client_name,
       client_email: req.body.clientEmail || req.body.client_email,
       client_region: req.body.clientRegion || res.locals.settings?.default_region || 'international',
@@ -135,7 +162,7 @@ router.post('/create', async (req, res) => {
         defaultEnabled: true
       })) : template.default_clauses,
       start_date: startDate.toISOString(),
-      end_date: endDate.toISOString()
+      end_date: endDateISO
     };
 
     // Expiration is now calculated when the contract is actually sent, not when created.
@@ -213,6 +240,11 @@ router.post('/:id/edit', async (req, res) => {
       });
     }
 
+    const effectiveInput = req.body.effectiveDate || req.body.start_date;
+    const startDate = effectiveInput ? new Date(effectiveInput) : (contract.start_date ? new Date(contract.start_date) : new Date());
+    const timePeriod = req.body.timePeriod || req.body.timeline || contract.timeline || '1 Month';
+    const endDateISO = calculateEndDate(startDate, timePeriod);
+
     const contractData = {
       company_name: req.body.companyName || req.body.company_name,
       company_email: req.body.companyEmail || req.body.company_email,
@@ -223,7 +255,9 @@ router.post('/:id/edit', async (req, res) => {
       total_amount: req.body.amount || req.body.total_amount || 0,
       currency: req.body.currency || 'USD',
       payment_type: req.body.paymentType || 'full_advance',
-      timeline: req.body.timePeriod || '',
+      timeline: timePeriod,
+      start_date: startDate.toISOString(),
+      end_date: endDateISO,
       client_name: req.body.clientName || req.body.client_name,
       client_email: req.body.clientEmail || req.body.client_email,
       client_region: req.body.clientRegion,

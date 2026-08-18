@@ -20,6 +20,6 @@
         <div class="title-section">
             <h1 class="document-title">CONTRACT AGREEMENT<span class="title-underline"></span></h1>
             <div class="document-meta">
-                Effective Date: <%= contract.created_at ? new Date(contract.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A' %>
+                Effective Date: <%= contract.start_date ? new Date(contract.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : (contract.created_at ? new Date(contract.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A') %>
             </div>
         </div>
