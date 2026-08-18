@@ -12,12 +12,12 @@
   <link rel="preload" href="/fonts/ieVn2YZDLWuGJpnzaiwFXS9tYtpd59A.woff2" as="font" type="font/woff2" crossorigin>
   <link href="/fonts/fonts.css" rel="stylesheet">
   
-  <link rel="stylesheet" href="/css/variables.css">
-  <link rel="stylesheet" href="/css/base.css">
-  <link rel="stylesheet" href="/css/components.css">
-  <link rel="stylesheet" href="/css/public.css">
+  <link rel="stylesheet" href="/css/variables.css?v=<%= locals.assetVersion || '1.0.1' %>">
+  <link rel="stylesheet" href="/css/base.css?v=<%= locals.assetVersion || '1.0.1' %>">
+  <link rel="stylesheet" href="/css/components.css?v=<%= locals.assetVersion || '1.0.1' %>">
+  <link rel="stylesheet" href="/css/public.css?v=<%= locals.assetVersion || '1.0.1' %>">
   <% if (typeof useSignature !== 'undefined' && useSignature) { %>
-  <link rel="stylesheet" href="/css/signature.css">
+  <link rel="stylesheet" href="/css/signature.css?v=<%= locals.assetVersion || '1.0.1' %>">
   <% } %>
 
   <!-- GSAP for Dynamic Animations (deferred) -->
