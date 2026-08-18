@@ -22,6 +22,7 @@ app.use(helmet({ contentSecurityPolicy: false })); // Allow inline scripts for n
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(express.static(path.join(__dirname, 'public'), { maxAge: '5m' }));
+app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'public/favicon.png')));
 
 // View engine
 app.set('view engine', 'ejs');
