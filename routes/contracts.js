@@ -99,33 +99,7 @@ router.get('/create/:templateSlug', async (req, res) => {
   }
 });
 
-function calculateEndDate(startDateInput, timePeriodStr) {
-  const startDate = new Date(startDateInput);
-  if (isNaN(startDate.getTime())) return new Date().toISOString();
-
-  const endDate = new Date(startDate);
-  const text = (timePeriodStr || '').trim().toLowerCase();
-
-  const yearMatch = text.match(/(\d+)\s*(?:year|yr|y)/);
-  const monthMatch = text.match(/(\d+)\s*(?:month|mo|m)/);
-  const weekMatch = text.match(/(\d+)\s*(?:week|wk|w)/);
-  const dayMatch = text.match(/(\d+)\s*(?:day|d)/);
-
-  if (yearMatch) {
-    endDate.setFullYear(endDate.getFullYear() + parseInt(yearMatch[1], 10));
-  } else if (monthMatch) {
-    endDate.setMonth(endDate.getMonth() + parseInt(monthMatch[1], 10));
-  } else if (weekMatch) {
-    endDate.setDate(endDate.getDate() + (parseInt(weekMatch[1], 10) * 7));
-  } else if (dayMatch) {
-    endDate.setDate(endDate.getDate() + parseInt(dayMatch[1], 10));
-  } else {
-    // Default fallback if no numeric duration is found in string
-    endDate.setMonth(endDate.getMonth() + 1);
-  }
-
-  return endDate.toISOString();
-}
+const { addPreparationPeriod, calculateEndDate } = require('../utils/dateHelpers');
 
 router.post('/create', async (req, res) => {
   try {
@@ -134,8 +108,10 @@ router.post('/create', async (req, res) => {
 
     const effectiveInput = req.body.effectiveDate || req.body.start_date;
     const startDate = effectiveInput ? new Date(effectiveInput) : new Date();
+    const prepPeriod = req.body.preparationPeriod || req.body.preparation_period || '1 week';
+    const activeStartDate = addPreparationPeriod(startDate, prepPeriod);
     const timePeriod = req.body.timePeriod || req.body.timeline || '1 Month';
-    const endDateISO = calculateEndDate(startDate, timePeriod);
+    const endDateISO = calculateEndDate(activeStartDate, timePeriod);
 
     const contractData = {
       template_id: template.id,
@@ -151,6 +127,7 @@ router.post('/create', async (req, res) => {
       currency: req.body.currency || 'USD',
       payment_type: req.body.paymentType || 'full_advance',
       timeline: timePeriod,
+      preparation_period: prepPeriod,
       client_name: req.body.clientName || req.body.client_name,
       client_email: req.body.clientEmail || req.body.client_email,
       client_region: req.body.clientRegion || res.locals.settings?.default_region || 'international',
@@ -242,8 +219,10 @@ router.post('/:id/edit', async (req, res) => {
 
     const effectiveInput = req.body.effectiveDate || req.body.start_date;
     const startDate = effectiveInput ? new Date(effectiveInput) : (contract.start_date ? new Date(contract.start_date) : new Date());
+    const prepPeriod = req.body.preparationPeriod || req.body.preparation_period || contract.preparation_period || '1 week';
+    const activeStartDate = addPreparationPeriod(startDate, prepPeriod);
     const timePeriod = req.body.timePeriod || req.body.timeline || contract.timeline || '1 Month';
-    const endDateISO = calculateEndDate(startDate, timePeriod);
+    const endDateISO = calculateEndDate(activeStartDate, timePeriod);
 
     const contractData = {
       company_name: req.body.companyName || req.body.company_name,
@@ -256,6 +235,7 @@ router.post('/:id/edit', async (req, res) => {
       currency: req.body.currency || 'USD',
       payment_type: req.body.paymentType || 'full_advance',
       timeline: timePeriod,
+      preparation_period: prepPeriod,
       start_date: startDate.toISOString(),
       end_date: endDateISO,
       client_name: req.body.clientName || req.body.client_name,
