@@ -232,7 +232,8 @@ async function generateContractPdf(contractData, templateData, signatureData, au
       settings: settings,
       qrCodeDataUri: qrCodeDataUri,
       companyLogoUri: companyLogoUri,
-      parseTemplateVars: parseTemplateVars
+      parseTemplateVars: parseTemplateVars,
+      filename: templatePath
     });
 
     // Vercel /tmp directory
