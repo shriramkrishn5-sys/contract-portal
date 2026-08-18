@@ -4,10 +4,10 @@ const expressLayouts = require('express-ejs-layouts');
 const session = require('express-session');
 const pgSession = require('connect-pg-simple')(session);
 const helmet = require('helmet');
+const compression = require('compression');
 const path = require('path');
 const { errorHandler, notFoundHandler } = require('./middleware/errorHandler');
 const { getDb } = require('./config/database');
-const { checkAndSendReminders } = require('./services/reminderService');
 const Setting = require('./models/Setting');
 
 const app = express();
@@ -15,13 +15,22 @@ const app = express();
 // Trust proxy for rate limiters (required when behind Cloudflare/cPanel Nginx)
 app.set('trust proxy', 1);
 
-// Vercel Cron handles reminders, no internal setInterval needed.
+// Response compression (Gzip / Brotli)
+app.use(compression());
 
 // Security and middleware
 app.use(helmet({ contentSecurityPolicy: false })); // Allow inline scripts for now
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use(express.static(path.join(__dirname, 'public'), { maxAge: '5m' }));
+app.use(express.static(path.join(__dirname, 'public'), {
+  maxAge: '1d',
+  setHeaders: (res, filePath) => {
+    // Fonts and static image assets can be cached for 7 days
+    if (filePath.match(/\.(woff2|woff|ttf|svg|png|jpg|jpeg|webp)$/i)) {
+      res.setHeader('Cache-Control', 'public, max-age=604800');
+    }
+  }
+}));
 app.get('/favicon.ico', (req, res) => res.sendFile(path.join(__dirname, 'public/favicon.png')));
 
 // View engine
