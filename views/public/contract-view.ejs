@@ -11,6 +11,8 @@
     try {
       const allSections = typeof template.content_sections === 'string' ? JSON.parse(template.content_sections) : template.content_sections;
       visibleSections = allSections.filter(section => {
+        // Skip signature sections to avoid duplicate signature blocks and sidebar entries (matches PDF filter)
+        if (section.title && section.title.toLowerCase().includes('signature')) return false;
         if (section.condition) {
           const [field, value] = section.condition.split(':');
           return contract[field] === value;
