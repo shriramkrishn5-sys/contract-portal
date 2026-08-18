@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const qrcode = require('qrcode');
 const Setting = require('../models/Setting');
+const { addPreparationPeriod, formatDateFormatted } = require('../utils/dateHelpers');
 
 let _cachedCompanySignatureUrl = null;
 let _cachedCompanySignatureValid = false;
@@ -102,7 +103,7 @@ async function generateContractPdf(contractData, templateData, signatureData, au
           const varName = match.replace(/[{}]/g, '').trim();
           
           // Identify if this is a key variable that should be auto-bolded
-          const boldVars = ['total_amount', 'currency', 'start_date', 'end_date', 'company_name', 'client_signatory_name', 'client_name', 'client_company', 'client_designation', 'authorized_signatory'];
+          const boldVars = ['total_amount', 'currency', 'start_date', 'active_start_date', 'end_date', 'company_name', 'client_signatory_name', 'client_name', 'client_company', 'client_designation', 'authorized_signatory'];
           const shouldBold = boldVars.includes(varName);
           
           let val = '';
@@ -114,7 +115,10 @@ async function generateContractPdf(contractData, templateData, signatureData, au
             val = currencySymbol;
           } else if (varName === 'start_date' || varName === 'end_date') {
             const d = contract[varName];
-            val = d ? new Date(d).toLocaleDateString('en-GB', { day: '2-digit', month: 'long', year: 'numeric' }) : `[${varName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}]`;
+            val = d ? formatDateFormatted(d) : `[${varName.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}]`;
+          } else if (varName === 'active_start_date') {
+            const prepPeriod = contract.preparation_period || '1 week';
+            val = contract.start_date ? formatDateFormatted(addPreparationPeriod(contract.start_date, prepPeriod)) : '[Active Start Date]';
           } else if (varName === 'company_name') {
             val = contract.company_name || settings?.company_name || 'KKeyQik Private Limited';
           } else if (varName === 'company_cin') {
@@ -176,10 +180,17 @@ async function generateContractPdf(contractData, templateData, signatureData, au
         renderedText = renderedText.replace(/Signature:\s*_{5,}/i, `Signature: <span style="color: #94a3b8; font-style: italic;">[Awaiting Electronic Signature]</span>`);
       }
       
-      // 3. Detect unresolved template variables
+      // 3a. Detect unresolved template variables ({{variable}})
       const strayMatches = renderedText.match(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g);
       if (strayMatches) {
         throw new Error(`TEMPLATE_VARIABLE_ERROR: Unresolved template variables detected in contract ${contract.uuid}: ${strayMatches.join(', ')}`);
+      }
+
+      // 3b. Detect unresolved bracketed date/field fallback placeholders.
+      // IMPORTANT: Keep this allowlist regex updated whenever a new template variable with a bracketed fallback string is added to parseTemplateVars!
+      const bracketMatches = renderedText.match(/\[(Start Date|End Date|Active Start Date|Client Name|Client Address|Client Signatory Name|Client Signatory Title)\]/gi);
+      if (bracketMatches) {
+        throw new Error(`TEMPLATE_VARIABLE_ERROR: Missing required contract date/field data in contract ${contract.uuid}: ${bracketMatches.join(', ')}`);
       }
 
       // 4. Parse basic Markdown bold (**text**)

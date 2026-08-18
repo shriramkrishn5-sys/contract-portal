@@ -61,7 +61,7 @@ async function run() {
         title: '5. Term and Timeline',
         order: 8,
         required: true,
-        content: `5.1 The Agreement begins on the Effective Date. Active project work is expected to commence on or about {{start_date}}, after receipt of the first payment and required Client Materials.\n\n5.2 The initial service term is {{timeline}}, ending {{end_date}} (the "Initial Term"). Unless terminated, the Agreement will continue on a month-to-month basis after the Initial Term.\n\n5.3 Service Provider shall use commercially reasonable efforts to complete the Section 3 Deliverables during the Initial Term, subject to Client's timely cooperation and the approved production schedule. The Company shall not be held liable for delays caused by the Client's failure to provide required materials or approvals.`
+        content: `5.1 The Agreement begins on the Effective Date. Active project work is expected to commence on or about {{active_start_date}}, after receipt of the first payment and required Client Materials.\n\n5.2 The initial service term is {{timeline}}, ending {{end_date}} (the "Initial Term"). Unless terminated, the Agreement will continue on a month-to-month basis after the Initial Term.\n\n5.3 Service Provider shall use commercially reasonable efforts to complete the Section 3 Deliverables during the Initial Term, subject to Client's timely cooperation and the approved production schedule. The Company shall not be held liable for delays caused by the Client's failure to provide required materials or approvals.`
       },
       {
         id: 'termination',
