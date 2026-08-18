@@ -267,21 +267,26 @@
 
 <%- include('../partials/contract-intro') %>
 
+        <% let templateHasSignatureSection = false; %>
         <% if (template && template.content_sections) { %>
             <% let sections = [];
                try { sections = typeof template.content_sections === 'string' ? JSON.parse(template.content_sections) : template.content_sections; } catch(e){}
-               // Skip the last section if it's a "Signatures" section to avoid duplication
-               const filteredSections = sections.filter(s => !s.title.toLowerCase().includes('signature'));
-               filteredSections.forEach(section => {
+               sections.forEach(section => {
                  // Check section-level condition (e.g. "client_type:company")
                  if (section.condition) {
                    const [field, value] = section.condition.split(':');
                    if (contract[field] !== value) return;
                  }
+                 const isSigSection = section.title && section.title.toLowerCase().includes('signature');
+                 if (isSigSection) templateHasSignatureSection = true;
                %>
                 <div class="section">
                     <div class="section-title"><%= section.title %></div>
-                    <div class="clause-content" style="white-space: pre-wrap;"><%- parseTemplateVars(section.content, contract, settings) %></div>
+                    <% if (isSigSection) { %>
+                        <%- include('../partials/contract-signatures') %>
+                    <% } else { %>
+                        <div class="clause-content" style="white-space: pre-wrap;"><%- parseTemplateVars(section.content, contract, settings) %></div>
+                    <% } %>
                 </div>
             <% }) %>
         <% } else { %>
@@ -311,7 +316,9 @@
             </div>
         <% } %>
 
-<%- include('../partials/contract-signatures') %>
+        <% if (!templateHasSignatureSection) { %>
+            <%- include('../partials/contract-signatures') %>
+        <% } %>
 
         <!-- Certificate of Completion -->
         <% if (typeof audit !== 'undefined' && audit && audit.hash) { %>

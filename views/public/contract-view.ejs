@@ -7,23 +7,26 @@
 <%
   // Parse template sections for sidebar navigation (zero I/O — operates on in-memory data)
   let visibleSections = [];
+  let templateHasSignatureSection = false;
+
   if (template && template.content_sections) {
     try {
       const allSections = typeof template.content_sections === 'string' ? JSON.parse(template.content_sections) : template.content_sections;
       visibleSections = allSections.filter(section => {
-        // Skip signature sections to avoid duplicate signature blocks and sidebar entries (matches PDF filter)
-        if (section.title && section.title.toLowerCase().includes('signature')) return false;
         if (section.condition) {
           const [field, value] = section.condition.split(':');
-          return contract[field] === value;
+          if (contract[field] !== value) return false;
+        }
+        if (section.title && section.title.toLowerCase().includes('signature')) {
+          templateHasSignatureSection = true;
         }
         return true;
       });
     } catch(e) {}
   }
   const hasAddendum = contract.selected_clauses && contract.selected_clauses.length > 0;
-  // Total sections: Introduction + visible content sections + (optional Addendum) + Signatures
-  const totalSections = 1 + visibleSections.length + (hasAddendum ? 1 : 0) + 1;
+  // Total sections: Introduction + visible content sections + (optional Addendum) + (optional standalone Signatures if template didn't have one)
+  const totalSections = 1 + visibleSections.length + (hasAddendum ? 1 : 0) + (templateHasSignatureSection ? 0 : 1);
 %>
 
 <!-- Stepper (Unmodified) -->
@@ -153,11 +156,13 @@
         </div>
       <% } %>
 
-      <!-- Fixed: Signatures -->
-      <div class="section-nav-item" data-section="section-signatures">
-        <span class="section-nav-dot"></span>
-        <span class="section-nav-label">Signatures</span>
-      </div>
+      <!-- Signatures (only if template didn't already contain a signature section) -->
+      <% if (!templateHasSignatureSection) { %>
+        <div class="section-nav-item" data-section="section-signatures">
+          <span class="section-nav-dot"></span>
+          <span class="section-nav-label">Signatures</span>
+        </div>
+      <% } %>
     </div>
   </aside>
 
@@ -207,7 +212,11 @@
             <% visibleSections.forEach((section, idx) => { %>
               <div class="clause-block" data-section-id="section-<%= idx %>">
                 <h3><%= section.title %></h3>
-                <p style="white-space: pre-wrap;"><%- parseTemplateVars(section.content, contract, settings) %></p>
+                <% if (section.title && section.title.toLowerCase().includes('signature')) { %>
+<%- include('../partials/contract-signatures') %>
+                <% } else { %>
+                  <p style="white-space: pre-wrap;"><%- parseTemplateVars(section.content, contract, settings) %></p>
+                <% } %>
               </div>
             <% }) %>
           <% } else if (template && template.body) { %>
@@ -235,10 +244,12 @@
             </div>
           <% } %>
 
-          <!-- Signatures (shared partial) -->
-          <div data-section-id="section-signatures">
+          <!-- Signatures (only if template didn't already contain a signature section) -->
+          <% if (!templateHasSignatureSection) { %>
+            <div data-section-id="section-signatures">
 <%- include('../partials/contract-signatures') %>
-          </div>
+            </div>
+          <% } %>
         </div>
       </div>
     </div>
