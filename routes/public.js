@@ -219,7 +219,7 @@ router.get('/:uuid/review', checkExpiration, async (req, res) => {
     if (contract.status === 'signed') return res.redirect(`/c/${contract.uuid}/complete`);
     if (contract.status === 'declined') return res.redirect(`/c/${contract.uuid}`);
     
-    res.render('public/contract-view', { contract, template, parseTemplateVars, settings: res.locals.settings, layout: 'layouts/public', title: 'Review Contract' });
+    res.render('public/contract-view', { contract, template, parseTemplateVars, settings: res.locals.settings, companyLogoUri: res.locals.settings?.company_logo || '/images/logo.svg', layout: 'layouts/public', title: 'Review Contract' });
   } catch (err) {
     console.error(err);
     res.status(500).send('Error loading contract');

@@ -1,0 +1,9 @@
+        <div class="intro-text">
+            <p>This Agreement (the "Agreement") is entered into as of <strong><%= contract.created_at ? new Date(contract.created_at).toLocaleDateString() : 'the Effective Date' %></strong>, by and between:</p>
+            
+            <p><strong><%= settings?.company_name || 'KKeyQik Private Limited' %></strong>, having its principal place of business at <%= settings?.company_address || 'H-235 A, Sector -12, Pratap Vihar, Ghaziabad - 201009' %> ("Company")</p>
+            
+            <p style="text-align: center; font-style: italic; margin: 15px 0;">AND</p>
+            
+            <p><strong><%= (contract.client_type !== 'individual' && contract.client_company) ? contract.client_company : (contract.client_name || '[Client Name]') %></strong>, having its principal place of business at <%= contract.client_selections?.client_address || contract.client_address || contract.client_company || '[Client Address]' %> ("Client").</p>
+        </div>

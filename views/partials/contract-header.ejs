@@ -1,0 +1,25 @@
+        <!-- Header -->
+        <div class="header">
+            <div class="company-info">
+                <% if (typeof companyLogoUri !== 'undefined' && companyLogoUri) { %>
+                    <img src="<%= companyLogoUri %>" alt="<%= settings?.company_name || 'Company Logo' %>" style="max-height: 48px; max-width: 220px; object-fit: contain; margin-bottom: 6px; display: block;">
+                <% } else { %>
+                    <div class="company-name"><%= settings?.company_name || 'KKeyQik Private Limited' %><span class="accent-dot">.</span></div>
+                <% } %>
+                <div class="company-details">
+                    <%= settings?.company_address || 'H-235 A, Sector -12, Pratap Vihar, Ghaziabad - 201009' %>
+                </div>
+            </div>
+            <div style="text-align: right;">
+                <span style="font-size: 10pt; color: var(--text-light);">Document ID</span><br>
+                <strong style="font-size: 11pt;"><%= contract.uuid || contract.id || 'N/A' %></strong>
+            </div>
+        </div>
+
+        <!-- Title Section -->
+        <div class="title-section">
+            <h1 class="document-title">CONTRACT AGREEMENT<span class="title-underline"></span></h1>
+            <div class="document-meta">
+                Effective Date: <%= contract.created_at ? new Date(contract.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A' %>
+            </div>
+        </div>

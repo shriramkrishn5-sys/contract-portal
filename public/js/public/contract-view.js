@@ -11,14 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // Interactive Viewer Controls & State
-  let currentPage = 1;
-  const totalPages = 12;
   let currentZoom = 100;
-
-  const currentPageNumEl = document.getElementById('currentPageNum');
-  const prevPageBtn = document.getElementById('prevPageBtn');
-  const nextPageBtn = document.getElementById('nextPageBtn');
-  const thumbnails = document.querySelectorAll('.page-thumbnail');
 
   const zoomLevelEl = document.getElementById('zoomLevel');
   const zoomInBtn = document.getElementById('zoomInBtn');
@@ -30,50 +23,50 @@ document.addEventListener('DOMContentLoaded', () => {
   const downloadDocBtn = document.getElementById('downloadDocBtn');
   const expandDocBtn = document.getElementById('expandDocBtn');
 
-  // Update page active state and smooth scroll
-  function updatePage(page) {
-    if (page < 1 || page > totalPages) return;
-    currentPage = page;
-    if (currentPageNumEl) currentPageNumEl.textContent = currentPage;
+  // --- Section-based sidebar navigation ---
+  const sidebarItems = document.querySelectorAll('.section-nav-item');
+  const sections = document.querySelectorAll('[data-section-id]');
 
-    thumbnails.forEach(t => {
-      const p = parseInt(t.getAttribute('data-page'), 10);
-      if (p === currentPage) {
-        t.classList.add('active');
-        t.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      } else {
-        t.classList.remove('active');
+  // Click handler: scroll the matching section into view
+  sidebarItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const sectionId = item.getAttribute('data-section');
+      const target = document.querySelector(`[data-section-id="${sectionId}"]`);
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
     });
-
-    if (docViewport) {
-      const scrollRatio = (currentPage - 1) / (totalPages - 1);
-      const maxScroll = docViewport.scrollHeight - docViewport.clientHeight;
-      docViewport.scrollTo({
-        top: scrollRatio * Math.max(0, maxScroll),
-        behavior: 'smooth'
-      });
-    }
-  }
-
-  if (prevPageBtn) {
-    prevPageBtn.addEventListener('click', () => {
-      if (currentPage > 1) updatePage(currentPage - 1);
-    });
-  }
-
-  if (nextPageBtn) {
-    nextPageBtn.addEventListener('click', () => {
-      if (currentPage < totalPages) updatePage(currentPage + 1);
-    });
-  }
-
-  thumbnails.forEach(t => {
-    t.addEventListener('click', () => {
-      const p = parseInt(t.getAttribute('data-page'), 10);
-      updatePage(p);
-    });
   });
+
+  // IntersectionObserver: highlight the active sidebar item as user scrolls
+  if (docViewport && sections.length > 0) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const activeSectionId = entry.target.getAttribute('data-section-id');
+
+            // Remove active from all sidebar items, add to the matching one
+            sidebarItems.forEach(item => {
+              if (item.getAttribute('data-section') === activeSectionId) {
+                item.classList.add('active');
+                item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+              } else {
+                item.classList.remove('active');
+              }
+            });
+          }
+        });
+      },
+      {
+        root: docViewport,
+        rootMargin: '0px 0px -60% 0px',
+        threshold: 0
+      }
+    );
+
+    sections.forEach(section => observer.observe(section));
+  }
 
   // Zoom controls logic
   function applyZoom(zoom) {
