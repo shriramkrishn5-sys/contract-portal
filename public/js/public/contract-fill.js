@@ -13,8 +13,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const form = document.getElementById('fillForm');
   if (!form) return;
 
-  // Restore
-  const saved = localStorage.getItem('contractFillData');
+  // Scope localStorage key specifically to this contract's UUID
+  const contractUuid = form.getAttribute('data-contract-uuid') || window.location.pathname.split('/')[2] || 'default';
+  const storageKey = `contractFillData_${contractUuid}`;
+
+  // Restore saved progress for THIS contract only
+  const saved = localStorage.getItem(storageKey);
   if (saved) {
     try {
       const data = JSON.parse(saved);
@@ -25,12 +29,24 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch(e) {}
   }
 
-  // Auto-save
+  // Auto-save progress for THIS contract
   setInterval(() => {
     const data = {};
     new FormData(form).forEach((val, key) => { data[key] = val; });
-    localStorage.setItem('contractFillData', JSON.stringify(data));
+    localStorage.setItem(storageKey, JSON.stringify(data));
   }, 10000);
+
+  // Clear saved progress upon successful form submission
+  form.addEventListener('submit', () => {
+    try {
+      localStorage.removeItem(storageKey);
+    } catch(e) {}
+  });
+
+  // Housekeeping: remove old unscoped legacy key
+  try {
+    localStorage.removeItem('contractFillData');
+  } catch(e) {}
 
   // Custom Select Dropdown for Company / Entity Type
   const container = document.getElementById('entityTypeCustomSelect');

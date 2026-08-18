@@ -51,7 +51,7 @@
       </div>
     </div>
     
-    <form action="/c/<%= contract.uuid %>/fill" method="POST" id="fillForm">
+    <form action="/c/<%= contract.uuid %>/fill" method="POST" id="fillForm" data-contract-uuid="<%= contract.uuid %>">
       <% if (typeof errorMessage !== 'undefined' && errorMessage) { %>
         <div class="alert alert-danger mb-4" style="background-color: #fef2f2; border: 1px solid #fca5a5; color: #991b1b; padding: 1rem 1.25rem; border-radius: 8px; font-weight: 500;">
           <strong>Validation Error:</strong> <%= errorMessage %>
