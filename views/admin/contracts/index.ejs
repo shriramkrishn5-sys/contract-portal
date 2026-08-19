@@ -1,4 +1,4 @@
-<div class="contracts-page">
+<div class="desktop-contracts-view contracts-page">
   <!-- Header Section -->
   <div class="page-header mb-4">
     <div>
@@ -243,7 +243,286 @@
   </div>
 </div>
 
-<!-- Retry PDF Generation Script -->
+<!-- ========================================== -->
+<!-- MOBILE CONTRACTS VIEW (<=768px)            -->
+<!-- ========================================== -->
+<div class="mobile-contracts-view">
+  <!-- Top Header Row -->
+  <div class="mc-header-row">
+    <div class="mc-title-group">
+      <h1 class="mc-page-title">Contracts</h1>
+      <p class="mc-page-subtitle">Manage, track and monitor all your contracts.</p>
+    </div>
+    <a href="/admin/contracts/new" class="mc-new-btn">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+      <span>New Contract</span>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-left: -2px;">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </a>
+  </div>
+
+  <!-- 5-Stat Strip / Carousel -->
+  <%
+    const totalCount = typeof stats !== 'undefined' ? stats.total : (typeof contracts !== 'undefined' ? contracts.length : 0);
+    const pendingCount = typeof stats !== 'undefined' ? stats.pending : 0;
+    const completedCount = typeof stats !== 'undefined' ? stats.completed : 0;
+    const reviewCount = typeof stats !== 'undefined' ? stats.in_review : 0;
+    const expiredCount = typeof stats !== 'undefined' ? stats.expired : 0;
+  %>
+  <div class="mc-stat-strip">
+    <div class="mc-stat-col" onclick="filterMobileContracts('all')">
+      <div class="mc-stat-icon" style="background: #ECFDF5; color: #10B981;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+      </div>
+      <div class="mc-stat-val"><%= totalCount %></div>
+      <div class="mc-stat-lbl">Total Contracts</div>
+      <div class="mc-stat-trend trend-up">↑ 20%</div>
+    </div>
+
+    <div class="mc-stat-divider"></div>
+
+    <div class="mc-stat-col" onclick="filterMobileContracts('pending')">
+      <div class="mc-stat-icon" style="background: #EFF6FF; color: #3B82F6;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+      </div>
+      <div class="mc-stat-val" style="color: #2563eb;"><%= pendingCount %></div>
+      <div class="mc-stat-lbl">Pending</div>
+      <div class="mc-stat-trend trend-up">↑ 12%</div>
+    </div>
+
+    <div class="mc-stat-divider"></div>
+
+    <div class="mc-stat-col" onclick="filterMobileContracts('completed')">
+      <div class="mc-stat-icon" style="background: #ECFDF5; color: #10B981;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+      </div>
+      <div class="mc-stat-val" style="color: #10B981;"><%= completedCount %></div>
+      <div class="mc-stat-lbl">Completed</div>
+      <div class="mc-stat-trend trend-up">↑ 15%</div>
+    </div>
+
+    <div class="mc-stat-divider"></div>
+
+    <div class="mc-stat-col" onclick="filterMobileContracts('in_review')">
+      <div class="mc-stat-icon" style="background: #F5F3FF; color: #8B5CF6;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+      </div>
+      <div class="mc-stat-val" style="color: #8B5CF6;"><%= reviewCount %></div>
+      <div class="mc-stat-lbl">In Review</div>
+      <div class="mc-stat-trend" style="color: #94A3B8;">—</div>
+    </div>
+
+    <div class="mc-stat-divider"></div>
+
+    <div class="mc-stat-col" onclick="filterMobileContracts('expired')">
+      <div class="mc-stat-icon" style="background: #FEF2F2; color: #EF4444;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+      </div>
+      <div class="mc-stat-val" style="color: #EF4444;"><%= expiredCount %></div>
+      <div class="mc-stat-lbl">Expired</div>
+      <div class="mc-stat-trend trend-down">↓ 5%</div>
+    </div>
+  </div>
+
+  <!-- Search & Filter Controls -->
+  <div class="mc-search-row">
+    <div class="mc-search-input-wrap">
+      <svg class="mc-search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+      <input type="text" id="mcSearchInput" class="mc-search-input" placeholder="Search contracts..." oninput="handleMobileContractSearch(this.value)">
+    </div>
+    <button type="button" class="mc-btn-control" onclick="toggleMobileFilterOptions()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="21" x2="4" y2="14"></line><line x1="4" y1="10" x2="4" y2="3"></line><line x1="12" y1="21" x2="12" y2="12"></line><line x1="12" y1="8" x2="12" y2="3"></line><line x1="20" y1="21" x2="20" y2="16"></line><line x1="20" y1="12" x2="20" y2="3"></line><line x1="1" y1="14" x2="7" y2="14"></line><line x1="9" y1="8" x2="15" y2="8"></line><line x1="17" y1="16" x2="23" y2="16"></line></svg>
+      <span>Filter</span>
+    </button>
+    <button type="button" class="mc-btn-control mc-btn-icon-only" onclick="toggleMobileSortOptions()" aria-label="Sort">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="21" y1="4" x2="14" y2="4"></line><line x1="10" y1="4" x2="3" y2="4"></line><line x1="21" y1="12" x2="12" y2="12"></line><line x1="8" y1="12" x2="3" y2="12"></line><line x1="21" y1="20" x2="16" y2="20"></line><line x1="12" y1="20" x2="3" y2="20"></line><line x1="14" y1="2" x2="14" y2="6"></line><line x1="8" y1="10" x2="8" y2="14"></line><line x1="16" y1="18" x2="16" y2="22"></line></svg>
+    </button>
+  </div>
+
+  <!-- Status Filter Tabs -->
+  <div class="mc-status-bar" id="mcStatusBar">
+    <button type="button" class="mc-status-tab active" data-status="all" onclick="filterMobileContracts('all', this)">All Contracts</button>
+    <button type="button" class="mc-status-tab" data-status="draft" onclick="filterMobileContracts('draft', this)">Draft</button>
+    <button type="button" class="mc-status-tab" data-status="pending" onclick="filterMobileContracts('pending', this)">Pending</button>
+    <button type="button" class="mc-status-tab" data-status="completed" onclick="filterMobileContracts('completed', this)">Completed</button>
+    <button type="button" class="mc-status-tab" data-status="expired" onclick="filterMobileContracts('expired', this)">Expired</button>
+  </div>
+
+  <!-- Contract Cards List -->
+  <div class="mc-list" id="mcContractList">
+    <% if (typeof contracts !== 'undefined' && contracts.length > 0) { %>
+      <% contracts.forEach((c, index) => { 
+        const contractId = 'CON-2026-' + String(c.id).padStart(5, '0');
+        const formattedDate = new Date(c.created_at || Date.now()).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' });
+        
+        let statusGroup = 'draft';
+        let badgeClass = 'completed';
+        let badgeText = 'Completed';
+        let badgeIcon = '<polyline points="20 6 9 17 4 12"></polyline>';
+        let iconBg = '#ECFDF5';
+        let iconColor = '#10B981';
+        let cardIconSvg = '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line>';
+
+        if (c.status === 'signed' || c.status === 'completed') {
+          statusGroup = 'completed';
+          badgeClass = 'completed';
+          badgeText = 'Completed';
+          badgeIcon = '<polyline points="20 6 9 17 4 12"></polyline>';
+          iconBg = '#ECFDF5';
+          iconColor = '#10B981';
+        } else if (c.status === 'opened' || c.status === 'filled') {
+          statusGroup = 'in_review';
+          badgeClass = 'review';
+          badgeText = 'In Review';
+          badgeIcon = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+          iconBg = '#F5F3FF';
+          iconColor = '#8B5CF6';
+          cardIconSvg = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>';
+        } else if (c.status === 'sent') {
+          statusGroup = 'pending';
+          badgeClass = 'pending';
+          badgeText = 'Pending';
+          badgeIcon = '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>';
+          iconBg = '#EFF6FF';
+          iconColor = '#3B82F6';
+          cardIconSvg = '<circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline>';
+        } else if (c.status === 'expired') {
+          statusGroup = 'expired';
+          badgeClass = 'expired';
+          badgeText = 'Expired';
+          badgeIcon = '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>';
+          iconBg = '#FEF2F2';
+          iconColor = '#EF4444';
+          cardIconSvg = '<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line>';
+        } else if (c.status === 'declined') {
+          statusGroup = 'expired';
+          badgeClass = 'declined';
+          badgeText = 'Declined';
+          badgeIcon = '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
+          iconBg = '#FEE2E2';
+          iconColor = '#DC2626';
+          cardIconSvg = '<line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line>';
+        } else {
+          statusGroup = 'draft';
+          badgeClass = 'draft';
+          badgeText = 'Draft';
+          badgeIcon = '<path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>';
+          iconBg = '#F1F5F9';
+          iconColor = '#64748B';
+        }
+
+        const searchPayload = `${c.project_name || ''} ${contractId} ${c.client_name || ''}`.toLowerCase();
+      %>
+        <div class="mc-card" data-status="<%= statusGroup %>" data-search="<%= searchPayload %>">
+          <a href="/admin/contracts/<%= c.id %>" class="mc-card-left">
+            <div class="mc-card-icon" style="background: <%= iconBg %>; color: <%= iconColor %>;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <%- cardIconSvg %>
+              </svg>
+            </div>
+            <div class="mc-card-info">
+              <div class="mc-card-title"><%= c.project_name || 'Contract Agreement' %></div>
+              <div class="mc-card-id"><%= contractId %></div>
+              <div class="mc-card-client">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <span><%= c.client_name || 'Client Party' %></span>
+              </div>
+            </div>
+          </a>
+
+          <div class="mc-card-right">
+            <div class="mc-badge-wrap">
+              <span class="mc-badge mc-badge-<%= badgeClass %>">
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <%- badgeIcon %>
+                </svg>
+                <%= badgeText %>
+              </span>
+              <span class="mc-date"><%= formattedDate %></span>
+            </div>
+
+            <div class="mc-menu-wrap">
+              <button type="button" class="mc-kebab-btn" onclick="toggleMobileContractDropdown(event, <%= c.id %>)" aria-label="Options">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="12" cy="5" r="1"></circle>
+                  <circle cx="12" cy="19" r="1"></circle>
+                </svg>
+              </button>
+              <div id="mcDropdown_<%= c.id %>" class="mc-dropdown-sheet">
+                <a href="/admin/contracts/<%= c.id %>" class="mc-sheet-item">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                  <span>View Details</span>
+                </a>
+                <button type="button" class="mc-sheet-item" onclick="copySigningLink('/c/<%= c.uuid %>')">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  <span>Copy Link</span>
+                </button>
+                <% if (c.status === 'signed' || c.status === 'completed') { %>
+                  <a href="/c/<%= c.uuid %>/download" class="mc-sheet-item" style="color: #10B981;">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span>Download PDF</span>
+                  </a>
+                <% } %>
+                <button type="button" class="mc-sheet-item" onclick="deleteContractSingle(<%= c.id %>)" style="color: #dc2626;">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  <span>Delete</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    <% } %>
+
+    <div id="mcEmptyState" class="mc-empty-state" style="display: none;">
+      <p style="margin: 0 0 10px 0; font-weight: 600;">No contracts found</p>
+      <p style="margin: 0 0 14px 0; font-size: 0.76rem; color: #94A3B8;">Try adjusting your search or category filter.</p>
+      <a href="/admin/contracts/new" class="btn btn-sm btn-primary" style="display: inline-block;">Create Contract</a>
+    </div>
+  </div>
+
+  <!-- Pagination Bar -->
+  <div class="mc-pagination-row">
+    <div class="mc-page-info">Showing 1 to <%= Math.min(5, (typeof contracts !== 'undefined' ? contracts.length : 0)) %> of <%= typeof contracts !== 'undefined' ? contracts.length : 0 %> contracts</div>
+    <div class="mc-page-controls">
+      <button type="button" class="mc-page-btn" disabled>&lt;</button>
+      <button type="button" class="mc-page-btn active">1</button>
+      <% if (typeof contracts !== 'undefined' && contracts.length > 5) { %>
+        <button type="button" class="mc-page-btn">2</button>
+      <% } %>
+      <% if (typeof contracts !== 'undefined' && contracts.length > 10) { %>
+        <button type="button" class="mc-page-btn">3</button>
+      <% } %>
+      <button type="button" class="mc-page-btn">&gt;</button>
+    </div>
+  </div>
+
+  <!-- Bottom Trust & Compliance Card -->
+  <div class="mc-trust-banner">
+    <div class="mct-shield-wrap">
+      <svg class="mct-sparkle-1" width="10" height="10" viewBox="0 0 24 24" fill="#1E513A"><path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/></svg>
+      <svg class="mct-sparkle-2" width="8" height="8" viewBox="0 0 24 24" fill="#1E513A"><path d="M12 2L14.4 9.6L22 12L14.4 14.4L12 22L9.6 14.4L12 22L9.6 14.4L2 12L9.6 9.6L12 2Z"/></svg>
+      <div class="mct-shield-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1E513A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          <polyline points="9 12 11 14 15 10"></polyline>
+        </svg>
+      </div>
+    </div>
+    <div class="mct-content">
+      <div class="mct-title">Secure. Reliable. Legally Binding.</div>
+      <div class="mct-desc">All your contracts are encrypted and stored securely.</div>
+    </div>
+    <a href="/admin/audit-logs" class="mct-btn">Learn More</a>
+  </div>
+</div>
+
+<!-- Retry PDF Generation Script & Mobile Contracts Filter Scripts -->
 <script>
 async function retryPdfGeneration(contractId) {
   if (!confirm('Are you sure you want to retry generating the PDF for this contract? Make sure you have resolved any signature issues first.')) return;
@@ -261,6 +540,125 @@ async function retryPdfGeneration(contractId) {
     alert('An error occurred while retrying PDF generation.');
   }
 }
+
+let currentMobileStatusFilter = 'all';
+let currentMobileSearchQuery = '';
+
+function handleMobileContractSearch(query) {
+  currentMobileSearchQuery = (query || '').toLowerCase().trim();
+  applyMobileContractFilters();
+}
+
+function filterMobileContracts(status, el) {
+  currentMobileStatusFilter = status;
+  const tabs = document.querySelectorAll('.mc-status-tab');
+  tabs.forEach(t => {
+    if (t.getAttribute('data-status') === status) {
+      t.classList.add('active');
+    } else {
+      t.classList.remove('active');
+    }
+  });
+  applyMobileContractFilters();
+}
+
+function applyMobileContractFilters() {
+  const cards = document.querySelectorAll('.mc-card');
+  let visibleCount = 0;
+
+  cards.forEach(card => {
+    const cardStatus = card.getAttribute('data-status') || '';
+    const searchData = card.getAttribute('data-search') || '';
+
+    const matchesStatus = (currentMobileStatusFilter === 'all' || 
+      cardStatus === currentMobileStatusFilter || 
+      (currentMobileStatusFilter === 'pending' && cardStatus === 'in_review'));
+
+    const matchesSearch = (!currentMobileSearchQuery || searchData.includes(currentMobileSearchQuery));
+
+    if (matchesStatus && matchesSearch) {
+      card.style.display = 'flex';
+      visibleCount++;
+    } else {
+      card.style.display = 'none';
+    }
+  });
+
+  const emptyEl = document.getElementById('mcEmptyState');
+  if (emptyEl) {
+    emptyEl.style.display = visibleCount === 0 ? 'block' : 'none';
+  }
+}
+
+function toggleMobileContractDropdown(event, contractId) {
+  event.preventDefault();
+  event.stopPropagation();
+  const allDropdowns = document.querySelectorAll('.mc-dropdown-sheet');
+  allDropdowns.forEach(d => {
+    if (d.id !== 'mcDropdown_' + contractId) d.classList.remove('show');
+  });
+
+  const target = document.getElementById('mcDropdown_' + contractId);
+  if (target) target.classList.toggle('show');
+}
+
+function copySigningLink(url) {
+  const fullUrl = window.location.origin + url;
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(fullUrl).then(() => {
+      alert('Contract signing link copied to clipboard!');
+    }).catch(() => {
+      prompt('Copy this link:', fullUrl);
+    });
+  } else {
+    prompt('Copy this link:', fullUrl);
+  }
+}
+
+async function deleteContractSingle(contractId) {
+  if (!confirm('Are you sure you want to permanently delete this contract? This action cannot be undone.')) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`/admin/contracts/${contractId}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+    const data = await res.json();
+    if (data.success) {
+      window.location.reload();
+    } else {
+      alert(data.message || 'Failed to delete contract');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('An error occurred while deleting the contract');
+  }
+}
+
+function toggleMobileFilterOptions() {
+  const select = document.getElementById('statusFilter');
+  if (select) {
+    select.scrollIntoView({ behavior: 'smooth' });
+    select.focus();
+  }
+}
+
+function toggleMobileSortOptions() {
+  const list = document.getElementById('mcContractList');
+  if (!list) return;
+  const cards = Array.from(list.querySelectorAll('.mc-card'));
+  cards.reverse().forEach(c => list.appendChild(c));
+}
+
+document.addEventListener('click', () => {
+  const allDropdowns = document.querySelectorAll('.mc-dropdown-sheet');
+  allDropdowns.forEach(d => d.classList.remove('show'));
+});
 </script>
 
 <style>

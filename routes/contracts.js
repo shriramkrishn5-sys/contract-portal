@@ -19,8 +19,19 @@ router.get('/', async (req, res) => {
       startDate: req.query.startDate,
       endDate: req.query.endDate
     };
+    const allContracts = await Contract.findAll({});
     const contracts = await Contract.findAll(filters);
-    res.render('admin/contracts/index', { contracts, filters, title: 'Contracts' });
+
+    const stats = {
+      total: allContracts.length,
+      pending: allContracts.filter(c => ['sent', 'opened', 'filled'].includes(c.status)).length,
+      completed: allContracts.filter(c => ['signed', 'completed'].includes(c.status)).length,
+      in_review: allContracts.filter(c => ['opened', 'filled'].includes(c.status)).length,
+      expired: allContracts.filter(c => ['expired', 'declined'].includes(c.status)).length,
+      draft: allContracts.filter(c => c.status === 'draft').length
+    };
+
+    res.render('admin/contracts/index', { contracts, allContracts, stats, filters, title: 'Contracts' });
   } catch (err) {
     console.error(err);
     res.status(500).send('Error loading contracts');
@@ -517,6 +528,22 @@ router.post('/bulk-action', async (req, res) => {
     res.json({ success: true, processed, errors });
   } catch (err) {
     res.status(500).json({ success: false, message: 'Server error during bulk action' });
+  }
+});
+
+// DELETE /admin/contracts/:id - Delete single contract
+router.delete('/:id', async (req, res) => {
+  try {
+    const contract = await Contract.findById(req.params.id);
+    if (!contract) return res.status(404).json({ success: false, message: 'Contract not found' });
+
+    await Contract.delete(req.params.id);
+    await AuditLog.create(req.admin.id, 'Contract Hard Deleted', 'Contract', contract.project_name || 'Contract', `Contract ${req.params.id} deleted`, req.ip);
+
+    res.json({ success: true, message: 'Contract deleted successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ success: false, message: 'Error deleting contract' });
   }
 });
 

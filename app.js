@@ -57,7 +57,7 @@ app.use(async (req, res, next) => {
   res.locals.title = 'Contract Portal';
   res.locals.currentPath = req.originalUrl;
   res.locals.appUrl = process.env.APP_URL || 'http://localhost:3000';
-  res.locals.assetVersion = process.env.ASSET_VERSION || '1.0.9';
+  res.locals.assetVersion = process.env.ASSET_VERSION || '1.1.0';
   try {
     res.locals.settings = await Setting.getAll();
   } catch (err) {
