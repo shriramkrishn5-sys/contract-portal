@@ -682,12 +682,12 @@ document.addEventListener('click', () => {
 }
 
 /* Header Actions */
-.header-actions {
+.desktop-contracts-view .header-actions {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
 }
-.btn-action {
+.desktop-contracts-view .btn-action {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -699,25 +699,25 @@ document.addEventListener('click', () => {
   cursor: pointer;
   transition: all 0.2s;
 }
-.btn-new {
+.desktop-contracts-view .btn-new {
   background: #237648;
   color: white;
 }
-.btn-new:hover {
+.desktop-contracts-view .btn-new:hover {
   background: #1c5e39;
   color: white;
   text-decoration: none;
 }
-.btn-upload {
+.desktop-contracts-view .btn-upload {
   background: #ffcc00;
   color: #1e293b;
 }
-.btn-upload:hover {
+.desktop-contracts-view .btn-upload:hover {
   background: #e6b800;
 }
 
 /* Page Header */
-.page-header {
+.desktop-contracts-view .page-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
@@ -1024,82 +1024,6 @@ document.addEventListener('click', () => {
   height: 1px;
   background: #e2e8f0;
   margin: 4px 0;
-}
-
-@media (max-width: 768px) {
-  .page-header {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-  .header-actions {
-    width: 100%;
-    display: flex;
-    gap: 8px;
-  }
-  .header-actions .btn-action {
-    flex: 1;
-    justify-content: center;
-  }
-  .filters-bar {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 12px;
-  }
-  .search-box {
-    width: 100%;
-    max-width: 100%;
-  }
-  .filter-dropdowns {
-    width: 100%;
-    gap: 8px;
-  }
-  .filter-select {
-    flex: 1 1 calc(50% - 4px);
-    min-width: 120px;
-  }
-  .date-filter-group {
-    width: 100%;
-    justify-content: space-between;
-  }
-  .date-input {
-    flex: 1;
-    min-width: 110px;
-  }
-  .btn-filter {
-    flex: 1 1 100%;
-    text-align: center;
-    justify-content: center;
-  }
-  .pagination-bar {
-    flex-direction: column;
-    gap: 12px;
-    align-items: center;
-    text-align: center;
-  }
-  .page-info, .page-controls, .page-size {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-  }
-  .bulk-action-bar {
-    bottom: 16px;
-    padding: 10px 14px;
-  }
-}
-
-@media (max-width: 480px) {
-  .filter-select {
-    flex: 1 1 100%;
-    width: 100%;
-  }
-  .date-filter-group {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .date-filter-group span {
-    text-align: center;
-  }
 }
 </style>
 
