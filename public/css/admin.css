@@ -2472,7 +2472,7 @@ html, body {
 
   .mobile-tab-items {
     display: flex;
-    align-items: center;
+    align-items: stretch;
     justify-content: space-around;
     height: 60px;
     max-width: 500px;
@@ -2493,8 +2493,10 @@ html, body {
     font-size: 0.7rem;
     font-weight: 500;
     cursor: pointer;
-    padding: 4px 0;
+    padding: 6px 0 4px 0;
     position: relative;
+    height: 100%;
+    box-sizing: border-box;
     transition: color 0.15s ease;
   }
 
@@ -2509,10 +2511,10 @@ html, body {
     top: 0;
     left: 50%;
     transform: translateX(-50%);
-    width: 24px;
+    width: 28px;
     height: 3px;
     background: #1E513A;
-    border-radius: 0 0 4px 4px;
+    border-radius: 0 0 3px 3px;
   }
 
   .mobile-tab-icon {
