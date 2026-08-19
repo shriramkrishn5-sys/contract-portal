@@ -12,7 +12,7 @@
         <h2 style="font-size: 20px; font-weight: 700; color: var(--portal-primary); margin: 0;"><%= locals.settings?.company_short_name || 'KKeyQik' %></h2>
       <% } %>
     </div>
-    <button id="sidebar-close-btn" class="sidebar-close-btn" aria-label="Close Navigation Menu" type="button">
+    <button id="sidebar-close-btn" class="sidebar-close-btn" aria-label="Close Navigation Menu" type="button" onclick="window.closeAdminSidebar && window.closeAdminSidebar(event)">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <line x1="18" y1="6" x2="6" y2="18"></line>
         <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -119,4 +119,4 @@
     &copy; <%= new Date().getFullYear() %> <%= locals.settings?.company_name || 'KKeyQik' %>. All rights reserved.
   </div>
 </aside>
-<div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+<div id="sidebarBackdrop" class="sidebar-backdrop" onclick="window.closeAdminSidebar && window.closeAdminSidebar(event)"></div>

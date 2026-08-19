@@ -97,7 +97,9 @@
       
       <script>
         document.addEventListener('DOMContentLoaded', function() {
-          const ctx = document.getElementById('contractsChart').getContext('2d');
+          const canvas = document.getElementById('contractsChart');
+          if (!canvas || typeof Chart === 'undefined') return;
+          const ctx = canvas.getContext('2d');
           
           const stats = {
             active: <%= stats.active || 0 %>,

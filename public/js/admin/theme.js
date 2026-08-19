@@ -1,4 +1,39 @@
-document.addEventListener('DOMContentLoaded', () => {
+// --- Global Sidebar Controls (Callable anywhere / inline fallback) ---
+window.openAdminSidebar = function(e) {
+  if (e) e.stopPropagation();
+  const sidebar = document.getElementById('adminSidebar') || document.querySelector('.sidebar');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop') || document.querySelector('.sidebar-backdrop');
+  const sidebarToggle = document.getElementById('sidebar-toggle') || document.querySelector('.hamburger-btn');
+  
+  if (sidebar) sidebar.classList.add('open');
+  if (sidebarBackdrop) sidebarBackdrop.classList.add('active');
+  if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'true');
+  document.body.style.overflow = window.innerWidth <= 768 ? 'hidden' : '';
+};
+
+window.closeAdminSidebar = function(e) {
+  if (e) e.stopPropagation();
+  const sidebar = document.getElementById('adminSidebar') || document.querySelector('.sidebar');
+  const sidebarBackdrop = document.getElementById('sidebarBackdrop') || document.querySelector('.sidebar-backdrop');
+  const sidebarToggle = document.getElementById('sidebar-toggle') || document.querySelector('.hamburger-btn');
+  
+  if (sidebar) sidebar.classList.remove('open');
+  if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
+  if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'false');
+  document.body.style.overflow = '';
+};
+
+window.toggleAdminSidebar = function(e) {
+  if (e) e.stopPropagation();
+  const sidebar = document.getElementById('adminSidebar') || document.querySelector('.sidebar');
+  if (sidebar && sidebar.classList.contains('open')) {
+    window.closeAdminSidebar(e);
+  } else {
+    window.openAdminSidebar(e);
+  }
+};
+
+function initAdminThemeAndNav() {
   // --- Theme Toggle Logic ---
   const themeToggle = document.getElementById('theme-toggle');
   if (themeToggle) {
@@ -32,58 +67,40 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // --- Mobile Sidebar Navigation & Backdrop Logic ---
+  // --- Wire Event Listeners for Sidebar & Backdrop ---
   const sidebar = document.getElementById('adminSidebar') || document.querySelector('.sidebar');
   const sidebarToggle = document.getElementById('sidebar-toggle') || document.querySelector('.hamburger-btn');
   const sidebarClose = document.getElementById('sidebar-close-btn') || document.querySelector('.sidebar-close-btn');
   const sidebarBackdrop = document.getElementById('sidebarBackdrop') || document.querySelector('.sidebar-backdrop');
 
-  function openSidebar() {
-    if (sidebar) sidebar.classList.add('open');
-    if (sidebarBackdrop) sidebarBackdrop.classList.add('active');
-    if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = window.innerWidth <= 768 ? 'hidden' : '';
-  }
-
-  function closeSidebar() {
-    if (sidebar) sidebar.classList.remove('open');
-    if (sidebarBackdrop) sidebarBackdrop.classList.remove('active');
-    if (sidebarToggle) sidebarToggle.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-  }
-
-  function toggleSidebar() {
-    if (sidebar && sidebar.classList.contains('open')) {
-      closeSidebar();
-    } else {
-      openSidebar();
-    }
-  }
-
   if (sidebarToggle) {
-    sidebarToggle.addEventListener('click', (e) => {
-      e.stopPropagation();
-      toggleSidebar();
+    sidebarToggle.addEventListener('click', window.toggleAdminSidebar);
+    sidebarToggle.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      window.toggleAdminSidebar(e);
     });
   }
 
   if (sidebarClose) {
-    sidebarClose.addEventListener('click', (e) => {
-      e.stopPropagation();
-      closeSidebar();
+    sidebarClose.addEventListener('click', window.closeAdminSidebar);
+    sidebarClose.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      window.closeAdminSidebar(e);
     });
   }
 
   if (sidebarBackdrop) {
-    sidebarBackdrop.addEventListener('click', () => {
-      closeSidebar();
+    sidebarBackdrop.addEventListener('click', window.closeAdminSidebar);
+    sidebarBackdrop.addEventListener('touchend', (e) => {
+      e.preventDefault();
+      window.closeAdminSidebar(e);
     });
   }
 
   // Close sidebar on Escape key
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && sidebar && sidebar.classList.contains('open')) {
-      closeSidebar();
+    if (e.key === 'Escape') {
+      window.closeAdminSidebar(e);
     }
   });
 
@@ -93,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
     navLinks.forEach((link) => {
       link.addEventListener('click', () => {
         if (window.innerWidth <= 768) {
-          closeSidebar();
+          window.closeAdminSidebar();
         }
       });
     });
@@ -102,7 +119,13 @@ document.addEventListener('DOMContentLoaded', () => {
   // Reset overflow and classes on resize to desktop
   window.addEventListener('resize', () => {
     if (window.innerWidth > 768) {
-      closeSidebar();
+      window.closeAdminSidebar();
     }
   });
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initAdminThemeAndNav);
+} else {
+  initAdminThemeAndNav();
+}
