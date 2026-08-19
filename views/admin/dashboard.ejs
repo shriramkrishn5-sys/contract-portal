@@ -34,6 +34,139 @@
   </div>
 </div>
 
+<!-- Mobile-Only 4 Stat Cards Row (<=768px) -->
+<div class="mobile-stat-grid">
+  <!-- Card 1: Total Contracts -->
+  <div class="mobile-stat-card">
+    <div class="msc-icon msc-icon-green">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+        <polyline points="14 2 14 8 20 8"></polyline>
+        <line x1="16" y1="13" x2="8" y2="13"></line>
+        <line x1="16" y1="17" x2="8" y2="17"></line>
+      </svg>
+    </div>
+    <div class="msc-value msc-val-green"><%= typeof stats !== 'undefined' ? stats.total : 0 %></div>
+    <div class="msc-label">Total Contracts</div>
+    <div class="msc-trend msc-trend-up">↑ 20%</div>
+  </div>
+
+  <!-- Card 2: Pending -->
+  <div class="mobile-stat-card">
+    <div class="msc-icon msc-icon-blue">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="22" y1="2" x2="11" y2="13"></line>
+        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+      </svg>
+    </div>
+    <div class="msc-value msc-val-blue"><%= typeof stats !== 'undefined' ? (stats.pending || 0) : 0 %></div>
+    <div class="msc-label">Pending</div>
+    <div class="msc-trend msc-trend-up">↑ 12%</div>
+  </div>
+
+  <!-- Card 3: Completed -->
+  <div class="mobile-stat-card">
+    <div class="msc-icon msc-icon-emerald">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1E513A" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    </div>
+    <div class="msc-value msc-val-emerald"><%= typeof stats !== 'undefined' ? (stats.completed || 0) : 0 %></div>
+    <div class="msc-label">Completed</div>
+    <div class="msc-trend msc-trend-up">↑ 15%</div>
+  </div>
+
+  <!-- Card 4: Expired -->
+  <div class="mobile-stat-card">
+    <div class="msc-icon msc-icon-purple">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#9333ea" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+    </div>
+    <div class="msc-value msc-val-purple"><%= typeof stats !== 'undefined' ? (stats.expired || stats.declined || 0) : 0 %></div>
+    <div class="msc-label">Expired</div>
+    <div class="msc-trend msc-trend-down">↓ 5%</div>
+  </div>
+</div>
+
+<!-- Mobile-Only Recent Contracts (<=768px) -->
+<div class="mobile-recent-section">
+  <div class="mobile-section-header">
+    <h3 class="mobile-section-title">Recent Contracts</h3>
+    <a href="/admin/contracts" class="mobile-section-link">View All &rsaquo;</a>
+  </div>
+
+  <div class="mobile-contracts-list">
+    <% if (typeof contracts !== 'undefined' && contracts.length > 0) { %>
+      <% contracts.slice(0, 4).forEach(c => { 
+        let badgeClass = 'pending';
+        let badgeText = 'Pending';
+        let badgeIcon = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
+        let iconType = 'blue';
+
+        if (c.status === 'signed' || c.status === 'completed') {
+          badgeClass = 'completed';
+          badgeText = 'Completed';
+          badgeIcon = '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>';
+          iconType = 'green';
+        } else if (c.status === 'filled' || c.status === 'draft') {
+          badgeClass = 'review';
+          badgeText = 'In Review';
+          badgeIcon = '<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/>';
+          iconType = 'purple';
+        } else if (c.status === 'declined') {
+          badgeClass = 'declined';
+          badgeText = 'Declined';
+          badgeIcon = '<line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>';
+          iconType = 'red';
+        } else if (c.status === 'expired') {
+          badgeClass = 'expired';
+          badgeText = 'Expired';
+          badgeIcon = '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>';
+          iconType = 'amber';
+        }
+        
+        const contractId = c.custom_id || ('CON-' + new Date(c.created_at).getFullYear() + '-' + String(c.id).padStart(5, '0'));
+        const formattedDate = new Date(c.created_at).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+      %>
+        <a href="/admin/contracts/<%= c.id %>" class="mobile-contract-card">
+          <div class="mcc-icon mcc-icon-<%= iconType %>">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+              <polyline points="14 2 14 8 20 8"></polyline>
+              <line x1="16" y1="13" x2="8" y2="13"></line>
+              <line x1="16" y1="17" x2="8" y2="17"></line>
+            </svg>
+          </div>
+          <div class="mcc-body">
+            <div class="mcc-title"><%= c.project_name || 'Contract Agreement' %></div>
+            <div class="mcc-id"><%= contractId %></div>
+          </div>
+          <div class="mcc-meta">
+            <span class="mcc-badge mcc-badge-<%= badgeClass %>">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <%- badgeIcon %>
+              </svg>
+              <%= badgeText %>
+            </span>
+            <span class="mcc-date"><%= formattedDate %></span>
+          </div>
+          <svg class="mcc-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#94A3B8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="9 18 15 12 9 6"></polyline>
+          </svg>
+        </a>
+      <% }) %>
+    <% } else { %>
+      <div class="mobile-empty-state">
+        <p>No contracts created yet.</p>
+        <a href="/admin/contracts/new" class="btn btn-sm btn-primary">Create Contract</a>
+      </div>
+    <% } %>
+  </div>
+</div>
+
 <!-- Desktop-Only Dashboard Header (>768px) -->
 <div class="dashboard-header mb-4">
   <div>

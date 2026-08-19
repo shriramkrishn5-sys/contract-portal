@@ -18,6 +18,8 @@ router.get('/', async (req, res) => {
     let completed = 0;
     let expiringSoon = 0;
     let declined = 0;
+    let pending = 0;
+    let expired = 0;
     
     const now = new Date();
     const thirtyDaysFromNow = new Date();
@@ -26,9 +28,11 @@ router.get('/', async (req, res) => {
     let upcomingExpirations = [];
 
     allContracts.forEach(c => {
+      if (['draft', 'sent', 'opened', 'filled'].includes(c.status)) pending++;
       if (c.status === 'signed' || c.status === 'active') active++;
-      if (c.status === 'completed') completed++;
+      if (c.status === 'completed' || c.status === 'signed') completed++;
       if (c.status === 'declined') declined++;
+      if (c.status === 'expired') expired++;
       
       const createdAt = new Date(c.created_at);
       const expiryDate = new Date(createdAt.getTime());
@@ -45,7 +49,7 @@ router.get('/', async (req, res) => {
     upcomingExpirations.sort((a, b) => a.expires_at_calculated - b.expires_at_calculated);
     upcomingExpirations = upcomingExpirations.slice(0, 5);
 
-    const stats = { total, active, completed, expiringSoon, declined };
+    const stats = { total, active, completed, expiringSoon, declined, pending, expired };
     const recentContracts = await Contract.getRecent(5);
     
     res.render('admin/dashboard', { 
