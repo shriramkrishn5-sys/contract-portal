@@ -3,7 +3,7 @@
     <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 0.25rem;">Templates</h1>
     <p>Create, manage and reuse contract templates to save time and ensure consistency.</p>
   </div>
-  <div class="header-actions" style="display: flex; gap: 1rem;">
+  <div class="header-actions" style="display: flex; gap: 1rem; flex-wrap: wrap;">
     <form method="POST" action="/admin/templates" style="margin: 0;">
       <button type="submit" class="btn btn-primary">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -26,8 +26,8 @@
   </div>
 </div>
 
-<div class="templates-filters">
-  <div class="filter-input">
+<div class="templates-filters" style="flex-wrap: wrap;">
+  <div class="filter-input" style="min-width: min(100%, 260px);">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
       stroke-linecap="round" stroke-linejoin="round">
       <circle cx="11" cy="11" r="8" />
@@ -36,14 +36,14 @@
     <input type="text" id="searchInput" placeholder="Search templates...">
   </div>
 
-  <select class="filter-select" id="categoryFilter">
+  <select class="filter-select" id="categoryFilter" style="max-width: 100%;">
     <option value="All">All Categories</option>
     <option value="Service Agreement">Service Agreement</option>
     <option value="Project Agreement">Project Agreement</option>
     <option value="Legal Agreement">Legal Agreement</option>
   </select>
 
-  <select class="filter-select" id="typeFilter">
+  <select class="filter-select" id="typeFilter" style="max-width: 100%;">
     <option value="All">All Types</option>
     <option value="Standard">Standard</option>
     <option value="Custom">Custom</option>
@@ -315,9 +315,9 @@
 
 <!-- Preview Modal -->
 <div id="previewModal" class="modal"
-  style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; align-items: center; justify-content: center;">
+  style="display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 50; align-items: center; justify-content: center; padding: 1rem;">
   <div
-    style="background: white; border-radius: 12px; width: 100%; max-width: 500px; padding: 24px; position: relative;">
+    style="background: white; border-radius: 12px; width: min(92vw, 480px); max-height: 90vh; overflow-y: auto; padding: 24px; position: relative; margin: 20px auto;">
     <button onclick="document.getElementById('previewModal').style.display='none'"
       style="position: absolute; right: 16px; top: 16px; background: none; border: none; cursor: pointer; color: #64748b;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -325,11 +325,11 @@
         <line x1="6" y1="6" x2="18" y2="18"></line>
       </svg>
     </button>
-    <h3 id="previewTitle" style="margin: 0 0 4px; font-size: 20px;">Template Name</h3>
+    <h3 id="previewTitle" style="margin: 0 0 4px; font-size: 20px; word-break: break-word;">Template Name</h3>
     <span id="previewCategory"
       style="display: inline-block; font-size: 13px; color: var(--portal-primary); background: var(--portal-bg); padding: 2px 8px; border-radius: 4px; margin-bottom: 16px;">Category</span>
     <p id="previewDesc"
-      style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 24px; padding: 12px; background: #f8fafc; border-radius: 8px;">
+      style="color: #475569; font-size: 14px; line-height: 1.5; margin-bottom: 24px; padding: 12px; background: #f8fafc; border-radius: 8px; word-break: break-word;">
       Description</p>
     <button class="btn btn-primary w-100" onclick="document.getElementById('previewModal').style.display='none'">Close
       Preview</button>

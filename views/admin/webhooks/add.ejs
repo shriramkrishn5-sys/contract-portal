@@ -1,4 +1,4 @@
-<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 30px;">
   <div>
     <h1 class="page-title">Add Webhook</h1>
     <p class="page-subtitle">Send notifications to external systems</p>
@@ -8,7 +8,7 @@
   </div>
 </div>
 
-<div class="card" style="max-width: 600px;">
+<div class="card" style="width: 100%; max-width: 600px;">
   <form action="/admin/webhooks/add" method="POST">
     <div class="form-group" style="margin-bottom: 20px;">
       <label class="form-label">Webhook URL</label>

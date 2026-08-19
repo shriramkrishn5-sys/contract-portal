@@ -1,11 +1,11 @@
 <div class="audit-logs-page">
   <!-- Header Section -->
-  <div class="page-header d-flex justify-content-between align-items-end mb-4">
+  <div class="page-header d-flex justify-content-between align-items-end mb-4" style="flex-wrap: wrap; gap: 16px;">
     <div>
       <h1 class="page-title">Audit Log</h1>
       <p class="page-subtitle">Track all activities and changes performed in the system.</p>
     </div>
-    <div class="header-actions">
+    <div class="header-actions" style="flex-wrap: wrap;">
       <a href="/admin/audit-logs/export?q=<%= filters.q %>&action=<%= filters.action %>&type=<%= filters.type %>&user=<%= filters.admin_id %>&startDate=<%= filters.startDate %>&endDate=<%= filters.endDate %>" class="btn btn-action btn-secondary">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
         Export Logs
@@ -50,7 +50,7 @@
         <% }) %>
       </select>
       
-      <div style="display: flex; gap: 8px; align-items: center;">
+      <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap;">
         <input type="date" name="startDate" value="<%= filters.startDate %>" class="filter-select" style="padding-right: 12px; background: white;" onchange="this.form.submit()">
         <span style="color: #94a3b8;">-</span>
         <input type="date" name="endDate" value="<%= filters.endDate %>" class="filter-select" style="padding-right: 12px; background: white;" onchange="this.form.submit()">
@@ -240,7 +240,8 @@ function changeLimit(limit) {
 }
 .search-box {
   position: relative;
-  width: 280px;
+  width: min(100%, 280px);
+  flex-grow: 1;
 }
 .search-box .search-icon {
   position: absolute;
@@ -256,6 +257,7 @@ function changeLimit(limit) {
   border-radius: 6px;
   font-size: 14px;
   outline: none;
+  box-sizing: border-box;
 }
 .search-box input:focus {
   border-color: #cbd5e1;
@@ -265,6 +267,7 @@ function changeLimit(limit) {
   display: flex;
   gap: 12px;
   align-items: center;
+  flex-wrap: wrap;
 }
 .filter-select {
   padding: 8px 32px 8px 12px;
@@ -297,10 +300,12 @@ function changeLimit(limit) {
   background: white;
   border: 1px solid #e2e8f0;
   border-radius: 8px;
-  overflow: visible;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 .logs-table {
   width: 100%;
+  min-width: 780px;
   border-collapse: collapse;
   white-space: nowrap;
 }
@@ -328,35 +333,35 @@ function changeLimit(limit) {
 .user-cell {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 10px;
 }
 .user-avatar {
-  width: 32px;
-  height: 32px;
-  background: #e2e8f0;
-  color: #475569;
+  width: 28px;
+  height: 28px;
+  background: #f1f5f9;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 600;
+  color: #475569;
 }
 .user-name {
-  font-weight: 500;
   font-size: 13px;
-  color: #1e293b;
+  font-weight: 500;
+  color: #0f172a;
 }
 .user-email {
-  font-size: 12px;
-  color: #64748b;
+  font-size: 11px;
+  color: #94a3b8;
 }
 
 /* Entity Type */
 .entity-type {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   font-size: 13px;
   color: #475569;
 }
@@ -366,7 +371,7 @@ function changeLimit(limit) {
 
 /* Badges */
 .badge-pill {
-  padding: 4px 10px;
+  padding: 2px 8px;
   border-radius: 9999px;
   font-size: 12px;
   font-weight: 500;
@@ -413,11 +418,14 @@ function changeLimit(limit) {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
   font-size: 13px;
   color: #64748b;
 }
 .page-controls {
   display: flex;
+  flex-wrap: wrap;
   gap: 4px;
 }
 .btn-page {

@@ -31,26 +31,34 @@ document.addEventListener('DOMContentLoaded', () => {
   const canvasPlaceholder = document.getElementById('canvasPlaceholder');
 
   if (canvas && typeof SignaturePad !== 'undefined') {
-    // Handle DPI scaling
-    function resizeCanvas() {
-      const ratio =  Math.max(window.devicePixelRatio || 1, 1);
-      canvas.width = canvas.offsetWidth * ratio;
-      canvas.height = canvas.offsetHeight * ratio;
-      canvas.getContext("2d").scale(ratio, ratio);
-      if(signaturePad) signaturePad.clear();
-      if (canvasPlaceholder && signaturePad && signaturePad.isEmpty()) {
-        canvasPlaceholder.style.opacity = '1';
-      }
-    }
-    
-    window.addEventListener("resize", resizeCanvas);
-    
     const portalDark = getComputedStyle(document.documentElement).getPropertyValue('--portal-dark').trim() || '#111827';
     signaturePad = new SignaturePad(canvas, {
       backgroundColor: 'rgba(255, 255, 255, 0)',
       penColor: portalDark
     });
+
+    // Handle DPI scaling without erasing drawn signature strokes on mobile resize
+    function resizeCanvas() {
+      if (!canvas || !signaturePad) return;
+      const ratio = Math.max(window.devicePixelRatio || 1, 1);
+      const data = signaturePad.isEmpty() ? null : signaturePad.toData();
+
+      canvas.width = canvas.offsetWidth * ratio;
+      canvas.height = canvas.offsetHeight * ratio;
+      const ctx = canvas.getContext("2d");
+      ctx.scale(ratio, ratio);
+
+      if (data && data.length > 0) {
+        signaturePad.fromData(data);
+        if (canvasPlaceholder) canvasPlaceholder.style.opacity = '0';
+      } else {
+        signaturePad.clear();
+        if (canvasPlaceholder) canvasPlaceholder.style.opacity = '1';
+      }
+    }
+    
     resizeCanvas();
+    window.addEventListener("resize", resizeCanvas);
     
     signaturePad.addEventListener("beginStroke", () => {
       if (canvasPlaceholder) canvasPlaceholder.style.opacity = '0';

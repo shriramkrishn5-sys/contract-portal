@@ -1,63 +1,67 @@
-<div class="page-header">
-  <h2>Categories</h2>
+<div class="page-header" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 24px;">
+  <h2 style="margin: 0;">Categories</h2>
   <button class="btn btn-primary" onclick="openCategoryModal()">Add Category</button>
 </div>
 
 <div class="card">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Icon</th>
-        <th>Name</th>
-        <th>Color</th>
-        <th>Actions</th>
-      </tr>
-    </thead>
-    <tbody>
-      <% categories.forEach(category => { %>
+  <div class="table-responsive">
+    <table class="table" style="min-width: 480px;">
+      <thead>
         <tr>
-          <td><span style="font-size: 1.5em;"><%= category.icon %></span></td>
-          <td><%= category.name %></td>
-          <td>
-            <div style="width: 20px; height: 20px; background-color: <%= category.color %>; border-radius: 4px;"></div>
-            <%= category.color %>
-          </td>
-          <td>
-            <button class="btn btn-sm btn-outline-primary" onclick='editCategory(<%- JSON.stringify(category) %>)'>Edit</button>
-            <button class="btn btn-sm btn-outline-danger" onclick="deleteCategory(<%= category.id %>)">Delete</button>
-          </td>
+          <th>Icon</th>
+          <th>Name</th>
+          <th>Color</th>
+          <th class="text-right">Actions</th>
         </tr>
-      <% }) %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% categories.forEach(category => { %>
+          <tr>
+            <td><span style="font-size: 1.5em;"><%= category.icon %></span></td>
+            <td><strong><%= category.name %></strong></td>
+            <td>
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <div style="width: 20px; height: 20px; background-color: <%= category.color %>; border-radius: 4px; border: 1px solid rgba(0,0,0,0.1);"></div>
+                <span><%= category.color %></span>
+              </div>
+            </td>
+            <td class="text-right">
+              <button class="btn btn-sm btn-outline" onclick='editCategory(<%- JSON.stringify(category) %>)'>Edit</button>
+              <button class="btn btn-sm btn-outline text-danger" style="margin-left: 4px;" onclick="deleteCategory(<%= category.id %>)">Delete</button>
+            </td>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <!-- Category Modal -->
 <div class="modal fade" id="categoryModal" tabindex="-1">
-  <div class="modal-dialog">
-    <div class="modal-content">
+  <div class="modal-dialog" style="max-width: min(92vw, 540px); margin: 20px auto;">
+    <div class="modal-content" style="border-radius: 12px; overflow: hidden;">
       <form id="categoryForm" method="POST" action="/admin/categories">
-        <div class="modal-header">
-          <h5 class="modal-title" id="categoryModalTitle">Add Category</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; padding: 16px 20px; border-bottom: 1px solid #e2e8f0;">
+          <h5 class="modal-title" id="categoryModalTitle" style="margin: 0; font-weight: 600;">Add Category</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" style="background: none; border: none; font-size: 20px; cursor: pointer;">&times;</button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" style="padding: 20px;">
           <input type="hidden" id="categoryId" name="id">
           <div class="mb-3">
-            <label class="form-label">Name</label>
-            <input type="text" class="form-control" id="categoryName" name="name" required>
+            <label class="form-label" style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px;">Name</label>
+            <input type="text" class="form-control" id="categoryName" name="name" required style="width: 100%;">
           </div>
           <div class="mb-3">
-            <label class="form-label">Color</label>
-            <input type="color" class="form-control form-control-color" id="categoryColor" name="color" value="#000000" required>
+            <label class="form-label" style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px;">Color</label>
+            <input type="color" class="form-control form-control-color" id="categoryColor" name="color" value="#000000" required style="height: 40px; padding: 4px; cursor: pointer;">
           </div>
           <div class="mb-3">
-            <label class="form-label">Icon (Emoji or FontAwesome)</label>
-            <input type="text" class="form-control" id="categoryIcon" name="icon" value="📁" required>
+            <label class="form-label" style="display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px;">Icon (Emoji or FontAwesome)</label>
+            <input type="text" class="form-control" id="categoryIcon" name="icon" value="📁" required style="width: 100%;">
           </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 8px; padding: 16px 20px; border-top: 1px solid #e2e8f0;">
+          <button type="button" class="btn btn-outline" data-bs-dismiss="modal">Cancel</button>
           <button type="submit" class="btn btn-primary">Save Category</button>
         </div>
       </form>

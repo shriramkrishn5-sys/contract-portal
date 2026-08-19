@@ -288,4 +288,54 @@
   </a>
 </div>
 
+<!-- Mobile Floating Sections Button (<=868px) -->
+<button type="button" class="mobile-sections-fab" id="mobileSectionsFab" aria-label="Open Sections List">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+    <line x1="9" y1="3" x2="9" y2="21"></line>
+  </svg>
+  <span>Sections (<%= totalSections %>)</span>
+</button>
+
+<!-- Mobile Sections Drawer Backdrop & Modal (<=868px) -->
+<div class="mobile-sections-drawer-backdrop" id="mobileSectionsBackdrop"></div>
+<div class="mobile-sections-drawer" id="mobileSectionsDrawer">
+  <div class="drawer-header">
+    <div class="d-flex align-items-center gap-2">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--portal-primary)" stroke-width="2">
+        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="9" y1="3" x2="9" y2="21"></line>
+      </svg>
+      <strong>Document Sections (<%= totalSections %>)</strong>
+    </div>
+    <button type="button" class="drawer-close-btn" id="mobileSectionsClose" aria-label="Close sections list">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+    </button>
+  </div>
+  <div class="drawer-content thumbnails-scroll-container">
+    <div class="section-nav-item active" data-section="section-intro">
+      <span class="section-nav-dot"></span>
+      <span class="section-nav-label">Introduction</span>
+    </div>
+    <% visibleSections.forEach((section, idx) => { %>
+      <div class="section-nav-item" data-section="section-<%= idx %>">
+        <span class="section-nav-dot"></span>
+        <span class="section-nav-label"><%= section.title %></span>
+      </div>
+    <% }) %>
+    <% if (hasAddendum) { %>
+      <div class="section-nav-item" data-section="section-addendum">
+        <span class="section-nav-dot"></span>
+        <span class="section-nav-label">Addendum: Additional Terms</span>
+      </div>
+    <% } %>
+    <% if (!templateHasSignatureSection) { %>
+      <div class="section-nav-item" data-section="section-signatures">
+        <span class="section-nav-dot"></span>
+        <span class="section-nav-label">Signatures</span>
+      </div>
+    <% } %>
+  </div>
+</div>
+
 <script src="/js/public/contract-view.js?v=<%= locals.assetVersion || '1.0.1' %>"></script>

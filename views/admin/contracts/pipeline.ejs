@@ -1,6 +1,6 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h1>Contract Pipeline</h1>
-  <div>
+<div class="pipeline-header-bar d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <h1 style="margin-bottom: 0;">Contract Pipeline</h1>
+  <div class="d-flex gap-2">
     <a href="/admin/contracts" class="btn btn-secondary">List View</a>
     <a href="/admin/contracts/new" class="btn btn-primary">New Contract</a>
   </div>
@@ -46,8 +46,11 @@
     display: flex;
     gap: 1.5rem;
     overflow-x: auto;
-    padding-bottom: 1rem;
+    padding-bottom: 1.5rem;
     align-items: flex-start;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x mandatory;
+    scroll-padding: 1rem;
   }
   .pipeline-column {
     flex: 0 0 300px;
@@ -56,6 +59,8 @@
     display: flex;
     flex-direction: column;
     max-height: calc(100vh - 200px);
+    scroll-snap-align: start;
+    border: 1px solid var(--portal-border, #e2e8f0);
   }
   .pipeline-header {
     padding: 1rem;
@@ -99,5 +104,29 @@
   .pipeline-card .card-client {
     color: var(--portal-text-muted);
     font-size: 0.875rem;
+  }
+
+  @media (max-width: 768px) {
+    .pipeline-board {
+      gap: 1rem;
+    }
+    .pipeline-column {
+      flex: 0 0 min(280px, 85vw);
+      max-height: calc(100vh - 160px);
+    }
+    .pipeline-header-bar {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.75rem;
+    }
+    .pipeline-header-bar > div {
+      width: 100%;
+      display: flex;
+      gap: 0.5rem;
+    }
+    .pipeline-header-bar > div .btn {
+      flex: 1;
+      justify-content: center;
+    }
   }
 </style>

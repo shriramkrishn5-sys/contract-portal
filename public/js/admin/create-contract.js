@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       if (type === 'custom_split') {
         html = `
-          <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-grid-2">
             <div class="form-group mb-0">
               <label class="form-label">Advance %</label>
               <input type="number" id="advPercent" class="form-control" value="50">
@@ -24,9 +24,9 @@ document.addEventListener('DOMContentLoaded', () => {
         html = `
           <div class="form-group mb-0">
             <label class="form-label">Milestones</label>
-            <div class="d-flex mb-2">
-              <input type="text" class="form-control" placeholder="Milestone name" style="margin-right: 0.5rem;">
-              <input type="number" class="form-control" placeholder="Amount" style="width: 120px; margin-right: 0.5rem;">
+            <div class="d-flex mb-2 flex-wrap gap-2">
+              <input type="text" class="form-control" placeholder="Milestone name" style="flex: 1; min-width: 140px;">
+              <input type="number" class="form-control" placeholder="Amount" style="width: 120px;">
               <button type="button" class="btn btn-secondary">+</button>
             </div>
           </div>

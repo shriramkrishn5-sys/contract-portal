@@ -1,11 +1,11 @@
-<div class="dashboard-header d-flex justify-content-between align-items-center mb-4">
+<div class="dashboard-header mb-4">
   <div>
     <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--portal-dark); margin-bottom: 0.25rem;">
       Welcome back, <%= typeof admin !== 'undefined' ? admin.name.split(' ')[0] : 'Naman' %> 👋
     </h2>
     <p class="text-muted" style="font-size: 0.875rem;">Here's what's happening with your contracts.</p>
   </div>
-  <div class="d-flex gap-3">
+  <div class="d-flex gap-3 flex-wrap">
     <a href="/admin/contracts/new" class="btn btn-primary">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       New Contract
@@ -133,11 +133,11 @@
               cutout: '70%',
               plugins: {
                 legend: {
-                  position: 'right',
+                  position: window.innerWidth <= 576 ? 'bottom' : 'right',
                   labels: {
                     color: textColor,
                     font: { family: "'Inter', sans-serif", size: 12 },
-                    padding: 20,
+                    padding: 15,
                     usePointStyle: true,
                     pointStyle: 'circle'
                   }
@@ -161,6 +161,14 @@
                   }
                 }
               }
+            }
+          });
+
+          window.addEventListener('resize', function() {
+            const newPos = window.innerWidth <= 576 ? 'bottom' : 'right';
+            if (chart.options.plugins.legend.position !== newPos) {
+              chart.options.plugins.legend.position = newPos;
+              chart.update();
             }
           });
 
@@ -252,7 +260,7 @@
     <h3 style="font-size: 1rem; font-weight: 600; margin: 0;">Recent Contracts</h3>
     <a href="/admin/contracts" style="color: var(--portal-primary); font-size: 0.875rem; font-weight: 500; text-decoration: none;">View All Contracts &rarr;</a>
   </div>
-  <div style="overflow-x: auto;">
+  <div class="table-responsive">
     <table class="table">
       <thead>
         <tr>

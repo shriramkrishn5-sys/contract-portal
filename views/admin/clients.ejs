@@ -1,15 +1,15 @@
-<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 30px;">
   <div>
     <h1 class="page-title">Client Directory</h1>
     <p class="page-subtitle">Auto-generated rolodex from your signed contracts</p>
   </div>
-  <div class="search-bar" style="position: relative; width: 300px;">
+  <div class="search-bar" style="position: relative; width: min(100%, 300px);">
     <svg style="position: absolute; left: 12px; top: 10px; color: #94a3b8;" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
     <input type="text" id="clientSearch" class="form-control" placeholder="Search clients..." style="padding-left: 40px; border-radius: 20px;">
   </div>
 </div>
 
-<div class="tabs" style="margin-bottom: 20px; display: flex; gap: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
+<div class="tabs" style="margin-bottom: 20px; display: flex; flex-wrap: wrap; gap: 10px; border-bottom: 1px solid #e2e8f0; padding-bottom: 10px;">
   <a href="/admin/clients" class="btn <%= status === 'active' ? 'btn-primary' : 'btn-outline' %>">Active Clients</a>
   <a href="/admin/clients?status=removed" class="btn <%= status === 'removed' ? 'btn-primary' : 'btn-outline' %>">Removed Clients</a>
 </div>
@@ -24,54 +24,56 @@
       <p style="color: #64748b; margin-bottom: 20px;">Clients will appear here automatically once contracts are signed.</p>
     </div>
   <% } else { %>
-    <table class="table" id="clientsTable">
-      <thead>
-        <tr>
-          <th>Client Name</th>
-          <th>Company</th>
-          <th>Contact Info</th>
-          <th>Contracts</th>
-          <th>Lifetime Value</th>
-          <th class="text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% clients.forEach(client => { %>
-          <tr class="client-row">
-            <td>
-              <div style="font-weight: 600; color: #0f172a;"><%= client.name %></div>
-              <div style="font-size: 13px; color: #64748b;"><%= client.designation || 'Signatory' %></div>
-            </td>
-            <td>
-              <div style="font-weight: 500;"><%= client.company %></div>
-              <div style="font-size: 13px; color: #64748b;"><%= client.region === 'indian' ? 'India' : 'International' %></div>
-            </td>
-            <td>
-              <div style="font-size: 13px; margin-bottom: 2px;"><a href="mailto:<%= client.email %>" style="color: #3b82f6; text-decoration: none;"><%= client.email %></a></div>
-              <div style="font-size: 13px; color: #64748b;"><%= client.phone || 'N/A' %></div>
-            </td>
-            <td>
-              <span class="badge" style="background: #e0e7ff; color: #4338ca; padding: 4px 10px; font-weight: 600;">
-                <%= client.contract_count %>
-              </span>
-            </td>
-            <td>
-              <div style="font-weight: 600; color: #16a34a;">
-                <% if(client.region === 'international') { %>$<% } else { %>₹<% } %><%= (client.total_spent || 0).toLocaleString() %>
-              </div>
-            </td>
-            <td class="text-right">
-              <a href="/admin/contracts?search=<%= encodeURIComponent(client.email) %>" class="btn btn-outline" style="padding: 4px 12px; font-size: 13px;">View Contracts</a>
-              <% if (status === 'removed') { %>
-                <button onclick="restoreClient('<%= client.id %>', '<%= client.name %>')" class="btn btn-outline" style="padding: 4px 12px; font-size: 13px; margin-left: 5px; border-color: #bbf7d0; background: #f0fdf4; color: #16a34a;">Restore</button>
-              <% } else { %>
-                <button onclick="deleteClient('<%= client.id %>', '<%= client.name %>')" class="btn btn-outline text-danger" style="padding: 4px 12px; font-size: 13px; margin-left: 5px; border-color: #fee2e2; background: #fef2f2;">Delete</button>
-              <% } %>
-            </td>
+    <div class="table-responsive">
+      <table class="table" id="clientsTable" style="min-width: 640px;">
+        <thead>
+          <tr>
+            <th>Client Name</th>
+            <th>Company</th>
+            <th>Contact Info</th>
+            <th>Contracts</th>
+            <th>Lifetime Value</th>
+            <th class="text-right">Actions</th>
           </tr>
-        <% }) %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% clients.forEach(client => { %>
+            <tr class="client-row">
+              <td>
+                <div style="font-weight: 600; color: #0f172a;"><%= client.name %></div>
+                <div style="font-size: 13px; color: #64748b;"><%= client.designation || 'Signatory' %></div>
+              </td>
+              <td>
+                <div style="font-weight: 500;"><%= client.company %></div>
+                <div style="font-size: 13px; color: #64748b;"><%= client.region === 'indian' ? 'India' : 'International' %></div>
+              </td>
+              <td>
+                <div style="font-size: 13px; margin-bottom: 2px;"><a href="mailto:<%= client.email %>" style="color: #3b82f6; text-decoration: none;"><%= client.email %></a></div>
+                <div style="font-size: 13px; color: #64748b;"><%= client.phone || 'N/A' %></div>
+              </td>
+              <td>
+                <span class="badge" style="background: #e0e7ff; color: #4338ca; padding: 4px 10px; font-weight: 600;">
+                  <%= client.contract_count %>
+                </span>
+              </td>
+              <td>
+                <div style="font-weight: 600; color: #16a34a;">
+                  <% if(client.region === 'international') { %>$<% } else { %>₹<% } %><%= (client.total_spent || 0).toLocaleString() %>
+                </div>
+              </td>
+              <td class="text-right">
+                <a href="/admin/contracts?search=<%= encodeURIComponent(client.email) %>" class="btn btn-outline" style="padding: 4px 12px; font-size: 13px;">View Contracts</a>
+                <% if (status === 'removed') { %>
+                  <button onclick="restoreClient('<%= client.id %>', '<%= client.name %>')" class="btn btn-outline" style="padding: 4px 12px; font-size: 13px; margin-left: 5px; border-color: #bbf7d0; background: #f0fdf4; color: #16a34a;">Restore</button>
+                <% } else { %>
+                  <button onclick="deleteClient('<%= client.id %>', '<%= client.name %>')" class="btn btn-outline text-danger" style="padding: 4px 12px; font-size: 13px; margin-left: 5px; border-color: #fee2e2; background: #fef2f2;">Delete</button>
+                <% } %>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
   <% } %>
 </div>
 

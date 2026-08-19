@@ -14,7 +14,7 @@
 
     <div class="section mb-5">
       <h3 class="mb-3 border-bottom pb-2">1. Client Details</h3>
-      <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div class="form-grid-2">
         <div class="form-group">
           <label class="form-label">Client Name</label>
           <input type="text" name="clientName" class="form-control"
@@ -62,11 +62,11 @@
           required><%= (typeof contract !== 'undefined' && contract.scope_of_work) ? contract.scope_of_work : ((typeof prefill !== 'undefined' && prefill.scopeOfWork) ? prefill.scopeOfWork : '') %></textarea>
       </div>
 
-      <div class="row" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+      <div class="form-grid-2 mb-3">
         <div class="form-group">
           <label class="form-label">Total Amount</label>
           <div class="d-flex">
-            <select name="currency" class="form-control" style="width: 80px; margin-right: 0.5rem;" required>
+            <select name="currency" class="form-control" style="width: 80px; margin-right: 0.5rem; flex-shrink: 0;" required>
               <option value="INR" <%=(typeof contract !=='undefined' && contract.currency==='INR' ) || ((typeof
                 contract==='undefined' || !contract.currency) && typeof prefill !=='undefined' &&
                 prefill.currency==='INR' ) ? 'selected' : '' %>>₹ INR</option>
@@ -74,7 +74,7 @@
                 contract==='undefined' || !contract.currency) && typeof prefill !=='undefined' &&
                 prefill.currency==='USD' ) ? 'selected' : '' %>>$ USD</option>
             </select>
-            <input type="number" name="amount" class="form-control"
+            <input type="number" name="amount" class="form-control" style="flex: 1;"
               value="<%= (typeof contract !== 'undefined' && contract.total_amount) ? contract.total_amount : ((typeof prefill !== 'undefined' && prefill.amount) ? prefill.amount : '') %>"
               required>
           </div>
@@ -91,28 +91,24 @@
         </div>
       </div>
 
-      <div class="row" style="display: grid; grid-template-columns: 1fr; margin-bottom: 1rem;">
-        <div class="form-group">
-          <label class="form-label">Time Period</label>
-          <input type="text" name="timePeriod" class="form-control"
-            value="<%= (typeof contract !== 'undefined' && contract.timeline) ? contract.timeline : ((typeof prefill !== 'undefined' && prefill.timePeriod) ? prefill.timePeriod : '1 Month') %>"
-            placeholder="e.g. 1 Month, 3 Months, 1 Year"
-            required>
-          <small class="text-muted" style="font-size: 0.8rem; display: block; margin-top: 4px;">
-            Used to calculate End Date (Start Date + Time Period).
-          </small>
-        </div>
+      <div class="form-group mb-3">
+        <label class="form-label">Time Period</label>
+        <input type="text" name="timePeriod" class="form-control"
+          value="<%= (typeof contract !== 'undefined' && contract.timeline) ? contract.timeline : ((typeof prefill !== 'undefined' && prefill.timePeriod) ? prefill.timePeriod : '1 Month') %>"
+          placeholder="e.g. 1 Month, 3 Months, 1 Year"
+          required>
+        <small class="text-muted" style="font-size: 0.8rem; display: block; margin-top: 4px;">
+          Used to calculate End Date (Start Date + Time Period).
+        </small>
       </div>
 
-      <div class="row" style="display: grid; grid-template-columns: 1fr; margin-bottom: 1rem;">
-        <div class="form-group">
-          <label class="form-label">Payment Type</label>
-          <select name="paymentType" id="paymentType" class="form-control" required>
-            <option value="full_advance">Full Advance</option>
-            <option value="custom_split">Custom Split</option>
-            <option value="milestone">Milestone-Based</option>
-          </select>
-        </div>
+      <div class="form-group mb-3">
+        <label class="form-label">Payment Type</label>
+        <select name="paymentType" id="paymentType" class="form-control" required>
+          <option value="full_advance">Full Advance</option>
+          <option value="custom_split">Custom Split</option>
+          <option value="milestone">Milestone-Based</option>
+        </select>
       </div>
 
       <div id="dynamicPaymentFields" class="mb-3 p-3 bg-light rounded" style="background: var(--portal-bg);">
@@ -132,22 +128,22 @@
             include these optional clauses in the contract addendum.</p>
 
           <div class="clauses-grid"
-            style="display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));">
+            style="display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 280px), 1fr));">
             <% filteredClauses.forEach((clause, index)=> { %>
               <label class="clause-toggle-card" for="clause<%= index %>"
-                style="display: flex; align-items: flex-start; padding: 12px 16px; border: 1px solid var(--portal-border, #e2e8f0); border-radius: 8px; cursor: pointer; transition: all 0.2s; background: white;">
-                <div style="margin-right: 12px; margin-top: 2px;">
+                style="display: flex; align-items: flex-start; padding: 12px 16px; border: 1px solid var(--portal-border, #e2e8f0); border-radius: 8px; cursor: pointer; transition: all 0.2s; background: white; min-width: 0;">
+                <div style="margin-right: 12px; margin-top: 2px; flex-shrink: 0;">
                   <input class="form-check-input custom-checkbox" type="checkbox" name="clauses[<%= index %>][enabled]"
                     value="true" <%=clause.defaultEnabled !==false ? 'checked' : '' %> id="clause<%= index %>"
                     style="width: 18px; height: 18px; accent-color: var(--portal-primary, #347A5A); cursor: pointer;">
                 </div>
-                <div style="flex: 1;">
+                <div style="flex: 1; min-width: 0; word-break: break-word;">
                   <div
                     style="font-weight: 600; font-size: 0.95rem; color: var(--portal-text, #334155); margin-bottom: 2px;">
                     <%= clause.title %>
                   </div>
                   <div
-                    style="font-size: 0.8rem; color: var(--portal-text-muted, #64748B); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+                    style="font-size: 0.8rem; color: var(--portal-text-muted, #64748B); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; word-break: break-word;">
                     <%= clause.content.replace(/<[^>]*>?/gm, '').substring(0, 100) %>...
                   </div>
                 </div>
@@ -169,7 +165,7 @@
         </style>
         <% } %>
 
-          <div class="d-flex justify-content-between">
+          <div class="form-actions-responsive">
             <button type="submit" name="action" value="draft" class="btn btn-secondary">Save Draft</button>
             <button type="submit" name="action" value="preview" class="btn btn-primary">Preview Contract</button>
           </div>

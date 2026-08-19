@@ -1,8 +1,8 @@
-<div class="d-flex justify-content-between align-items-center mb-4">
-  <h2>Contract Preview</h2>
-  <div>
+<div class="contract-preview-header d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+  <h2 style="margin-bottom: 0;">Contract Preview</h2>
+  <div class="d-flex gap-2 flex-wrap">
     <% if (contract.status === 'draft') { %>
-      <a href="/admin/contracts/<%= contract.id %>/edit" class="btn btn-secondary mr-2">Edit</a>
+      <a href="/admin/contracts/<%= contract.id %>/edit" class="btn btn-secondary">Edit</a>
     <% } %>
     <form id="sendEmailForm" action="/admin/contracts/<%= contract.id %>/send" method="POST" style="display: inline;">
       <button type="submit" id="generateBtn" class="btn btn-primary">Generate & Send Link</button>
@@ -10,31 +10,33 @@
   </div>
 </div>
 
-<div class="contract-document mx-auto" style="max-width: 800px; border: 1px solid var(--portal-border);">
-  <div class="text-center mb-5">
-    <h1 style="margin:0;">CONTRACT AGREEMENT</h1>
-    <p class="text-muted">Effective Date: <%= contract.start_date ? new Date(contract.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : (contract.created_at ? new Date(contract.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A') %></p>
-  </div>
-
-  <p>This Agreement is entered into between <strong><%= typeof contract !== 'undefined' ? (contract.company_name || 'KKeyQik') : 'KKeyQik' %></strong> (hereinafter referred to as the "Company") and <strong><%= typeof contract !== 'undefined' ? (contract.client_name || '[Client Name]') : '[Client Name]' %></strong> (hereinafter referred to as the "Client").</p>
-
-  <h3>1. Scope of Work</h3>
-  <p>The Company agrees to perform the following services for the Project <strong><%= typeof contract !== 'undefined' ? (contract.project_name || '[Project Name]') : '[Project Name]' %></strong>:</p>
-  <p style="white-space: pre-wrap;"><%= typeof contract !== 'undefined' ? (contract.scope_of_work || '[Scope Details]') : '[Scope Details]' %></p>
-
-  <h3>2. Payment Terms</h3>
-  <p>Total Amount: <%= typeof contract !== 'undefined' ? (contract.currency || 'USD') : '' %> <%= typeof contract !== 'undefined' ? (contract.total_amount || '0') : '0' %></p>
-
-  <div class="mt-5 pt-4 border-top d-flex justify-content-between">
-    <div>
-      <p><strong>For Company:</strong></p>
-      <div style="height: 60px;"></div>
-      <p>Name: <%= typeof contract !== 'undefined' ? (contract.authorized_signatory || 'John Doe') : 'John Doe' %></p>
+<div class="contract-document-wrapper">
+  <div class="contract-document">
+    <div class="text-center mb-5">
+      <h1 style="margin: 0; font-size: clamp(1.5rem, 4vw, 2rem);">CONTRACT AGREEMENT</h1>
+      <p class="text-muted" style="font-size: 0.875rem; margin-top: 0.25rem;">Effective Date: <%= contract.start_date ? new Date(contract.start_date).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : (contract.created_at ? new Date(contract.created_at).toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }) : 'N/A') %></p>
     </div>
-    <div>
-      <p><strong>For Client:</strong></p>
-      <div style="height: 60px;"></div>
-      <p>Name: <%= typeof contract !== 'undefined' ? (contract.client_name || '[Client Name]') : '[Client Name]' %></p>
+
+    <p>This Agreement is entered into between <strong><%= typeof contract !== 'undefined' ? (contract.company_name || 'KKeyQik') : 'KKeyQik' %></strong> (hereinafter referred to as the "Company") and <strong><%= typeof contract !== 'undefined' ? (contract.client_name || '[Client Name]') : '[Client Name]' %></strong> (hereinafter referred to as the "Client").</p>
+
+    <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">1. Scope of Work</h3>
+    <p>The Company agrees to perform the following services for the Project <strong><%= typeof contract !== 'undefined' ? (contract.project_name || '[Project Name]') : '[Project Name]' %></strong>:</p>
+    <p style="white-space: pre-wrap; word-break: break-word;"><%= typeof contract !== 'undefined' ? (contract.scope_of_work || '[Scope Details]') : '[Scope Details]' %></p>
+
+    <h3 style="margin-top: 1.5rem; margin-bottom: 0.5rem; font-size: 1.15rem;">2. Payment Terms</h3>
+    <p>Total Amount: <%= typeof contract !== 'undefined' ? (contract.currency || 'USD') : '' %> <%= typeof contract !== 'undefined' ? (contract.total_amount || '0') : '0' %></p>
+
+    <div class="mt-5 pt-4 border-top d-flex justify-content-between signatory-block flex-wrap gap-4">
+      <div>
+        <p><strong>For Company:</strong></p>
+        <div style="height: 60px;"></div>
+        <p>Name: <%= typeof contract !== 'undefined' ? (contract.authorized_signatory || 'John Doe') : 'John Doe' %></p>
+      </div>
+      <div>
+        <p><strong>For Client:</strong></p>
+        <div style="height: 60px;"></div>
+        <p>Name: <%= typeof contract !== 'undefined' ? (contract.client_name || '[Client Name]') : '[Client Name]' %></p>
+      </div>
     </div>
   </div>
 </div>
@@ -72,3 +74,46 @@
     });
   }
 </script>
+
+<style>
+.contract-document-wrapper {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+.contract-document {
+  max-width: 800px;
+  width: 100%;
+  background: white;
+  border: 1px solid var(--portal-border, #e2e8f0);
+  border-radius: 8px;
+  padding: 3rem 2.5rem;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+@media (max-width: 768px) {
+  .contract-document {
+    padding: 1.5rem 1rem;
+  }
+  .contract-preview-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  .contract-preview-header > div {
+    width: 100%;
+    display: flex;
+  }
+  .contract-preview-header > div .btn,
+  .contract-preview-header > div form,
+  .contract-preview-header > div form .btn {
+    flex: 1;
+    justify-content: center;
+  }
+  .signatory-block {
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+}
+</style>

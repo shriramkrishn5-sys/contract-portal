@@ -42,10 +42,44 @@ document.addEventListener('DOMContentLoaded', () => {
       // Close currently active if it's not this one
       if (activeDropdown && activeDropdown !== dropdown) {
         activeDropdown.classList.remove('show');
+        activeDropdown.removeAttribute('style');
       }
       
+      const isOpening = !dropdown.classList.contains('show');
       dropdown.classList.toggle('show');
-      activeDropdown = dropdown.classList.contains('show') ? dropdown : null;
+      activeDropdown = isOpening ? dropdown : null;
+
+      if (isOpening) {
+        // Reset styles first
+        dropdown.style.right = '0';
+        dropdown.style.left = 'auto';
+        dropdown.style.top = '100%';
+        dropdown.style.bottom = 'auto';
+        dropdown.style.marginTop = '4px';
+        dropdown.style.marginBottom = '0';
+
+        // Check viewport boundary so it never opens offscreen on mobile
+        const rect = dropdown.getBoundingClientRect();
+        const windowWidth = window.innerWidth || document.documentElement.clientWidth;
+        const windowHeight = window.innerHeight || document.documentElement.clientHeight;
+
+        if (rect.right > windowWidth - 10) {
+          dropdown.style.right = '0';
+          dropdown.style.left = 'auto';
+        }
+        if (rect.left < 10) {
+          dropdown.style.left = '0';
+          dropdown.style.right = 'auto';
+        }
+        if (rect.bottom > windowHeight - 10) {
+          dropdown.style.top = 'auto';
+          dropdown.style.bottom = '100%';
+          dropdown.style.marginTop = '0';
+          dropdown.style.marginBottom = '4px';
+        }
+      } else {
+        dropdown.removeAttribute('style');
+      }
     });
   });
 
@@ -53,9 +87,19 @@ document.addEventListener('DOMContentLoaded', () => {
   document.addEventListener('click', () => {
     if (activeDropdown) {
       activeDropdown.classList.remove('show');
+      activeDropdown.removeAttribute('style');
       activeDropdown = null;
     }
   });
+
+  // Also close dropdown on scroll
+  window.addEventListener('scroll', () => {
+    if (activeDropdown) {
+      activeDropdown.classList.remove('show');
+      activeDropdown.removeAttribute('style');
+      activeDropdown = null;
+    }
+  }, { passive: true });
 
   // Prevent dropdown closing when clicking inside it
   document.querySelectorAll('.dropdown-menu-custom').forEach(menu => {

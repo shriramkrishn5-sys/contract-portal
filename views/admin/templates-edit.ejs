@@ -1,4 +1,4 @@
-<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 30px;">
   <div>
     <a href="/admin/templates" style="color: #64748b; text-decoration: none; font-size: 14px; display: flex; align-items: center; gap: 4px; margin-bottom: 8px;">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
@@ -23,13 +23,13 @@
       </div>
       
       <div style="margin-top: 16px; display: flex; gap: 12px; align-items: center; flex-wrap: wrap;">
-        <button class="btn btn-outline" style="flex: 1; min-width: 180px; border-style: dashed;" onclick="addSection()">
+        <button class="btn btn-outline" style="flex: 1 1 180px; min-width: 160px; border-style: dashed;" onclick="addSection()">
           + Add New Section
         </button>
 
-        <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; flex: 1 1 240px;">
           <span style="font-size: 13px; font-weight: 500; color: #64748b; white-space: nowrap;">Variable Builder:</span>
-          <select id="variableDropdown" class="form-control" style="width: auto; padding: 6px 12px; font-size: 13px; cursor: pointer;" onchange="handleVariableInsert(this)">
+          <select id="variableDropdown" class="form-control" style="flex: 1; min-width: 160px; width: auto; padding: 6px 12px; font-size: 13px; cursor: pointer;" onchange="handleVariableInsert(this)">
             <option value="">+ Insert Variable...</option>
             <option value="{{client_name}}">{{client_name}} (Client Name)</option>
             <option value="{{company_name}}">{{company_name}} (Company Name)</option>
@@ -95,13 +95,13 @@ function renderSections() {
   sections.forEach((sec, idx) => {
     container.innerHTML += `
       <div class="section-editor" style="border: 1px solid #e2e8f0; border-radius: 8px; overflow: hidden;">
-        <div style="background: #f8fafc; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
-          <input type="text" value="${escapeHtml(sec.title)}" onchange="updateSectionTitle(${idx}, this.value)" style="border: none; background: transparent; font-weight: 600; font-size: 15px; flex: 1; outline: none;" placeholder="Section Title">
-          <button class="btn-icon" style="color: #ef4444;" onclick="removeSection(${idx})">
+        <div style="background: #f8fafc; padding: 12px 16px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center; gap: 8px;">
+          <input type="text" value="${escapeHtml(sec.title)}" onchange="updateSectionTitle(${idx}, this.value)" style="border: none; background: transparent; font-weight: 600; font-size: 15px; flex: 1; min-width: 0; outline: none;" placeholder="Section Title">
+          <button class="btn-icon" style="color: #ef4444; flex-shrink: 0; padding: 6px;" onclick="removeSection(${idx})" title="Remove Section">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
           </button>
         </div>
-        <textarea class="section-textarea" data-idx="${idx}" onfocus="setActiveTextarea(this)" oninput="updateSectionContent(${idx}, this.value)" onchange="updateSectionContent(${idx}, this.value)" style="width: 100%; border: none; padding: 16px; min-height: 150px; outline: none; font-family: monospace; font-size: 13px; line-height: 1.5; resize: vertical;">${escapeHtml(sec.content)}</textarea>
+        <textarea class="section-textarea" data-idx="${idx}" onfocus="setActiveTextarea(this)" oninput="updateSectionContent(${idx}, this.value)" onchange="updateSectionContent(${idx}, this.value)" style="width: 100%; border: none; padding: 16px; min-height: 150px; outline: none; font-family: monospace; font-size: 13px; line-height: 1.5; resize: vertical; box-sizing: border-box;">${escapeHtml(sec.content)}</textarea>
       </div>
     `;
   });

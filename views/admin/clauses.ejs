@@ -1,4 +1,4 @@
-<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 30px;">
   <div>
     <h1 class="page-title">Clause Library</h1>
     <p class="page-subtitle">Manage standard and reusable clauses for your templates</p>
@@ -20,55 +20,57 @@
       <button class="btn btn-primary" onclick="openClauseModal()">Create Clause</button>
     </div>
   <% } else { %>
-    <table class="table">
-      <thead>
-        <tr>
-          <th>Title</th>
-          <th>Category</th>
-          <th>Default</th>
-          <th>Client Toggleable</th>
-          <th class="text-right">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% clauses.forEach(clause => { %>
+    <div class="table-responsive">
+      <table class="table" style="min-width: 540px;">
+        <thead>
           <tr>
-            <td style="font-weight: 500; color: #0f172a;">
-              <%= clause.title %>
-            </td>
-            <td><span class="badge" style="background: #e2e8f0; color: #334155;"><%= clause.category %></span></td>
-            <td>
-              <% if (clause.default_enabled) { %>
-                <span class="badge" style="background: #dcfce7; color: #166534;">Yes</span>
-              <% } else { %>
-                <span class="badge" style="background: #f1f5f9; color: #64748b;">No</span>
-              <% } %>
-            </td>
-            <td>
-              <% if (clause.client_toggleable) { %>
-                <span class="badge" style="background: #dcfce7; color: #166534;">Yes</span>
-              <% } else { %>
-                <span class="badge" style="background: #f1f5f9; color: #64748b;">No</span>
-              <% } %>
-            </td>
-            <td class="text-right">
-              <button class="btn btn-icon" onclick='editClause(<%- JSON.stringify(clause) %>)' title="Edit">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-              </button>
-              <button class="btn btn-icon" style="color: #ef4444;" onclick="deleteClause(<%= clause.id %>)" title="Delete">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-              </button>
-            </td>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Default</th>
+            <th>Client Toggleable</th>
+            <th class="text-right">Actions</th>
           </tr>
-        <% }) %>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <% clauses.forEach(clause => { %>
+            <tr>
+              <td style="font-weight: 500; color: #0f172a;">
+                <%= clause.title %>
+              </td>
+              <td><span class="badge" style="background: #e2e8f0; color: #334155;"><%= clause.category %></span></td>
+              <td>
+                <% if (clause.default_enabled) { %>
+                  <span class="badge" style="background: #dcfce7; color: #166534;">Yes</span>
+                <% } else { %>
+                  <span class="badge" style="background: #f1f5f9; color: #64748b;">No</span>
+                <% } %>
+              </td>
+              <td>
+                <% if (clause.client_toggleable) { %>
+                  <span class="badge" style="background: #dcfce7; color: #166534;">Yes</span>
+                <% } else { %>
+                  <span class="badge" style="background: #f1f5f9; color: #64748b;">No</span>
+                <% } %>
+              </td>
+              <td class="text-right">
+                <button class="btn btn-icon" onclick='editClause(<%- JSON.stringify(clause) %>)' title="Edit">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                </button>
+                <button class="btn btn-icon" style="color: #ef4444;" onclick="deleteClause(<%= clause.id %>)" title="Delete">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                </button>
+              </td>
+            </tr>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
   <% } %>
 </div>
 
 <!-- Modal -->
-<div id="clauseModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center;">
-  <div class="modal-content" style="background: white; border-radius: 16px; width: 100%; max-width: 600px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+<div id="clauseModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center; padding: 1rem;">
+  <div class="modal-content" style="background: white; border-radius: 16px; width: min(92vw, 540px); max-height: 90vh; overflow-y: auto; margin: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);">
     <div class="modal-header" style="padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
       <h3 id="modalTitle" style="margin: 0; font-size: 18px; font-weight: 600;">Add New Clause</h3>
       <button class="btn-icon" onclick="closeModal()" style="border: none; background: none; cursor: pointer; color: #64748b;">
@@ -96,10 +98,10 @@
       
       <div class="form-group mb-4">
         <label>Content *</label>
-        <textarea id="clauseContent" name="content" class="form-control" rows="5" required placeholder="Enter the full clause text..."></textarea>
+        <textarea id="clauseContent" name="content" class="form-control" rows="5" required placeholder="Enter the full clause text..." style="box-sizing: border-box;"></textarea>
       </div>
 
-      <div class="form-group" style="display: flex; gap: 24px;">
+      <div class="form-group" style="display: flex; gap: 24px; flex-wrap: wrap;">
         <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-weight: 400;">
           <input type="checkbox" id="clauseDefault" name="default_enabled" style="width: 16px; height: 16px;">
           Enabled by Default
@@ -110,7 +112,7 @@
         </label>
       </div>
       
-      <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 12px;">
+      <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap;">
         <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
         <button type="submit" class="btn btn-primary" id="saveClauseBtn">Save Clause</button>
       </div>

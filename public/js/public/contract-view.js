@@ -23,11 +23,38 @@ document.addEventListener('DOMContentLoaded', () => {
   const downloadDocBtn = document.getElementById('downloadDocBtn');
   const expandDocBtn = document.getElementById('expandDocBtn');
 
-  // --- Section-based sidebar navigation ---
+  // --- Section-based sidebar & mobile drawer navigation ---
   const sidebarItems = document.querySelectorAll('.section-nav-item');
   const sections = document.querySelectorAll('[data-section-id]');
+  const mobileFab = document.getElementById('mobileSectionsFab');
+  const mobileDrawer = document.getElementById('mobileSectionsDrawer');
+  const mobileBackdrop = document.getElementById('mobileSectionsBackdrop');
+  const mobileClose = document.getElementById('mobileSectionsClose');
 
-  // Click handler: scroll the matching section into view
+  const openMobileDrawer = () => {
+    if (mobileDrawer) mobileDrawer.classList.add('open');
+    if (mobileBackdrop) mobileBackdrop.classList.add('open');
+  };
+
+  const closeMobileDrawer = () => {
+    if (mobileDrawer) mobileDrawer.classList.remove('open');
+    if (mobileBackdrop) mobileBackdrop.classList.remove('open');
+  };
+
+  if (mobileFab) {
+    mobileFab.addEventListener('click', openMobileDrawer);
+  }
+  if (mobileClose) {
+    mobileClose.addEventListener('click', closeMobileDrawer);
+  }
+  if (mobileBackdrop) {
+    mobileBackdrop.addEventListener('click', closeMobileDrawer);
+  }
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeMobileDrawer();
+  });
+
+  // Click handler: scroll the matching section into view and close drawer if open
   sidebarItems.forEach(item => {
     item.addEventListener('click', () => {
       const sectionId = item.getAttribute('data-section');
@@ -35,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (target) {
         target.scrollIntoView({ behavior: 'smooth', block: 'start' });
       }
+      closeMobileDrawer();
     });
   });
 

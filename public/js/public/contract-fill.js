@@ -101,6 +101,12 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     });
 
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        container.classList.remove('open');
+      }
+    });
+
     document.addEventListener('click', (e) => {
       if (!container.contains(e.target)) {
         container.classList.remove('open');

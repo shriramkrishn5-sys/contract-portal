@@ -1,4 +1,4 @@
-<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+<div class="header-actions" style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px; margin-bottom: 30px;">
   <div>
     <h1 class="page-title">Users & Roles</h1>
     <p class="page-subtitle">Manage team access and permissions</p>
@@ -12,73 +12,75 @@
 </div>
 
 <div class="card">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>User</th>
-        <th>Role</th>
-        <th>Joined Date</th>
-        <th class="text-right">Status</th>
-        <% if (currentUser.role === 'superadmin') { %>
-          <th class="text-right">Actions</th>
-        <% } %>
-      </tr>
-    </thead>
-    <tbody>
-      <% team.forEach(user => { %>
+  <div class="table-responsive">
+    <table class="table" style="min-width: 600px;">
+      <thead>
         <tr>
-          <td>
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px;">
-                <%= user.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() %>
-              </div>
-              <div>
-                <div style="font-weight: 600; color: #0f172a;"><%= user.name %></div>
-                <div style="font-size: 13px; color: #64748b;"><%= user.email %></div>
-              </div>
-            </div>
-          </td>
-          <td>
-            <% if (user.role === 'superadmin') { %>
-              <span class="badge" style="background: #fee2e2; color: #b91c1c;">Super Admin</span>
-            <% } else if (user.role === 'manager') { %>
-              <span class="badge" style="background: #fef3c7; color: #b45309;">Manager</span>
-            <% } else { %>
-              <span class="badge" style="background: #f1f5f9; color: #64748b;">Viewer</span>
-            <% } %>
-          </td>
-          <td style="color: #64748b;">
-            <%= new Date(user.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %>
-          </td>
-          <td class="text-right">
-            <span class="badge badge-active">Active</span>
-          </td>
+          <th>User</th>
+          <th>Role</th>
+          <th>Joined Date</th>
+          <th class="text-right">Status</th>
           <% if (currentUser.role === 'superadmin') { %>
-            <td class="text-right">
-              <div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center;">
-                <button type="button" class="btn-icon" title="Edit User" onclick='openEditModal(<%- JSON.stringify({ id: user.id, name: user.name, email: user.email, role: user.role }) %>)' style="border: 1px solid #cbd5e1; background: white; border-radius: 6px; padding: 6px 12px; cursor: pointer; color: #334155; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
-                  Edit
-                </button>
-                <% if (user.id !== currentUser.id) { %>
-                  <button type="button" class="btn-icon" title="Delete User" onclick="openDeleteModal(<%= user.id %>, '<%- user.name.replace(/'/g, "\\'") %>')" style="border: 1px solid #fca5a5; background: #fef2f2; border-radius: 6px; padding: 6px 12px; cursor: pointer; color: #dc2626; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                    Delete
-                  </button>
-                <% } %>
-              </div>
-            </td>
+            <th class="text-right">Actions</th>
           <% } %>
         </tr>
-      <% }) %>
-    </tbody>
-  </table>
+      </thead>
+      <tbody>
+        <% team.forEach(user => { %>
+          <tr>
+            <td>
+              <div style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 36px; height: 36px; border-radius: 50%; background: #e0e7ff; color: #4338ca; display: flex; align-items: center; justify-content: center; font-weight: 600; font-size: 14px; flex-shrink: 0;">
+                  <%= user.name.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase() %>
+                </div>
+                <div style="min-width: 0; word-break: break-word;">
+                  <div style="font-weight: 600; color: #0f172a;"><%= user.name %></div>
+                  <div style="font-size: 13px; color: #64748b;"><%= user.email %></div>
+                </div>
+              </div>
+            </td>
+            <td>
+              <% if (user.role === 'superadmin') { %>
+                <span class="badge" style="background: #fee2e2; color: #b91c1c;">Super Admin</span>
+              <% } else if (user.role === 'manager') { %>
+                <span class="badge" style="background: #fef3c7; color: #b45309;">Manager</span>
+              <% } else { %>
+                <span class="badge" style="background: #f1f5f9; color: #64748b;">Viewer</span>
+              <% } %>
+            </td>
+            <td style="color: #64748b;">
+              <%= new Date(user.created_at).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }) %>
+            </td>
+            <td class="text-right">
+              <span class="badge badge-active">Active</span>
+            </td>
+            <% if (currentUser.role === 'superadmin') { %>
+              <td class="text-right">
+                <div style="display: flex; gap: 8px; justify-content: flex-end; align-items: center; flex-wrap: wrap;">
+                  <button type="button" class="btn-icon" title="Edit User" onclick='openEditModal(<%- JSON.stringify({ id: user.id, name: user.name, email: user.email, role: user.role }) %>)' style="border: 1px solid #cbd5e1; background: white; border-radius: 6px; padding: 6px 12px; cursor: pointer; color: #334155; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                    Edit
+                  </button>
+                  <% if (user.id !== currentUser.id) { %>
+                    <button type="button" class="btn-icon" title="Delete User" onclick="openDeleteModal(<%= user.id %>, '<%- user.name.replace(/'/g, "\\'") %>')" style="border: 1px solid #fca5a5; background: #fef2f2; border-radius: 6px; padding: 6px 12px; cursor: pointer; color: #dc2626; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px;">
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                      Delete
+                    </button>
+                  <% } %>
+                </div>
+              </td>
+            <% } %>
+          </tr>
+        <% }) %>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <% if (currentUser.role === 'superadmin') { %>
 <!-- Modal -->
-<div id="userModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center;">
-  <div class="modal-content" style="background: white; border-radius: 16px; width: 100%; max-width: 450px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+<div id="userModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center; padding: 1rem;">
+  <div class="modal-content" style="background: white; border-radius: 16px; width: min(92vw, 480px); max-height: 90vh; overflow-y: auto; margin: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);">
     <div class="modal-header" style="padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
       <h3 id="modalTitle" style="margin: 0; font-size: 18px; font-weight: 600;">Add New User</h3>
       <button class="btn-icon" onclick="closeModal()" style="border: none; background: none; cursor: pointer; color: #64748b;">
@@ -109,7 +111,7 @@
         <input type="password" id="userPassword" class="form-control" required minlength="6">
         <small id="passwordHelp" style="display: block; color: #64748b; margin-top: 4px; font-size: 12px;"></small>
       </div>
-      <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 12px;">
+      <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap;">
         <button type="button" class="btn btn-outline" onclick="closeModal()">Cancel</button>
         <button type="submit" class="btn btn-primary" id="saveUserBtn">Add User</button>
       </div>
@@ -118,8 +120,8 @@
 </div>
 
 <!-- Reassign and Delete Modal -->
-<div id="deleteModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center;">
-  <div class="modal-content" style="background: white; border-radius: 16px; width: 100%; max-width: 450px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+<div id="deleteModal" class="modal" style="display: none; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 50; align-items: center; justify-content: center; padding: 1rem;">
+  <div class="modal-content" style="background: white; border-radius: 16px; width: min(92vw, 480px); max-height: 90vh; overflow-y: auto; margin: auto; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);">
     <div class="modal-header" style="padding: 20px 24px; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between; align-items: center;">
       <h3 style="margin: 0; font-size: 18px; font-weight: 600; color: #b91c1c;">Remove User</h3>
       <button class="btn-icon" onclick="closeDeleteModal()" style="border: none; background: none; cursor: pointer; color: #64748b;">
@@ -139,7 +141,7 @@
           <% }) %>
         </select>
       </div>
-      <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 12px;">
+      <div style="margin-top: 30px; display: flex; justify-content: flex-end; gap: 12px; flex-wrap: wrap;">
         <button type="button" class="btn btn-outline" onclick="closeDeleteModal()">Cancel</button>
         <button type="submit" class="btn btn-primary" id="confirmDeleteBtn" disabled style="background: #dc2626; border-color: #dc2626;">Reassign & Remove</button>
       </div>
