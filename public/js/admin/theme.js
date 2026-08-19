@@ -33,6 +33,35 @@ window.toggleAdminSidebar = function(e) {
   }
 };
 
+// --- Global More Drawer Controls ---
+window.openMoreDrawer = function(e) {
+  if (e) e.stopPropagation();
+  const drawer = document.getElementById('moreDrawer');
+  const backdrop = document.getElementById('moreDrawerBackdrop');
+  if (drawer) drawer.classList.add('active');
+  if (backdrop) backdrop.classList.add('active');
+  document.body.style.overflow = 'hidden';
+};
+
+window.closeMoreDrawer = function(e) {
+  if (e) e.stopPropagation();
+  const drawer = document.getElementById('moreDrawer');
+  const backdrop = document.getElementById('moreDrawerBackdrop');
+  if (drawer) drawer.classList.remove('active');
+  if (backdrop) backdrop.classList.remove('active');
+  document.body.style.overflow = '';
+};
+
+window.toggleMoreDrawer = function(e) {
+  if (e) e.stopPropagation();
+  const drawer = document.getElementById('moreDrawer');
+  if (drawer && drawer.classList.contains('active')) {
+    window.closeMoreDrawer(e);
+  } else {
+    window.openMoreDrawer(e);
+  }
+};
+
 function initAdminThemeAndNav() {
   // --- Theme Toggle Logic ---
   const themeToggle = document.getElementById('theme-toggle');
@@ -97,10 +126,11 @@ function initAdminThemeAndNav() {
     });
   }
 
-  // Close sidebar on Escape key
+  // Close sidebar and more drawer on Escape key
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       window.closeAdminSidebar(e);
+      window.closeMoreDrawer(e);
     }
   });
 
@@ -116,10 +146,22 @@ function initAdminThemeAndNav() {
     });
   }
 
+  // Close more drawer when clicking grid items
+  const moreGrid = document.querySelector('.more-drawer-grid');
+  if (moreGrid) {
+    const moreLinks = moreGrid.querySelectorAll('a');
+    moreLinks.forEach((link) => {
+      link.addEventListener('click', () => {
+        window.closeMoreDrawer();
+      });
+    });
+  }
+
   // Reset overflow and classes on resize to desktop
   window.addEventListener('resize', () => {
     if (window.innerWidth > 768) {
       window.closeAdminSidebar();
+      window.closeMoreDrawer();
     }
   });
 }

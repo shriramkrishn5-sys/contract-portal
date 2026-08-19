@@ -1,0 +1,136 @@
+<!-- Mobile 5-Item Bottom Tab Bar Navigation (<=768px) -->
+<nav class="mobile-bottom-nav" aria-label="Mobile Navigation">
+  <div class="mobile-tab-items">
+    <a href="/admin" class="mobile-tab-item <%= (typeof currentPath !== 'undefined' && (currentPath === '/admin' || currentPath === '/admin/dashboard')) ? 'active' : '' %>">
+      <div class="mobile-tab-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+          <polyline points="9 22 9 12 15 12 15 22"></polyline>
+        </svg>
+      </div>
+      <span class="mobile-tab-label">Home</span>
+    </a>
+
+    <a href="/admin/contracts" class="mobile-tab-item <%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/contracts') && !currentPath.includes('status=sent')) ? 'active' : '' %>">
+      <div class="mobile-tab-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+          <line x1="16" y1="13" x2="8" y2="13"></line>
+          <line x1="16" y1="17" x2="8" y2="17"></line>
+        </svg>
+      </div>
+      <span class="mobile-tab-label">Contracts</span>
+    </a>
+
+    <a href="/admin/contracts?status=sent" class="mobile-tab-item <%= (typeof currentPath !== 'undefined' && currentPath.includes('status=sent')) ? 'active' : '' %>">
+      <div class="mobile-tab-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+        </svg>
+      </div>
+      <span class="mobile-tab-label">Sign</span>
+    </a>
+
+    <a href="/admin/templates" class="mobile-tab-item <%= (typeof currentPath !== 'undefined' && currentPath.startsWith('/admin/templates')) ? 'active' : '' %>">
+      <div class="mobile-tab-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+          <polyline points="2 17 12 22 22 17"></polyline>
+          <polyline points="2 12 12 17 22 12"></polyline>
+        </svg>
+      </div>
+      <span class="mobile-tab-label">Templates</span>
+    </a>
+
+    <button type="button" class="mobile-tab-item" onclick="toggleMoreDrawer(event)" aria-label="More Options">
+      <div class="mobile-tab-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="3" y1="12" x2="21" y2="12"></line>
+          <line x1="3" y1="6" x2="21" y2="6"></line>
+          <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+      </div>
+      <span class="mobile-tab-label">More</span>
+    </button>
+  </div>
+</nav>
+
+<!-- 'More' Slide-Up Drawer Sheet -->
+<div id="moreDrawerBackdrop" class="more-drawer-backdrop" onclick="closeMoreDrawer(event)"></div>
+<div id="moreDrawer" class="more-drawer-sheet">
+  <div class="more-drawer-handle"></div>
+  <div class="more-drawer-header">
+    <div class="more-drawer-title">More Options</div>
+    <button type="button" class="more-drawer-close" onclick="closeMoreDrawer(event)" aria-label="Close">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+  </div>
+  <div class="more-drawer-grid">
+    <a href="/admin/team" class="more-grid-item">
+      <div class="more-item-icon" style="background: #EFF6FF; color: #2563eb;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      </div>
+      <span>Users & Roles</span>
+    </a>
+
+    <a href="/admin/clients" class="more-grid-item">
+      <div class="more-item-icon" style="background: #ECFDF5; color: #10B981;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="8.5" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+      </div>
+      <span>Client Rolodex</span>
+    </a>
+
+    <a href="/admin/clauses" class="more-grid-item">
+      <div class="more-item-icon" style="background: #F3E8FF; color: #9333ea;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+      </div>
+      <span>Clause Library</span>
+    </a>
+
+    <a href="/admin/categories" class="more-grid-item">
+      <div class="more-item-icon" style="background: #FEF3C7; color: #d97706;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+      </div>
+      <span>Categories</span>
+    </a>
+
+    <a href="/admin/notifications" class="more-grid-item">
+      <div class="more-item-icon" style="background: #E0E7FF; color: #4f46e5;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      </div>
+      <span>Notifications</span>
+    </a>
+
+    <a href="/admin/settings" class="more-grid-item">
+      <div class="more-item-icon" style="background: #F1F5F9; color: #475569;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+      </div>
+      <span>Settings</span>
+    </a>
+
+    <a href="/admin/contracts/pipeline" class="more-grid-item">
+      <div class="more-item-icon" style="background: #FDF2F8; color: #db2777;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+      </div>
+      <span>Pipeline</span>
+    </a>
+
+    <a href="/admin/webhooks" class="more-grid-item">
+      <div class="more-item-icon" style="background: #F0FDF4; color: #15803d;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
+      </div>
+      <span>Webhooks</span>
+    </a>
+
+    <a href="/auth/logout" class="more-grid-item" style="color: #dc2626;">
+      <div class="more-item-icon" style="background: #FEE2E2; color: #dc2626;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </div>
+      <span>Logout</span>
+    </a>
+  </div>
+</div>
