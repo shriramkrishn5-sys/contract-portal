@@ -240,19 +240,45 @@ html, body {
   display: none;
 }
 
-.mobile-brand-title {
-  font-size: 1.35rem;
-  font-weight: 800;
-  color: var(--portal-primary, #1E513A);
-  font-family: 'Hanken Grotesk', sans-serif;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
+/* Logo Dark & Light Mode Support */
+.header-logo-light,
+.sidebar-logo-light {
+  display: none !important;
+}
+
+.header-logo-dark,
+.sidebar-logo-dark {
+  display: block !important;
+}
+
+[data-theme="dark"] .header-logo-dark,
+[data-theme="dark"] .sidebar-logo-dark {
+  display: none !important;
+}
+
+[data-theme="dark"] .header-logo-light,
+[data-theme="dark"] .sidebar-logo-light {
+  display: block !important;
+}
+
+.mobile-brand-logo-link {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+}
+
+.mobile-header-logo {
+  max-height: 28px;
+  max-width: 140px;
+  width: auto;
+  object-fit: contain;
 }
 
 .mobile-brand-tagline {
   font-size: 0.72rem;
   color: var(--portal-text-muted, #64748B);
   font-weight: 500;
+  margin-top: 2px;
 }
 
 .hamburger-btn {

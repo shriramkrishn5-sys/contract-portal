@@ -1,7 +1,12 @@
 <header class="admin-header">
   <div class="header-left">
     <div class="mobile-brand-header">
-      <div class="mobile-brand-title"><%= locals.settings?.company_short_name || 'KeyQik' %></div>
+      <% const darkLogo = (locals.settings && locals.settings.company_logo) ? locals.settings.company_logo : '/logo.png'; %>
+      <% const lightLogo = (locals.settings && locals.settings.company_logo_light) ? locals.settings.company_logo_light : '/light-logo.png'; %>
+      <a href="/admin" class="mobile-brand-logo-link">
+        <img src="<%= darkLogo %>" alt="<%= locals.settings?.company_short_name || 'KKeyQik' %>" class="mobile-header-logo header-logo-dark">
+        <img src="<%= lightLogo %>" alt="<%= locals.settings?.company_short_name || 'KKeyQik' %>" class="mobile-header-logo header-logo-light">
+      </a>
       <div class="mobile-brand-tagline">Smart Contracts. Simplified.</div>
     </div>
     <div class="header-greeting">

@@ -1,16 +1,12 @@
 <aside class="sidebar" id="adminSidebar">
   <div class="sidebar-brand">
     <div class="sidebar-brand-inner">
-      <% if (locals.settings && (locals.settings.company_logo || locals.settings.company_logo_light)) { %>
-        <% if (locals.settings.company_logo) { %>
-          <img src="<%= locals.settings.company_logo %>" alt="<%= locals.settings.company_short_name || 'Logo' %>" class="sidebar-logo-dark <%= locals.settings.company_logo_light ? 'has-light-logo' : '' %>" style="max-width: 100%; max-height: 32px;">
-        <% } %>
-        <% if (locals.settings.company_logo_light) { %>
-          <img src="<%= locals.settings.company_logo_light %>" alt="<%= locals.settings.company_short_name || 'Logo' %>" class="sidebar-logo-light" style="max-width: 100%; max-height: 32px; display: none;">
-        <% } %>
-      <% } else { %>
-        <h2 style="font-size: 20px; font-weight: 700; color: var(--portal-primary); margin: 0;"><%= locals.settings?.company_short_name || 'KKeyQik' %></h2>
-      <% } %>
+      <% const darkLogo = (locals.settings && locals.settings.company_logo) ? locals.settings.company_logo : '/logo.png'; %>
+      <% const lightLogo = (locals.settings && locals.settings.company_logo_light) ? locals.settings.company_logo_light : '/light-logo.png'; %>
+      <a href="/admin" style="display: flex; align-items: center; text-decoration: none;">
+        <img src="<%= darkLogo %>" alt="<%= locals.settings?.company_short_name || 'KKeyQik' %>" class="sidebar-logo-dark" style="max-width: 100%; max-height: 32px; object-fit: contain;">
+        <img src="<%= lightLogo %>" alt="<%= locals.settings?.company_short_name || 'KKeyQik' %>" class="sidebar-logo-light" style="max-width: 100%; max-height: 32px; object-fit: contain; display: none;">
+      </a>
     </div>
     <button id="sidebar-close-btn" class="sidebar-close-btn" aria-label="Close Navigation Menu" type="button" onclick="window.closeAdminSidebar && window.closeAdminSidebar(event)">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
