@@ -186,4 +186,20 @@ router.put('/:id', async (req, res) => {
   }
 });
 
+// DELETE /admin/templates/:id - Delete template
+router.delete('/:id', async (req, res) => {
+  try {
+    const template = await Template.findById(req.params.id);
+    if (!template) return res.status(404).json({ success: false, message: 'Template not found' });
+
+    await Template.delete(req.params.id);
+    await AuditLog.create(req.admin.id, 'Deleted', 'Template', template.name, 'Template deleted', req.ip);
+
+    res.json({ success: true, message: 'Template deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Error deleting template' });
+  }
+});
+
 module.exports = router;

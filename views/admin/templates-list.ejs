@@ -133,8 +133,12 @@
         <p style="font-size: 14px; color: #475569; margin: 0 0 24px; flex-grow: 1; line-height: 1.5; word-break: break-word;">
           <%= template.description %>
         </p>
-        <div style="display: flex; gap: 12px; margin-top: auto;">
-          <a href="/admin/templates/<%= template.id %>/edit" class="btn btn-outline" style="flex: 1; justify-content: center;">Edit Structure</a>
+        <div style="display: flex; gap: 8px; margin-top: auto;">
+          <a href="/admin/contracts/create/<%= template.slug %>" class="btn btn-primary" style="flex: 1; justify-content: center;">Use Template</a>
+          <a href="/admin/templates/<%= template.id %>/edit" class="btn btn-outline" style="justify-content: center;" title="Edit Structure">Edit</a>
+          <button type="button" class="btn btn-outline" style="color: #dc2626; border-color: #fca5a5; padding: 0 12px;" onclick="deleteTemplate(<%= template.id %>, '<%= template.name.replace(/'/g, "\\'") %>')" title="Delete Template">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+          </button>
         </div>
       </div>
     <% }) %>
@@ -251,7 +255,7 @@
       } catch(e) {}
     %>
       <div class="mt-card" data-cat="<%= catKey %>" data-title="<%= nameLower %>">
-        <a href="/admin/templates/<%= t.id %>/edit" class="mt-card-left">
+        <a href="/admin/contracts/create/<%= t.slug %>" class="mt-card-left">
           <div class="mt-card-icon" style="background: <%= iconBg %>; color: <%= iconColor %>;">
             <% if (iconType === 'marketing') { %>
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -311,14 +315,18 @@
               </svg>
             </button>
             <div id="tmplDropdown_<%= t.id %>" class="mt-dropdown-sheet">
+              <a href="/admin/contracts/create/<%= t.slug %>" class="mt-sheet-item">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                <span>Create Contract</span>
+              </a>
               <a href="/admin/templates/<%= t.id %>/edit" class="mt-sheet-item">
                 <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
                 <span>Edit Template</span>
               </a>
-              <a href="/admin/contracts/new?template=<%= t.id %>" class="mt-sheet-item">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                <span>Create Contract</span>
-              </a>
+              <button type="button" class="mt-sheet-item" onclick="deleteTemplate(<%= t.id %>, '<%= t.name.replace(/'/g, "\\'") %>')" style="background: none; border: none; width: 100%; cursor: pointer; color: #dc2626; text-align: left; padding: 8px 10px; font-family: inherit; font-size: 0.78rem;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                <span>Delete Template</span>
+              </button>
             </div>
           </div>
         </div>
@@ -415,6 +423,31 @@ function toggleTmplDropdown(event, tmplId) {
 
   const target = document.getElementById('tmplDropdown_' + tmplId);
   if (target) target.classList.toggle('show');
+}
+
+async function deleteTemplate(templateId, templateName) {
+  if (!confirm(`Are you sure you want to delete "${templateName}"? This action cannot be undone.`)) {
+    return;
+  }
+
+  try {
+    const res = await fetch(`/admin/templates/${templateId}`, {
+      method: 'DELETE',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    });
+    const data = await res.json();
+    if (data.success) {
+      window.location.reload();
+    } else {
+      alert(data.message || 'Failed to delete template');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('An error occurred while deleting the template');
+  }
 }
 
 document.addEventListener('click', () => {
