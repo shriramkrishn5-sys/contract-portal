@@ -1,3 +1,40 @@
+<!-- Mobile-Only Hero Banner Card (<=768px) -->
+<div class="mobile-hero-banner">
+  <div class="mobile-hero-content">
+    <div class="mobile-hero-icon">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="7" y1="17" x2="17" y2="7"></line>
+        <polyline points="7 7 17 7 17 17"></polyline>
+      </svg>
+    </div>
+    <div class="mobile-hero-text">
+      <span class="mobile-hero-sub">Welcome back,</span>
+      <h2 class="mobile-hero-title"><%= typeof admin !== 'undefined' && admin.name ? admin.name.split(' ')[0] : 'Aviral' %> 👋</h2>
+      <p class="mobile-hero-desc">Manage, track and sign your contracts in one place.</p>
+    </div>
+  </div>
+  <div class="mobile-hero-art">
+    <div class="hero-doc-illustration">
+      <div class="hero-doc-sheet">
+        <div class="doc-line doc-line-green"></div>
+        <div class="doc-line doc-line-gray"></div>
+        <div class="doc-line doc-line-gray short"></div>
+        <div class="doc-signature">
+          <svg width="36" height="16" viewBox="0 0 50 24" fill="none" stroke="#22c55e" stroke-width="2.5" stroke-linecap="round">
+            <path d="M2 18 C 10 10, 15 22, 22 14 C 28 8, 32 20, 48 10"/>
+          </svg>
+        </div>
+      </div>
+      <div class="hero-pen-icon">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#1e293b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path>
+        </svg>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Desktop-Only Dashboard Header (>768px) -->
 <div class="dashboard-header mb-4">
   <div>
     <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--portal-dark); margin-bottom: 0.25rem;">

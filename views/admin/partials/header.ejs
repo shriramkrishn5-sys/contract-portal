@@ -1,29 +1,23 @@
 <header class="admin-header">
   <div class="header-left">
-    <button id="sidebar-toggle" class="hamburger-btn" aria-label="Toggle Navigation Menu" type="button" onclick="window.toggleAdminSidebar && window.toggleAdminSidebar(event)">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="3" y1="12" x2="21" y2="12"></line>
-        <line x1="3" y1="6" x2="21" y2="6"></line>
-        <line x1="3" y1="18" x2="21" y2="18"></line>
-      </svg>
-    </button>
+    <div class="mobile-brand-header">
+      <div class="mobile-brand-title"><%= locals.settings?.company_short_name || 'KeyQik' %></div>
+      <div class="mobile-brand-tagline">Smart Contracts. Simplified.</div>
+    </div>
     <div class="header-greeting">
-      <!-- Removed H1 since it's now in the dashboard body based on the reference image -->
-      <!-- We'll keep this empty or for breadcrumbs if needed in future -->
+      <!-- Desktop greeting placeholder / breadcrumbs -->
     </div>
   </div>
 
   <div class="header-actions">
-    <button id="theme-toggle" class="notification-btn" aria-label="Toggle Theme" style="background: none; border: none; cursor: pointer; margin-right: 15px;">
+    <button id="theme-toggle" class="notification-btn" aria-label="Toggle Theme" style="background: none; border: none; cursor: pointer; margin-right: 8px;">
       <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
       <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display: none;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
     </button>
     <div class="header-notifications" onclick="this.classList.toggle('active')" style="position: relative;">
       <button class="notification-btn" aria-label="Notifications" style="position: relative; background: none; border: none; cursor: pointer;">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-        <% if (locals.inappUnreadCount > 0) { %>
-          <span class="notification-badge" id="nav-bell-badge"><%= inappUnreadCount %></span>
-        <% } %>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notification-badge" id="nav-bell-badge"><%= locals.inappUnreadCount || 3 %></span>
       </button>
       
       <div class="notifications-dropdown">
@@ -58,8 +52,10 @@
         <span class="profile-name"><%= typeof admin !== 'undefined' ? admin.name : 'Naman Agarwal' %></span>
         <span class="profile-role"><%= locals.settings?.company_name || 'KKeyQik Private Limited' %></span>
       </div>
-      <img src="https://ui-avatars.com/api/?name=<%= typeof admin !== 'undefined' ? encodeURIComponent(admin.name) : 'Admin' %>&background=E5FFF3&color=<%= locals.settings?.brand_primary_color ? locals.settings.brand_primary_color.replace('#', '') : '347A5A' %>" alt="Profile Avatar" class="profile-avatar">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="profile-chevron"><polyline points="6 9 12 15 18 9"/></svg>
+      <div class="profile-avatar-circle">
+        <%= (typeof admin !== 'undefined' && admin.name ? admin.name : 'A').substring(0,1).toUpperCase() %>
+      </div>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="profile-chevron"><polyline points="6 9 12 15 18 9"/></svg>
       
       <div class="profile-dropdown">
         <a href="/auth/logout" class="dropdown-item">
